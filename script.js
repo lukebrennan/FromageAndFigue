@@ -543,11 +543,17 @@ document.addEventListener("click", e => {
   const u = new URL(a.href, location.href);
   if (u.origin !== location.origin || /\.[a-z0-9]+$/i.test(u.pathname)) return;
   if (u.pathname === location.pathname && u.hash) return;     // same page: normal anchor
+  if (u.pathname === location.pathname && u.search === location.search && !u.hash) {   // the page you are already on: glide to the top
+    e.preventDefault();
+    if (lenis) lenis.scrollTo(0, { duration: 1.1 }); else window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    return;
+  }
   if (reduce) return;
   e.preventDefault();
   try { sessionStorage.setItem("ff-nav", "1"); } catch (err) {}
   html.classList.add("leaving");
   setTimeout(() => (location.href = u.href), 260);
+  setTimeout(() => html.classList.remove("leaving"), 3500);   // never leave the page blank if navigation stalls
 });
 addEventListener("pageshow", ev => { if (ev.persisted) html.classList.remove("leaving"); });
 
@@ -583,4 +589,24 @@ addEventListener("pageshow", ev => { if (ev.persisted) html.classList.remove("le
     set(open, false); $(".menu-caret", open).focus();
   });
   document.addEventListener("click", e => { if (!e.target.closest(".has-menu")) menus.forEach(m => set(m, false)); });
+})();
+
+
+/* ---------- arriving on #section: stay aligned while fonts and images settle ---------- */
+(() => {
+  const id = decodeURIComponent(location.hash.slice(1));
+  if (!id || id === "top") return;
+  let alive = true;
+  ["wheel", "touchstart", "keydown", "mousedown"].forEach(ev => addEventListener(ev, () => (alive = false), { once: true, passive: true }));
+  const align = () => {
+    if (!alive) return;
+    const el = document.getElementById(id); if (!el) return;
+    const y = Math.round(el.getBoundingClientRect().top + scrollY - header.offsetHeight + 1);
+    if (Math.abs(scrollY - y) > 2) { if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y); }
+  };
+  const ro = new ResizeObserver(align); ro.observe(document.body);
+  addEventListener("load", () => setTimeout(align, 60));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(align, 60));
+  setTimeout(() => { alive = false; ro.disconnect(); }, 4500);
+  align();
 })();
