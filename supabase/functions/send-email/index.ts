@@ -45,9 +45,12 @@ const row = (k: string, v: string) => `<tr><td style="padding:7px 16px 7px 0;fon
 const panel = (inner: string) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3ede1;border-left:3px solid #b79a5d"><tr><td style="padding:16px 20px">${inner}</td></tr></table>`;
 
 function items(o: any) {
-  const lines = (o.items || []).map((i: any) => `<tr><td style="padding:12px 0;border-bottom:1px solid #e6dfd0;font:400 15px/1.4 ${SANS};color:#141312">${esc(i.name)}<br><span style="font-size:13px;color:#6f6a61">${esc(i.qty)} x ${esc(i.price)}</span></td><td align="right" style="padding:12px 0;border-bottom:1px solid #e6dfd0;font:400 15px ${SANS};color:#141312;white-space:nowrap">${gbp((i.unit_price || 0) * i.qty)}</td></tr>`).join("");
-  const tot = (k: string, v: string, strong = false) => `<tr><td style="padding:${strong ? "14px" : "8px"} 0 ${strong ? "0" : "0"};font:${strong ? "400 22px" : "400 14px"} ${strong ? SERIF : SANS};color:${strong ? "#141312" : "#6f6a61"}">${k}</td><td align="right" style="padding:${strong ? "14px" : "8px"} 0 0;font:${strong ? "400 22px" : "400 14px"} ${strong ? SERIF : SANS};color:#141312">${v}</td></tr>`;
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td colspan="2" style="padding-bottom:8px;border-bottom:1px solid #141312;font:500 11px ${SANS};letter-spacing:.2em;text-transform:uppercase;color:#6f6a61">Your order</td></tr>${lines}
+  const thumb = (i: any) => i.thumb
+    ? `<img src="${esc(i.thumb)}" width="64" height="80" alt="" style="display:block;width:64px;height:80px;object-fit:cover;background:#ece4d6;border:0">`
+    : `<div style="width:64px;height:80px;background:#ece4d6;font-size:0;line-height:0">&nbsp;</div>`;
+  const lines = (o.items || []).map((i: any) => `<tr><td width="64" style="width:64px;padding:12px 16px 12px 0;border-bottom:1px solid #e6dfd0;vertical-align:middle">${thumb(i)}</td><td style="padding:12px 0;border-bottom:1px solid #e6dfd0;font:400 15px/1.4 ${SANS};color:#141312;vertical-align:middle">${esc(i.name)}<br><span style="font-size:13px;color:#6f6a61">${esc(i.qty)} x ${esc(i.price)}</span></td><td align="right" style="padding:12px 0;border-bottom:1px solid #e6dfd0;font:400 15px ${SANS};color:#141312;white-space:nowrap;vertical-align:middle">${gbp((i.unit_price || 0) * i.qty)}</td></tr>`).join("");
+  const tot = (k: string, v: string, strong = false) => `<tr><td colspan="2" style="padding:${strong ? "14px" : "8px"} 0 0;font:${strong ? "400 22px" : "400 14px"} ${strong ? SERIF : SANS};color:${strong ? "#141312" : "#6f6a61"}">${k}</td><td align="right" style="padding:${strong ? "14px" : "8px"} 0 0;font:${strong ? "400 22px" : "400 14px"} ${strong ? SERIF : SANS};color:#141312">${v}</td></tr>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td colspan="3" style="padding-bottom:8px;border-bottom:1px solid #141312;font:500 11px ${SANS};letter-spacing:.2em;text-transform:uppercase;color:#6f6a61">Your order</td></tr>${lines}
 ${tot("Subtotal", gbp(o.subtotal))}${tot(o.fulfilment === "delivery" ? "Delivery" : "Collection in store", o.delivery_fee > 0 ? gbp(o.delivery_fee) : "Free")}${tot("Total", gbp(o.total), true)}</table>`;
 }
 
@@ -115,6 +118,15 @@ const T = {
 // ---------------------------------------------------------------- sending
 const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+// look up each product's photo so the emails can show a thumbnail next to every item
+async function withThumbs(db: any, o: any) {
+  const ids = (o.items ?? []).map((i: any) => i.id).filter(Boolean);
+  if (!ids.length) return o;
+  const { data } = await db.from("products").select("id,img").in("id", ids);
+  const url = (img: string) => (!img ? "" : /^https?:/.test(img) ? img : `${SITE}/assets/products/${img}.webp`);
+  const map: Record<string, string> = Object.fromEntries((data ?? []).map((r: any) => [r.id, url(r.img)]));
+  return { ...o, items: o.items.map((i: any) => ({ ...i, thumb: map[i.id] ?? "" })) };
+}
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function send(to: string, subject: string, html: string, replyTo = REPLY_TO) {
@@ -131,7 +143,7 @@ async function send(to: string, subject: string, html: string, replyTo = REPLY_T
 const sample = (kind: string) => ({
   id: "sample", ref: "FF-SAMPLE", status: "new", customer_name: "Camille Dubois", email: ADMIN, fulfilment: kind.includes("delivery") ? "delivery" : "collection",
   slot_at: new Date(Date.now() + 2 * 86400000).toISOString(), address: "12 Bold Street\nLiverpool L1 4DS",
-  items: [{ name: "Comté 24 months", qty: 2, price: "£8 / 100g", unit_price: 8 }, { name: "Walnut bread", qty: 1, price: "£6 / loaf", unit_price: 6 }, { name: "The Classic Board", qty: 1, price: "£85 / board", unit_price: 85 }],
+  items: [{ id: "comte", name: "Comté 24 months", qty: 2, price: "£8 / 100g", unit_price: 8 }, { id: "bread", name: "Walnut bread", qty: 1, price: "£6 / loaf", unit_price: 6 }, { id: "board-classic", name: "The Classic Board", qty: 1, price: "£85 / board", unit_price: 85 }],
   subtotal: 107, delivery_fee: kind.includes("delivery") ? 4.99 : 0, total: kind.includes("delivery") ? 111.99 : 107, payment: "demo",
   customer_note: "A gift for my mother, could you leave out the blue cheese? Thank you!", cancel_reason: "One of the cheeses is out of stock until next week, so we could not complete the order in time.",
 });
@@ -150,7 +162,7 @@ Deno.serve(async (req) => {
     if (!user || (user.email ?? "").toLowerCase() !== ADMIN) return json({ error: "Not allowed." }, 403);
     if (!Deno.env.get("RESEND_API_KEY")) return json({ error: "The RESEND_API_KEY secret has not been added in Supabase yet." }, 500);
     const kind = String(body.template || "plain");
-    const o = sample(kind) as any;
+    const o = await withThumbs(db, sample(kind)) as any;
     const mail = kind === "plain" ? { subject: "Test email from Fromage & Figue", html: layout({ shop, preheader: "It works.", eyebrow: "Test email", title: "It *works.*", excerpt: "This is a test email from your shop website. If you can read this, the shop can send emails to customers." }) }
       : kind.startsWith("confirmation") ? T.confirmation(o, shop) : kind === "alert" ? T.alert(o, shop)
       : kind.startsWith("ready") ? T.ready(o, shop) : kind === "cancelled" ? T.cancelled(o, shop) : null;
@@ -161,8 +173,9 @@ Deno.serve(async (req) => {
 
   // 2. real orders: called by the database whenever an order is placed or its status changes
   if (body.order_id && (body.type === "INSERT" || body.type === "UPDATE")) {
-    const { data: o } = await db.from("orders").select("*").eq("id", body.order_id).maybeSingle();
-    if (!o) return json({ ok: false, reason: "no such order" });
+    const { data: row } = await db.from("orders").select("*").eq("id", body.order_id).maybeSingle();
+    if (!row) return json({ ok: false, reason: "no such order" });
+    const o = await withThumbs(db, row);
     const tag = body.type === "INSERT" ? "confirmation" : o.status === "ready" ? "ready" : o.status === "cancelled" ? "cancelled" : "";
     if (!tag) return json({ ok: true, skipped: "no email for this status" });
     // claim it first, so the same email can never go out twice
