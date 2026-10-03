@@ -25,7 +25,7 @@ function toast(msg, bad) { const t = $("#toast"); t.textContent = msg; t.classLi
 const fail = e => { console.error(e); toast((e && e.message) || "Something went wrong", true); };
 async function q(promise) { const { data, error } = await promise; if (error) throw error; return data; }
 
-const S = { tab: "orders", cats: [], prods: [], orders: [], ofilter: "open", openOrder: null, pq: "", pcat: "all" };
+const S = { tab: "orders", cats: [], prods: [], orders: [], ofilter: "open", openOrder: null, cancelFor: null, pq: "", pcat: "all" };
 
 /* ---------- sign in ---------- */
 function showLogin(msg) { $("#app").hidden = true; $("#login").hidden = false; const m = $("#login-msg"); m.hidden = !msg; m.textContent = msg || ""; }
@@ -87,8 +87,10 @@ function orderDetail(o) {
       <dt>${esc(cap(o.fulfilment))}</dt><dd>${o.fulfilment === "delivery" ? "Within 1 to 3 days" : when(o.slot_at) || "No time chosen"}</dd>${o.address ? `<dt>Address</dt><dd>${esc(o.address)}</dd>` : ""}<dt>Payment</dt><dd>${esc(o.payment)} (no money taken)</dd>${o.customer_note ? `<dt>Customer note</dt><dd class="cnote">${esc(o.customer_note)}</dd>` : ""}</dl>
       <label style="margin-top:1rem">Your private note<span class="hint">Only you can see this. For example "Allergic to nuts" or "Customer rang to change time".</span><textarea data-note rows="2">${esc(o.internal_note)}</textarea></label>
       <div class="actions"><button class="btn sm dark" data-save-note="${o.id}">Save note</button></div></div>
-    <div class="full-w"><p class="hint" style="margin:0 0 .5rem">Where is this order up to? Click a button to update it.</p>
-      <div class="steps-btns">${STATUSES.map(s => `<button type="button" class="stp${s === o.status ? " on" : ""} ${s}" data-set-status="${s}" data-oid="${o.id}" aria-pressed="${s === o.status}"><b>${SLABEL[s]}</b><small>${sdesc(s, o)}</small></button>`).join("")}</div></div>
+    <div class="full-w"><p class="hint" style="margin:0 0 .5rem">Where is this order up to? Click a button to update it. <b>Ready</b> and <b>Cancelled</b> email the customer automatically.</p>
+      <div class="steps-btns">${STATUSES.map(s => `<button type="button" class="stp${s === o.status ? " on" : ""} ${s}" data-set-status="${s}" data-oid="${o.id}" aria-pressed="${s === o.status}"><b>${SLABEL[s]}</b><small>${sdesc(s, o)}</small></button>`).join("")}</div>
+      ${S.cancelFor === o.id ? `<div class="cancel-box"><label>Why is this order being cancelled?<span class="hint">This is included in the email the customer receives. Be kind and clear. You can leave it blank.</span><textarea data-reason rows="3" placeholder="One of the cheeses is out of stock until next week, so we could not complete the order in time."></textarea></label><div class="actions"><button class="btn sm danger" data-confirm-cancel="${o.id}">Cancel order and email customer</button><button class="btn sm" data-abort-cancel>Keep order</button></div></div>` : ""}
+      ${o.status === "cancelled" && o.cancel_reason ? `<p class="hint" style="margin:.8rem 0 0">Reason given to the customer: <b>${esc(o.cancel_reason)}</b></p>` : ""}</div>
   </div></td></tr>`;
 }
 $("#view").addEventListener("click", async e => {
@@ -97,7 +99,18 @@ $("#view").addEventListener("click", async e => {
   if (e.target.closest("#o-refresh")) return viewOrders().catch(fail);
   const st = e.target.closest("[data-set-status]");
   if (st) {
+    const next = st.dataset.setStatus;
+    if (next === "cancelled") { S.cancelFor = st.dataset.oid; return drawOrders(); }
+    S.cancelFor = null;
+    if (next === "ready" && !confirm("This will email the customer to say their order is ready. Continue?")) return;
     try { await q(sb.from("orders").update({ status: st.dataset.setStatus }).eq("id", st.dataset.oid)); toast(`Marked as ${SLABEL[st.dataset.setStatus]}`); await viewOrders(); } catch (err) { fail(err); }
+    return;
+  }
+  if (e.target.closest("[data-abort-cancel]")) { S.cancelFor = null; return drawOrders(); }
+  const cc = e.target.closest("[data-confirm-cancel]");
+  if (cc) {
+    const reason = $("[data-reason]", cc.closest(".detail-row")).value.trim();
+    try { await q(sb.from("orders").update({ status: "cancelled", cancel_reason: reason }).eq("id", cc.dataset.confirmCancel)); S.cancelFor = null; toast("Order cancelled. The customer will be emailed."); await viewOrders(); } catch (err) { fail(err); }
     return;
   }
   const sn = e.target.closest("[data-save-note]");
@@ -271,17 +284,18 @@ async function viewSettings() {
       <div class="grid2">${fld("Opening message", "openingNote", s.openingNote, 'placeholder="Spring 2027, Liverpool"', "A short line shown near the top of the site.")}${fld("Opening date", "openingDate", s.openingDate, 'type="date"', "Used for the countdown line on the home page.")}</div></div>
     <div class="card"><h2>Contact</h2><div class="grid2">${fld("Email address", "email", s.email, 'type="email"', "Where customers write to you.")}${fld("Phone number", "phone", s.phone, 'placeholder="0151 496 0142"', "Shown on the site. Customers can tap it to call.")}${fld("Address, first line", "a1", s.address[0] || "", 'placeholder="14 Gambier Lane"')}${fld("Address, second line", "a2", s.address[1] || "", 'placeholder="Liverpool L1 4DX"', "Include the postcode. It is also used for the map.")}</div></div>
     <div class="card"><h2>Opening hours</h2><p class="hint" style="margin:-.6rem 0 1rem">Use the 24 hour clock: 9 is 9am, 17 is 5pm. Tick Closed for days the shop is shut. These show on the site once the shop has opened.</p><div class="hours"><span></span><b class="hint">Opens at</b><b class="hint">Closes at</b><span></span>${hours}</div></div>
-    <div class="card"><h2>Emails</h2><p class="hint" style="margin:-.6rem 0 1rem">Checks that the shop can send email. A short test message is sent to your own login address (${esc(ADMIN_EMAIL)}).</p>
-      <button class="btn" type="button" id="test-email">Send me a test email</button> <span class="hint" id="test-email-msg"></span></div>
+    <div class="card"><h2>Emails</h2><p class="hint" style="margin:-.6rem 0 1rem">The shop sends these emails automatically: a confirmation to the customer and an alert to you when an order is placed, then an email to the customer when you mark an order Ready or Cancelled. Send yourself a sample of any of them (to ${esc(ADMIN_EMAIL)}) to see how they look.</p>
+      <div class="tools"><select id="test-kind"><option value="plain">Simple test message</option><option value="confirmation">Order confirmation (collection)</option><option value="confirmation-delivery">Order confirmation (delivery)</option><option value="alert">New order alert (to you)</option><option value="ready">Ready to collect</option><option value="ready-delivery">On its way (delivery)</option><option value="cancelled">Order cancelled</option></select>
+      <button class="btn" type="button" id="test-email">Send me a sample</button> <span class="hint" id="test-email-msg"></span></div></div>
     <div class="save-bar"><button class="btn dark" type="submit">Save settings</button><span class="hint">Changes appear on the site within a few minutes.</span></div>
   </form>`;
   $$("[data-closed]").forEach(c => c.addEventListener("change", () => { $$(`[data-h^="${c.dataset.closed}-"]`).forEach(i => (i.disabled = c.checked)); }));
   $("#test-email").addEventListener("click", async () => {
     const btn = $("#test-email"), msg = $("#test-email-msg"); btn.disabled = true; msg.textContent = "Sending";
     try {
-      const { data, error } = await sb.functions.invoke("send-email", { body: { action: "test" } });
+      const { data, error } = await sb.functions.invoke("send-email", { body: { action: "test", template: $("#test-kind").value } });
       if (error) { let m = error.message; try { const b = await error.context.json(); m = b.error || m; } catch (e) {} throw new Error(m); }
-      msg.textContent = "Sent. Check your inbox, and your spam folder."; toast("Test email sent");
+      msg.textContent = "Sent. Check your inbox, and your spam folder."; toast("Sample sent");
     } catch (err) { msg.textContent = ""; fail(err); }
     btn.disabled = false;
   });
@@ -320,7 +334,7 @@ async function viewHelp() {
     <div class="card"><h2>Add a new product</h2><ol><li>Open <b>Products</b> and press <b>Add product</b>.</li><li>Fill in the name, choose a category and enter the price.</li><li>Choose a main photo. Anything from your phone works.</li><li>Press <b>Save</b>. It appears on the website within a few minutes.</li></ol></div>
     <div class="card"><h2>Change a price or description</h2><ol><li>Open <b>Products</b> and click the product.</li><li>Change what you need and press <b>Save</b>.</li></ol></div>
     <div class="card"><h2>Take something off the website for a while</h2><p>Open the product and untick <b>Show on the website</b>. It stays saved, so you can bring it back later. Use <b>Delete</b> only if you never want it again.</p></div>
-    <div class="card"><h2>Deal with an order</h2><ol><li>Open <b>Orders</b>. New orders have a gold <b>New</b> tag, and the Orders tab shows how many are waiting.</li><li>Click an order to see what was bought, who by, when they want it, and any note the customer left (shown with a <b>Note</b> tag in the list).</li><li>Move it along with the buttons at the bottom: <b>Preparing</b>, then <b>Ready</b>, then <b>Order complete</b>. Each click saves straight away.</li></ol><p>Customers are not emailed automatically yet, so contact them yourself using the email shown. Delivery orders have no set time: they are promised within 1 to 3 days.</p></div>
+    <div class="card"><h2>Deal with an order</h2><ol><li>Open <b>Orders</b>. New orders have a gold <b>New</b> tag, and the Orders tab shows how many are waiting.</li><li>Click an order to see what was bought, who by, when they want it, and any note the customer left (shown with a <b>Note</b> tag in the list).</li><li>Move it along with the buttons at the bottom: <b>Preparing</b>, then <b>Ready</b>, then <b>Order complete</b>. Each click saves straight away.</li></ol><p>Customers are emailed automatically: a confirmation when they order, then again when you mark the order <b>Ready</b> or <b>Cancelled</b>. When you cancel you can type a reason, which goes in the email. Delivery orders have no set time: they are promised within 1 to 3 days.</p></div>
     <div class="card"><h2>Add a category</h2><p>Open <b>Categories</b> and add one, for example "Goat" on Main Collection page. Then add products to it. Collection categories become filter buttons automatically. Gifts categories get their own section on the Boards &amp; gifts page, with the heading and introduction you write.</p></div>
     <div class="card"><h2>See who has signed up for news</h2><p>Open <b>Email list</b>. Everyone who used the footer form is listed there. Press <b>Download as spreadsheet</b> to get the addresses as a file you can open in Excel or import into an email tool. Remove anyone who asks to be taken off.</p></div>
     <div class="card"><h2>Open the shop</h2><p>When you open, go to <b>Shop settings</b> and untick <b>The shop has not opened yet</b>. Check your opening hours are right, then press <b>Save</b>.</p></div>

@@ -159,3 +159,6 @@ label:not(.check) > input, label:not(.check) > select, label:not(.check) > texta
 
 .tag.note { background: var(--sand); border-color: var(--stone); margin-left: .4rem; }
 .cnote { background: var(--paper); border-left: 2px solid var(--gold); padding: .6rem .8rem; white-space: pre-wrap; }
+
+.cancel-box { margin-top: 1rem; padding: 1rem 1.1rem; border: 1px solid var(--warn); background: var(--paper); display: grid; gap: .8rem; }
+.cancel-box .actions { display: flex; gap: .6rem; flex-wrap: wrap; }

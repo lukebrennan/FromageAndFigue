@@ -61,9 +61,13 @@ create table if not exists public.orders (
   total numeric(10, 2) not null,
   payment text not null default 'demo',
   internal_note text not null default '',
-  customer_note text not null default ''  -- a note left by the customer at checkout
+  customer_note text not null default '',  -- a note left by the customer at checkout
+  cancel_reason text not null default '',  -- why the shop cancelled it (included in the email)
+  emails_sent text[] not null default '{}' -- which emails have gone out, so none is sent twice
 );
 alter table public.orders add column if not exists customer_note text not null default '';
+alter table public.orders add column if not exists cancel_reason text not null default '';
+alter table public.orders add column if not exists emails_sent text[] not null default '{}';
 
 create table if not exists public.settings (
   key text primary key,
@@ -111,6 +115,7 @@ create policy "place order" on public.orders for insert to anon, authenticated
     and char_length(email) between 3 and 200
     and char_length(address) <= 500
     and char_length(customer_note) <= 1000
+    and cancel_reason = '' and emails_sent = '{}'
     and jsonb_typeof(items) = 'array' and jsonb_array_length(items) between 1 and 60
     and total between 0 and 5000 and subtotal between 0 and 5000
   );
@@ -146,3 +151,25 @@ create policy "join list" on public.signups for insert to anon, authenticated
   with check (char_length(email) between 5 and 200 and email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$');
 drop policy if exists "admin signups" on public.signups;
 create policy "admin signups" on public.signups for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- ---------- order emails (see update-emails.sql) ----------
+create extension if not exists pg_net with schema extensions;
+
+create or replace function public.notify_order_email() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  perform net.http_post(
+    url := 'https://gshowmtmibiqaytnyqkr.supabase.co/functions/v1/send-email',
+    headers := '{"Content-Type": "application/json"}'::jsonb,
+    body := jsonb_build_object('type', TG_OP, 'order_id', new.id)
+  );
+  return new;
+end $$;
+
+drop trigger if exists orders_email_insert on public.orders;
+create trigger orders_email_insert after insert on public.orders
+  for each row execute function public.notify_order_email();
+
+drop trigger if exists orders_email_update on public.orders;
+create trigger orders_email_update after update of status on public.orders
+  for each row when (old.status is distinct from new.status) execute function public.notify_order_email();
