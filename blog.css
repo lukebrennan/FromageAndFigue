@@ -67,3 +67,7 @@
 @media (max-width: 1000px) { .blog-grid { grid-template-columns: 1fr 1fr; } .bfeature { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .blog-grid { grid-template-columns: 1fr; } .bcard figure { aspect-ratio: 16 / 10; } .prose { font-size: 1.05rem; } }
 @media (prefers-reduced-motion: reduce) { .rise { animation: none; opacity: 1; transform: none; } .bfeature:hover img, .bcard:hover img { transform: none; } }
+.prose strong, .prose b { font-weight: 600; color: var(--ink); }
+.prose > p:first-child { font-size: 1.3em; line-height: 1.65; color: var(--ink); }
+.prose h2 { padding-top: .2em; border-top: 1px solid var(--line); }
+.prose > h2:first-child { border-top: 0; margin-top: 0; }
