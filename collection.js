@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
-   The Collection page. Uses PRODUCTS, the order list and helpers from script.js.
+   Main Collection page. Uses PRODUCTS, the order list and helpers from script.js.
    Edit the DETAILS block to change the text and photographs for each product.
    images: extra photographs, files in assets/ (a -800 version must exist too).
 ------------------------------------------------------------------ */

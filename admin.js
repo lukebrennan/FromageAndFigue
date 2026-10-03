@@ -142,8 +142,8 @@ function editProduct(id) {
     <div class="pv" id="pv"><img id="pv-img" alt=""><div><small>How it looks on the site</small><b id="pv-name"></b><span id="pv-price"></span><p id="pv-note"></p></div></div>
     <p class="sec">1. The basics <span class="hint">Everything here appears on the product card.</span></p>
     ${fld("Product name", "name", p.name, 'required placeholder="Brie de Meaux"', "What customers see. Use the name you would say across the counter.")}
-    <label>Which category is it in?<span class="hint">This decides where it appears: the cheese filters on The collection page, or a section on Boards &amp; gifts. You can manage categories on the Categories tab.</span>
-      <select name="category">${S.cats.map(c => `<option value="${c.id}"${p.category === c.id ? " selected" : ""}>${esc(c.name)} (${c.section === "gifts" ? "Boards & gifts page" : "The collection page"})</option>`).join("")}</select></label>
+    <label>Which category is it in?<span class="hint">This decides where it appears: the cheese filters on Main Collection page, or a section on Boards &amp; gifts. You can manage categories on the Categories tab.</span>
+      <select name="category">${S.cats.map(c => `<option value="${c.id}"${p.category === c.id ? " selected" : ""}>${esc(c.name)} (${c.section === "gifts" ? "Boards & gifts page" : "Main Collection page"})</option>`).join("")}</select></label>
     <div class="grid3">${fld("Price in pounds", "price", p.price, 'type="number" step="0.01" min="0" required placeholder="9.50"', "Just the number, for example 9 or 9.50.")}${fld("Sold by", "unit", p.unit, 'placeholder="100g"', "What the price is for: 100g, loaf, jar, box. Leave empty for a single item.")}
     <label class="check" style="align-self:center"><input type="checkbox" name="price_from"${p.price_from ? " checked" : ""}> <span>Show as "From £…"<span class="hint">Tick when the price changes depending on what you choose.</span></span></label></div>
     ${area("Short description", "note", p.note, 2, "One or two sentences. Shown on the product card.", "Supple and creamy, with notes of mushroom and cream. Best at room temperature.")}
@@ -221,10 +221,10 @@ async function viewCategories() { await Promise.all([loadCats(), loadProds()]); 
 function drawCategories() {
   const used = id => S.prods.filter(p => p.category === id).length;
   const card = c => `<div class="card cat" data-id="${esc(c.id)}">
-    <div class="cat-top"><h2>${esc(c.name)}</h2><span class="hint">${used(c.id)} product${used(c.id) === 1 ? "" : "s"} &middot; ${c.section === "gifts" ? "Boards &amp; gifts page" : "The collection page"}</span></div>
+    <div class="cat-top"><h2>${esc(c.name)}</h2><span class="hint">${used(c.id)} product${used(c.id) === 1 ? "" : "s"} &middot; ${c.section === "gifts" ? "Boards &amp; gifts page" : "Main Collection page"}</span></div>
     <div class="grid2">
       ${fld("Category name", "name", c.name, 'data-k="name"', c.section === "gifts" ? "Shown as the label in the quick links at the top of the page." : "Shown as a filter button, for example Soft, Hard or Blue.")}
-      <label>Which page is it on?<span class="hint">The collection is the cheese and pantry catalogue. Boards &amp; gifts is the gifts page.</span><select data-k="section"><option value="collection"${c.section === "collection" ? " selected" : ""}>The collection</option><option value="gifts"${c.section === "gifts" ? " selected" : ""}>Boards and gifts</option></select></label>
+      <label>Which page is it on?<span class="hint">The Main Collection is the cheese and pantry catalogue. Boards &amp; gifts is the gifts page.</span><select data-k="section"><option value="collection"${c.section === "collection" ? " selected" : ""}>Main Collection</option><option value="gifts"${c.section === "gifts" ? " selected" : ""}>Boards and gifts</option></select></label>
       ${c.section === "gifts" ? `${fld("Section heading", "title", c.title, 'data-k="title" placeholder="For the *table.*"', "The big heading on the page. Put a word between *stars* to make it gold and italic.")}${area("Section introduction", "intro", c.intro, 2, "A sentence or two under the heading.", "Served on a wooden board, with bread and a preserve.").replace("<textarea ", "<textarea data-k=\"intro\" ")}` : ""}
       ${fld("Position", "sort", c.sort, 'type="number" data-k="sort"', "A lower number shows first.")}
       <label class="check" style="align-self:center"><input type="checkbox" data-k="active"${c.active ? " checked" : ""}> <span>Show on the website<span class="hint">Untick to hide this category and all of its products.</span></span></label>
@@ -236,7 +236,7 @@ function drawCategories() {
     ${S.cats.map(card).join("")}
     <div class="card"><h2>Add a category</h2><p class="hint" style="margin:-.4rem 0 1rem">Example: a collection category called "Goat" for goat cheeses, or a gifts category called "Hampers". After adding it, create products in it from the Products tab.</p>
     <form id="cat-new" class="grid3" autocomplete="off">
-      ${fld("Name", "name", "", 'required placeholder="Goat"')}<label>Which page is it on?<select name="section"><option value="collection">The collection</option><option value="gifts">Boards and gifts</option></select></label><div style="align-self:end"><button class="btn dark" type="submit">Add category</button></div></form></div>`;
+      ${fld("Name", "name", "", 'required placeholder="Goat"')}<label>Which page is it on?<select name="section"><option value="collection">Main Collection</option><option value="gifts">Boards and gifts</option></select></label><div style="align-self:end"><button class="btn dark" type="submit">Add category</button></div></form></div>`;
 }
 $("#view").addEventListener("click", async e => {
   if (S.tab !== "categories") return;
@@ -293,7 +293,7 @@ async function viewHelp() {
     <div class="card"><h2>Change a price or description</h2><ol><li>Open <b>Products</b> and click the product.</li><li>Change what you need and press <b>Save</b>.</li></ol></div>
     <div class="card"><h2>Take something off the website for a while</h2><p>Open the product and untick <b>Show on the website</b>. It stays saved, so you can bring it back later. Use <b>Delete</b> only if you never want it again.</p></div>
     <div class="card"><h2>Deal with an order</h2><ol><li>Open <b>Orders</b>. New orders have a gold <b>New</b> tag, and the Orders tab shows how many are waiting.</li><li>Click an order to see what was bought, who by, when they want it, and any note the customer left (shown with a <b>Note</b> tag in the list).</li><li>Move it along with the buttons at the bottom: <b>Preparing</b>, then <b>Ready</b>, then <b>Order complete</b>. Each click saves straight away.</li></ol><p>Customers are not emailed automatically yet, so contact them yourself using the email shown. Delivery orders have no set time: they are promised within 1 to 3 days.</p></div>
-    <div class="card"><h2>Add a category</h2><p>Open <b>Categories</b> and add one, for example "Goat" on The collection page. Then add products to it. Collection categories become filter buttons automatically. Gifts categories get their own section on the Boards &amp; gifts page, with the heading and introduction you write.</p></div>
+    <div class="card"><h2>Add a category</h2><p>Open <b>Categories</b> and add one, for example "Goat" on Main Collection page. Then add products to it. Collection categories become filter buttons automatically. Gifts categories get their own section on the Boards &amp; gifts page, with the heading and introduction you write.</p></div>
     <div class="card"><h2>Open the shop</h2><p>When you open, go to <b>Shop settings</b> and untick <b>The shop has not opened yet</b>. Check your opening hours are right, then press <b>Save</b>.</p></div>
     <div class="card"><h2>Good to know</h2><ul><li>Changes appear on the website within about 5 minutes. If you edit on this computer, you will see them straight away.</li><li>Photos are shrunk automatically, so there is no need to resize them first.</li><li>The checkout on the site is a demo. No money is taken, and test orders appear in the list like real ones.</li><li>Sign out when you are done, especially on a shared computer.</li></ul></div>
   </div>`;
