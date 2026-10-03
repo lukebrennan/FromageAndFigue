@@ -16,6 +16,7 @@ const SHOP = {
 /* Edit this list to change the counter. img is a file in assets/products/. */
 const PRODUCTS = [
   { id: "brie", name: "Brie de Meaux", type: "soft", note: "Creamy, mushroomy, and best at room temperature.", pair: "Fresh figs, a crisp white", price: "$9 / 100g", img: "brie" },
+  { id: "reblochon", name: "Reblochon", type: "soft", note: "Washed rind, supple, nutty, and gently fruity.", pair: "New potatoes, a crisp white", price: "$9 / 100g", img: "reblochon" },
   { id: "comte", name: "Comte 24 months", type: "hard", note: "Nutty and caramel sweet, with crunchy crystals.", pair: "Walnut bread, fig jam", price: "$8 / 100g", img: "comte" },
   { id: "roquefort", name: "Roquefort", type: "blue", note: "Sharp, salty, and beautiful with honey.", pair: "Honey, walnuts, a sweet wine", price: "$10 / 100g", img: "roquefort" },
   { id: "goat", name: "Fresh goat cheese", type: "soft", note: "Bright, lemony, and soft.", pair: "Warm bread, olive oil", price: "$7 / 100g", img: "goat" },
