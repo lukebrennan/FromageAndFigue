@@ -4,14 +4,14 @@
 const SHOP = {
   name: "Fromage & Figue",
   city: "Liverpool",
-  address: ["Address to be announced", "Liverpool, United Kingdom"],
-  mapQuery: "Fromage & Figue, Liverpool, UK",
-  email: "hello@example.com",
-  phone: "(000) 000 0000",
-  phoneLink: "+0000000000",
-  whatsapp: "",            // digits only with country code, for example 447700900123. Leave empty to hide.
+  address: ["14 Gambier Lane", "Liverpool L1 4DX"],
+  mapQuery: "14 Gambier Lane, Liverpool L1 4DX, UK",
+  email: "hello@fromageandfigue.co.uk",
+  phone: "0151 496 0142",
+  phoneLink: "+441514960142",
+  whatsapp: "447700900142",            // digits only with country code, for example 447700900123. Leave empty to hide.
   openingSoon: true,      // true shows "Opening soon" everywhere instead of live hours. Set false at launch.
-  openingNote: "Liverpool, date to be announced",
+  openingNote: "Autumn 2026, Liverpool",
   owner: "Benoit Severin-Delos",
   timeZone: "Europe/London",
   // Opening hours by weekday: [open hour, close hour] in 24h time, or null when closed. Sunday first.
