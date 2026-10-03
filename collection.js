@@ -216,6 +216,14 @@ function detailHTML(p, items) {
 }
 
 let detailEl = null;
+function hintState() {
+  if (!detailEl) return;
+  const w = $(".d-wrap", detailEl), box = $(".d-box", detailEl), room = w.scrollHeight - w.clientHeight;
+  box.classList.toggle("can-scroll", room > 24);
+  box.classList.toggle("at-end", w.scrollTop >= room - 24);
+  box.classList.toggle("scrolled", w.scrollTop > 40);
+}
+addEventListener("resize", hintState);
 function openDetail(id, fromHash) {
   const p = byId[id]; if (!p) return;
   if (openId === id) return;
@@ -226,6 +234,7 @@ function openDetail(id, fromHash) {
     const panel = $(".d-wrap", detailEl);
     panel.innerHTML = detailHTML(p, live);
     panel.scrollTop = 0;
+    setTimeout(hintState, 60);
     detailEl.setAttribute("aria-label", `${p.name} details`);
     panel.classList.remove("swap"); void panel.offsetWidth; panel.classList.add("swap");
   } else {
@@ -233,7 +242,11 @@ function openDetail(id, fromHash) {
     detailEl.className = "detail";
     detailEl.setAttribute("role", "dialog"); detailEl.setAttribute("aria-modal", "true"); detailEl.setAttribute("aria-label", `${p.name} details`);
     detailEl.setAttribute("data-lenis-prevent", "");
-    detailEl.innerHTML = `<div class="d-scrim" data-close></div><div class="d-wrap">${detailHTML(p, live)}</div>`;
+    detailEl.innerHTML = `<div class="d-scrim" data-close></div><div class="d-box"><div class="d-wrap">${detailHTML(p, live)}</div><button type="button" class="d-hint" aria-hidden="true" tabindex="-1">Scroll for more <i>&darr;</i></button></div>`;
+    const w = $(".d-wrap", detailEl);
+    w.addEventListener("scroll", () => hintState(), { passive: true });
+    $(".d-hint", detailEl).addEventListener("click", () => w.scrollBy({ top: Math.round(w.clientHeight * .7), behavior: "smooth" }));
+    setTimeout(hintState, 400);
     document.body.appendChild(detailEl);
     document.body.classList.add("modal-open");
     if (lenis) lenis.stop();
