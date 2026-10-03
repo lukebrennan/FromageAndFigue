@@ -27,7 +27,7 @@ function setMeta(p) {
   const set = (sel, v) => { const el = $(sel); if (el) el.setAttribute("content", v); };
   set('meta[name="description"]', desc); set('meta[property="og:title"]', title); set('meta[property="og:description"]', desc);
   set('meta[name="twitter:title"]', title); set('meta[name="twitter:description"]', desc);
-  const url = `https://fromageandfigue.co.uk/post?slug=${encodeURIComponent(p.slug)}`;
+  const url = `https://fromageandfigue.co.uk/blog/${encodeURIComponent(p.slug)}/`;
   set('meta[property="og:url"]', url); const c = $('link[rel="canonical"]'); if (c) c.href = url;
   if (p.featured_image) { set('meta[property="og:image"]', p.featured_image); set('meta[name="twitter:image"]', p.featured_image); }
 }
@@ -35,7 +35,7 @@ function notFound() {
   root.innerHTML = `<header class="post-hero"><div class="wrap narrow"><a class="back" href="blog">&lsaquo; All stories</a><h1>We could not find <em>that story.</em></h1><p class="standfirst">It may have been moved or taken down. Head back to the blog to see everything we have written.</p></div></header>`;
   document.title = "Story not found | Fromage & Figue";
 }
-const card = p => `<a class="bcard" href="post?slug=${encodeURIComponent(p.slug)}" data-reveal><figure>${p.featured_image ? `<img src="${esc(p.featured_image)}" alt="${esc(p.featured_alt || p.title)}" loading="lazy">` : `<span class="no-img" aria-hidden="true">F&amp;F</span>`}</figure><div class="bcard-body"><p class="bmeta">${[p.category, fmtDate(p.published_at)].filter(Boolean).map(esc).join(" &middot; ")}</p><h3>${esc(p.title)}</h3>${p.excerpt ? `<p class="bex">${esc(p.excerpt)}</p>` : ""}<span class="bmore">Read the story</span></div></a>`;
+const card = p => `<a class="bcard" href="/blog/${encodeURIComponent(p.slug)}/" data-reveal><figure>${p.featured_image ? `<img src="${esc(p.featured_image)}" alt="${esc(p.featured_alt || p.title)}" loading="lazy">` : `<span class="no-img" aria-hidden="true">F&amp;F</span>`}</figure><div class="bcard-body"><p class="bmeta">${[p.category, fmtDate(p.published_at)].filter(Boolean).map(esc).join(" &middot; ")}</p><h3>${esc(p.title)}</h3>${p.excerpt ? `<p class="bex">${esc(p.excerpt)}</p>` : ""}<span class="bmore">Read the story</span></div></a>`;
 
 (async () => {
   const slug = (new URLSearchParams(location.search).get("slug") || "").trim().toLowerCase();

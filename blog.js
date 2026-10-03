@@ -10,7 +10,7 @@ const grid = $("#blog-grid"), feature = $("#blog-feature"), filters = $("#blog-f
 
 const img = p => (p.featured_image ? `<img src="${esc(p.featured_image)}" alt="${esc(p.featured_alt || p.title)}" loading="lazy">` : `<span class="no-img" aria-hidden="true">F&amp;F</span>`);
 const meta = p => [p.category, fmtDate(p.published_at)].filter(Boolean).map(esc).join(" &middot; ");
-const href = p => `post?slug=${encodeURIComponent(p.slug)}`;
+const href = p => `/blog/${encodeURIComponent(p.slug)}/`;
 const card = p => `<a class="bcard" href="${href(p)}" data-reveal><figure>${img(p)}</figure><div class="bcard-body"><p class="bmeta">${meta(p)}</p><h3>${esc(p.title)}</h3>${p.excerpt ? `<p class="bex">${esc(p.excerpt)}</p>` : ""}<span class="bmore">Read the story</span></div></a>`;
 const lead = p => `<a class="bfeature" href="${href(p)}" data-reveal><figure>${img(p)}</figure><div class="bf-body"><p class="bmeta">Latest &middot; ${meta(p)}</p><h2>${esc(p.title)}</h2>${p.excerpt ? `<p class="bex">${esc(p.excerpt)}</p>` : ""}<span class="bmore">Read the story</span></div></a>`;
 

@@ -1,0 +1,59 @@
+name: Build blog pages
+
+# Makes a real page for every published blog post, with a clean address, and refreshes
+# sitemap.xml and llms.txt (new pages and posts are picked up automatically).
+# Runs when the template changes, every 10 minutes (so scheduled posts go live), and on request
+# (GitHub > Actions > Build blog pages > Run workflow).
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [blog-updated]
+  schedule:
+    - cron: "*/10 * * * *"
+  push:
+    paths:
+      - "*.html"
+      - "scripts/build-blog.mjs"
+      - ".github/workflows/build-blog.yml"
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: build-blog
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        run: npm install --no-save --no-audit --no-fund sanitize-html@2
+      - name: Build the pages
+        run: node scripts/build-blog.mjs
+      - name: Commit changes
+        id: commit
+        run: |
+          git config user.name "Fromage and Figue site builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A blog sitemap.xml llms.txt ./*.html
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Nothing new to publish."
+          else
+            git commit -m "Update blog pages"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Ask GitHub Pages to rebuild
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          curl -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds" || true

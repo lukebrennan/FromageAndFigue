@@ -352,7 +352,7 @@ function drawBlog() {
     <div class="page-head"><h1>Blog</h1><div class="tools"><button class="btn dark" id="b-new">Write a new post</button></div></div>
     ${lede("Write and publish stories for the blog. Save a post as a draft while you work on it, then publish it when it is ready. Published posts appear on the blog page of the website.")}
     ${posts.length ? `<table class="tbl"><thead><tr><th></th><th>Title</th><th class="hide-s">Category</th><th>Status</th><th class="hide-s">Date</th><th></th></tr></thead><tbody>
-    ${posts.map(p => { const st = postState(p); return `<tr class="row" data-id="${p.id}"><td>${p.featured_image ? `<img class="thumb" src="${esc(p.featured_image)}" alt="" loading="lazy">` : '<div class="thumb"></div>'}</td><td><b>${esc(p.title)}</b><br><small style="color:var(--muted)">${esc(p.slug)}</small></td><td class="hide-s">${esc(p.category || "")}</td><td><span class="tag ${st === "Published" ? "ready" : st === "Scheduled" ? "preparing" : "off"}">${st}</span></td><td class="hide-s">${p.published_at ? when(p.published_at) : "Not published"}</td><td class="num">${st === "Published" ? `<a href="post?slug=${encodeURIComponent(p.slug)}" target="_blank" rel="noopener" data-stop>View</a>` : ""}</td></tr>`; }).join("")}
+    ${posts.map(p => { const st = postState(p); return `<tr class="row" data-id="${p.id}"><td>${p.featured_image ? `<img class="thumb" src="${esc(p.featured_image)}" alt="" loading="lazy">` : '<div class="thumb"></div>'}</td><td><b>${esc(p.title)}</b><br><small style="color:var(--muted)">${esc(p.slug)}</small></td><td class="hide-s">${esc(p.category || "")}</td><td><span class="tag ${st === "Published" ? "ready" : st === "Scheduled" ? "preparing" : "off"}">${st}</span></td><td class="hide-s">${p.published_at ? when(p.published_at) : "Not published"}</td><td class="num">${st === "Published" ? `<a href="/blog/${encodeURIComponent(p.slug)}/" target="_blank" rel="noopener" data-stop>View</a>` : ""}</td></tr>`; }).join("")}
     </tbody></table>` : `<p class="empty">No posts yet. Press "Write a new post" to start your first story.</p>`}`;
   $("#b-new").addEventListener("click", () => editPost(null));
   $$("tr.row", $("#view")).forEach(r => r.addEventListener("click", e => { if (e.target.closest("[data-stop]")) return; editPost(r.dataset.id); }));
@@ -419,7 +419,7 @@ async function editPost(id) {
   // slug + SEO helpers
   const upd = () => {
     const t = form.seo_title.value.trim() || form.title.value.trim() || "Post title", d = form.seo_description.value.trim() || form.excerpt.value.trim() || "A short description of the post appears here.";
-    $("#serp-title").textContent = `${t} | Fromage & Figue`.slice(0, 70); $("#serp-desc").textContent = d.slice(0, 160); $("#serp-url").textContent = `fromageandfigue.co.uk › post › ${form.slug.value || slug(form.title.value) || "your-post"}`;
+    $("#serp-title").textContent = `${t} | Fromage & Figue`.slice(0, 70); $("#serp-desc").textContent = d.slice(0, 160); $("#serp-url").textContent = `fromageandfigue.co.uk › blog › ${form.slug.value || slug(form.title.value) || "your-post"}`;
     $("#c-title").textContent = counter(form.seo_title, 30, 60); $("#c-desc").textContent = counter(form.seo_description, 70, 160);
   };
   let touched = !!p.slug;
