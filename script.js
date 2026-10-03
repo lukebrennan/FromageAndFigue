@@ -541,7 +541,7 @@ document.addEventListener("click", e => {
   if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
   if (a.target && a.target !== "_self") return;
   const u = new URL(a.href, location.href);
-  if (u.origin !== location.origin || !/\.html$|\/$/.test(u.pathname)) return;
+  if (u.origin !== location.origin || /\.[a-z0-9]+$/i.test(u.pathname)) return;
   if (u.pathname === location.pathname && u.hash) return;     // same page: normal anchor
   if (reduce) return;
   e.preventDefault();
@@ -552,24 +552,35 @@ document.addEventListener("click", e => {
 addEventListener("pageshow", ev => { if (ev.persisted) html.classList.remove("leaving"); });
 
 
-/* ---------- shop dropdown in the main heading ---------- */
+/* ---------- dropdowns in the main heading ---------- */
 (() => {
-  const wrap = $(".has-menu"); if (!wrap) return;
-  const trigger = $(".menu-trigger", wrap), panel = $(".mega", wrap);
+  const menus = $$(".has-menu"); if (!menus.length) return;
   let t;
-  const set = on => {
-    clearTimeout(t);
-    wrap.classList.toggle("open", on); trigger.setAttribute("aria-expanded", on); header.classList.toggle("menu-open", on);
-    panel.toggleAttribute("inert", !on);
+  const anyOpen = () => menus.some(m => m.classList.contains("open"));
+  const set = (m, on) => {
+    if (on) menus.forEach(o => { if (o !== m) toggle(o, false); });
+    toggle(m, on);
+    header.classList.toggle("menu-open", anyOpen());
   };
-  panel.setAttribute("inert", "");
-  trigger.addEventListener("click", () => set(!wrap.classList.contains("open")));
-  if (finePointer) {
-    wrap.addEventListener("mouseenter", () => { clearTimeout(t); t = setTimeout(() => set(true), 80); });
-    wrap.addEventListener("mouseleave", () => { clearTimeout(t); t = setTimeout(() => set(false), 220); });
+  function toggle(m, on) {
+    m.classList.toggle("open", on);
+    $(".menu-caret", m).setAttribute("aria-expanded", on);
+    $(".dd", m).toggleAttribute("inert", !on);
   }
-  wrap.addEventListener("focusout", e => { if (!wrap.contains(e.relatedTarget)) set(false); });
-  addEventListener("keydown", e => { if (e.key === "Escape" && wrap.classList.contains("open")) { set(false); trigger.focus(); } });
-  document.addEventListener("click", e => { if (!wrap.contains(e.target)) set(false); });
-  panel.addEventListener("click", e => { if (e.target.closest("a")) set(false); });
+  menus.forEach(m => {
+    $(".dd", m).setAttribute("inert", "");
+    $(".menu-caret", m).addEventListener("click", () => set(m, !m.classList.contains("open")));
+    if (finePointer) {
+      m.addEventListener("mouseenter", () => { clearTimeout(t); t = setTimeout(() => set(m, true), 90); });
+      m.addEventListener("mouseleave", () => { clearTimeout(t); t = setTimeout(() => set(m, false), 220); });
+    }
+    m.addEventListener("focusout", e => { if (!m.contains(e.relatedTarget)) set(m, false); });
+    $(".dd", m).addEventListener("click", e => { if (e.target.closest("a")) set(m, false); });
+  });
+  addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    const open = menus.find(m => m.classList.contains("open")); if (!open) return;
+    set(open, false); $(".menu-caret", open).focus();
+  });
+  document.addEventListener("click", e => { if (!e.target.closest(".has-menu")) menus.forEach(m => set(m, false)); });
 })();

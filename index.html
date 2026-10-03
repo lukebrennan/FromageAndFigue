@@ -34,7 +34,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/shopfront.webp" imagesrcset="assets/shopfront-800.webp 800w, assets/shopfront.webp 1536w" imagesizes="100vw" fetchpriority="high">
   <link rel="stylesheet" href="styles.css">
-  <script>document.documentElement.classList.replace('no-js','js');try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
+  <script>document.documentElement.classList.replace('no-js','js');if(/\.html$/.test(location.pathname)){try{history.replaceState(null,'',location.pathname.replace(/(index)?\.html$/,'')+location.search+location.hash)}catch(e){}}try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
 </head>
 <body>
   <div class="progress" aria-hidden="true"></div>
@@ -50,30 +50,32 @@
     </a>
     <nav class="nav" aria-label="Main">
       <div class="has-menu">
-        <button class="menu-trigger" type="button" aria-expanded="false" aria-controls="shop-menu" aria-haspopup="true">Shop <i class="caret" aria-hidden="true"></i></button>
-        <div class="mega" id="shop-menu">
-          <div class="mega-in">
-            <div class="mega-col">
-              <a class="mega-head" href="collection.html"><span>The collection</span><small>Cheeses, bread and pantry goods</small></a>
-              <ul>
-                <li><a href="collection.html">All 12 items</a></li>
-                <li><a href="collection.html?type=soft">Soft cheeses</a></li>
-                <li><a href="collection.html?type=hard">Hard cheeses</a></li>
-                <li><a href="collection.html?type=blue">Blue cheeses</a></li>
-                <li><a href="collection.html?type=pantry">Pantry</a></li>
-              </ul>
-            </div>
-            <div class="mega-col">
-              <a class="mega-head" href="gifts.html"><span>Boards &amp; gifts</span><small>Composed by Benoit</small></a>
-              <ul>
-                <li><a href="gifts.html#boards">Cheese boards</a></li>
-                <li><a href="gifts.html#boxes">Gift boxes and hampers</a></li>
-                <li><a href="gifts.html#vouchers">Gift vouchers</a></li>
-              </ul>
-            </div>
-            <a class="mega-img" href="gifts.html" tabindex="-1" aria-hidden="true"><img src="assets/board-800.webp" alt="" width="800" height="533" loading="lazy"><span>Boards, boxes and vouchers</span></a>
-          </div>
-        </div>
+        <a class="menu-link" href="collection">The collection</a>
+        <button class="menu-caret" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="menu-collection" aria-label="The collection menu"><i class="caret" aria-hidden="true"></i></button>
+        <div class="dd" id="menu-collection"><div class="dd-box">
+          <a class="dd-head" href="collection"><span>Shop the whole collection</span><i aria-hidden="true">&rarr;</i></a>
+          <p class="dd-label">Cheese</p>
+          <ul>
+            <li><a href="collection?type=soft">Soft cheeses</a></li>
+            <li><a href="collection?type=hard">Hard cheeses</a></li>
+            <li><a href="collection?type=blue">Blue cheeses</a></li>
+          </ul>
+          <p class="dd-label">And also</p>
+          <ul><li><a href="collection?type=pantry">Bread and pantry</a></li></ul>
+        </div></div>
+      </div>
+      <div class="has-menu">
+        <a class="menu-link" href="gifts">Boards &amp; gifts</a>
+        <button class="menu-caret" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="menu-gifts" aria-label="Boards and gifts menu"><i class="caret" aria-hidden="true"></i></button>
+        <div class="dd" id="menu-gifts"><div class="dd-box">
+          <a class="dd-head" href="gifts"><span>Shop all boards &amp; gifts</span><i aria-hidden="true">&rarr;</i></a>
+          <ul>
+            <li><a href="gifts#boards">Cheese boards</a></li>
+            <li><a href="gifts#boxes">Gift boxes and hampers</a></li>
+            <li><a href="gifts#vouchers">Gift vouchers</a></li>
+            <li><a href="gifts#custom">Something special</a></li>
+          </ul>
+        </div></div>
       </div>
       <a href="#about" data-spy="about">About</a>
       <a href="#visit" data-spy="visit">Visit</a>
@@ -136,7 +138,7 @@
         <div class="filters" role="group" aria-label="Filter the collection" id="filters" data-reveal></div>
         <ul class="grid" id="grid" aria-live="polite"></ul>
         <p class="empty" id="empty" hidden>Nothing matches that. Try another word, or ask us in store.</p>
-        <p class="more-link" data-reveal><a href="collection.html">View the full collection <span aria-hidden="true">&rarr;</span></a></p>
+        <p class="more-link" data-reveal><a href="collection">View the full collection <span aria-hidden="true">&rarr;</span></a></p>
         <ol class="steps" data-reveal>
           <li><span class="n">01</span><h3>Choose</h3><p>Browse the collection and add what you like to your list.</p></li>
           <li><span class="n">02</span><h3>Reserve</h3><p>Pick a day and time for collection, or have it delivered.</p></li>
@@ -203,7 +205,7 @@
           <h2>A gift worth<br><em>unwrapping.</em></h2>
           <p class="section-intro">Hand-composed cheese boards and gift boxes, wrapped with care. Tell Benoit the occasion and he will compose something to suit it.</p>
           <a class="btn btn-gold" href="mailto:hello@fromageandfigue.co.uk?subject=Boards%20and%20gift%20boxes" data-shop-email>Enquire by email</a>
-          <a class="more-link-inline" href="gifts.html">See boards, boxes and vouchers <span aria-hidden="true">&rarr;</span></a>
+          <a class="more-link-inline" href="gifts">See boards, boxes and vouchers <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="gift-grid">
           <figure class="gift-card" data-reveal data-fx="wipe-l" style="--d:.1s">
@@ -348,8 +350,8 @@
         </form>
       </div>
       <nav class="footer-nav" aria-label="Footer">
-        <a href="collection.html">The collection</a>
-        <a href="gifts.html">Boards &amp; gifts</a>
+        <a href="collection">The collection</a>
+        <a href="gifts">Boards &amp; gifts</a>
         <a href="#about">About</a>
         <a href="#faq">Questions</a>
         <a href="#visit">Visit</a>
@@ -360,8 +362,8 @@
   </footer>
 
   <nav class="tabbar" aria-label="Quick navigation">
-    <a href="collection.html">Cheese</a>
-    <a href="gifts.html">Gifts</a>
+    <a href="collection">Cheese</a>
+    <a href="gifts">Gifts</a>
     <a href="#about" data-spy="about">About</a>
     <a href="#visit" data-spy="visit">Visit</a>
     <button type="button" data-open-order>Order <b class="count" data-count>0</b></button>

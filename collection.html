@@ -7,11 +7,11 @@
   <meta name="description" content="Browse the full Fromage &amp; Figue collection: soft, hard and blue cheeses, plus bread and pantry goods. Reserve for free collection in Liverpool, or have it delivered.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#141312">
-  <link rel="canonical" href="https://fromageandfigue.co.uk/collection.html">
+  <link rel="canonical" href="https://fromageandfigue.co.uk/collection">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Fromage &amp; Figue">
   <meta property="og:locale" content="en_GB">
-  <meta property="og:url" content="https://fromageandfigue.co.uk/collection.html">
+  <meta property="og:url" content="https://fromageandfigue.co.uk/collection">
   <meta property="og:title" content="The Collection | Fromage &amp; Figue">
   <meta property="og:description" content="Every cheese on the counter, and the pantry that goes with it. Opening soon in Liverpool.">
   <meta property="og:image" content="https://fromageandfigue.co.uk/assets/social.jpg">
@@ -34,7 +34,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="collection.css">
-  <script>document.documentElement.classList.replace('no-js','js');try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
+  <script>document.documentElement.classList.replace('no-js','js');if(/\.html$/.test(location.pathname)){try{history.replaceState(null,'',location.pathname.replace(/(index)?\.html$/,'')+location.search+location.hash)}catch(e){}}try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
 </head>
 <body>
   <div class="progress" aria-hidden="true"></div>
@@ -45,41 +45,43 @@
   </div>
 
   <header class="site-header">
-    <a class="logo" href="index.html" aria-label="Fromage &amp; Figue, home">
+    <a class="logo" href="./" aria-label="Fromage &amp; Figue, home">
       <img src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380">
     </a>
     <nav class="nav" aria-label="Main">
       <div class="has-menu">
-        <button class="menu-trigger current" type="button" aria-expanded="false" aria-controls="shop-menu" aria-haspopup="true">Shop <i class="caret" aria-hidden="true"></i></button>
-        <div class="mega" id="shop-menu">
-          <div class="mega-in">
-            <div class="mega-col">
-              <a class="mega-head" href="collection.html"><span>The collection</span><small>Cheeses, bread and pantry goods</small></a>
-              <ul>
-                <li><a href="collection.html">All 12 items</a></li>
-                <li><a href="collection.html?type=soft">Soft cheeses</a></li>
-                <li><a href="collection.html?type=hard">Hard cheeses</a></li>
-                <li><a href="collection.html?type=blue">Blue cheeses</a></li>
-                <li><a href="collection.html?type=pantry">Pantry</a></li>
-              </ul>
-            </div>
-            <div class="mega-col">
-              <a class="mega-head" href="gifts.html"><span>Boards &amp; gifts</span><small>Composed by Benoit</small></a>
-              <ul>
-                <li><a href="gifts.html#boards">Cheese boards</a></li>
-                <li><a href="gifts.html#boxes">Gift boxes and hampers</a></li>
-                <li><a href="gifts.html#vouchers">Gift vouchers</a></li>
-              </ul>
-            </div>
-            <a class="mega-img" href="gifts.html" tabindex="-1" aria-hidden="true"><img src="assets/board-800.webp" alt="" width="800" height="533" loading="lazy"><span>Boards, boxes and vouchers</span></a>
-          </div>
-        </div>
+        <a class="menu-link current" href="collection">The collection</a>
+        <button class="menu-caret" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="menu-collection" aria-label="The collection menu"><i class="caret" aria-hidden="true"></i></button>
+        <div class="dd" id="menu-collection"><div class="dd-box">
+          <a class="dd-head" href="collection"><span>Shop the whole collection</span><i aria-hidden="true">&rarr;</i></a>
+          <p class="dd-label">Cheese</p>
+          <ul>
+            <li><a href="collection?type=soft">Soft cheeses</a></li>
+            <li><a href="collection?type=hard">Hard cheeses</a></li>
+            <li><a href="collection?type=blue">Blue cheeses</a></li>
+          </ul>
+          <p class="dd-label">And also</p>
+          <ul><li><a href="collection?type=pantry">Bread and pantry</a></li></ul>
+        </div></div>
       </div>
-      <a href="index.html#about">About</a>
-      <a href="index.html#visit">Visit</a>
+      <div class="has-menu">
+        <a class="menu-link" href="gifts">Boards &amp; gifts</a>
+        <button class="menu-caret" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="menu-gifts" aria-label="Boards and gifts menu"><i class="caret" aria-hidden="true"></i></button>
+        <div class="dd" id="menu-gifts"><div class="dd-box">
+          <a class="dd-head" href="gifts"><span>Shop all boards &amp; gifts</span><i aria-hidden="true">&rarr;</i></a>
+          <ul>
+            <li><a href="gifts#boards">Cheese boards</a></li>
+            <li><a href="gifts#boxes">Gift boxes and hampers</a></li>
+            <li><a href="gifts#vouchers">Gift vouchers</a></li>
+            <li><a href="gifts#custom">Something special</a></li>
+          </ul>
+        </div></div>
+      </div>
+      <a href="./#about">About</a>
+      <a href="./#visit">Visit</a>
     </nav>
     <div class="header-right">
-      <a class="status" href="index.html#visit"><i class="dot"></i><span id="status-text">Opening hours</span></a>
+      <a class="status" href="./#visit"><i class="dot"></i><span id="status-text">Opening hours</span></a>
       <button class="order-btn" type="button" data-open-order aria-label="Open your order list">
         Order list <b class="count" data-count>0</b>
       </button>
@@ -159,11 +161,11 @@
         </form>
       </div>
       <nav class="footer-nav" aria-label="Footer">
-        <a href="collection.html">The collection</a>
-        <a href="gifts.html">Boards &amp; gifts</a>
-        <a href="index.html#about">About</a>
-        <a href="index.html#faq">Questions</a>
-        <a href="index.html#visit">Visit</a>
+        <a href="collection">The collection</a>
+        <a href="gifts">Boards &amp; gifts</a>
+        <a href="./#about">About</a>
+        <a href="./#faq">Questions</a>
+        <a href="./#visit">Visit</a>
         <a href="#top">Back to top</a>
       </nav>
       <p class="copy">&copy; <span id="year"></span> Fromage &amp; Figue &middot; Liverpool</p>
@@ -171,10 +173,10 @@
   </footer>
 
   <nav class="tabbar" aria-label="Quick navigation">
-    <a href="collection.html" class="active">Cheese</a>
-    <a href="gifts.html">Gifts</a>
-    <a href="index.html#about">About</a>
-    <a href="index.html#visit">Visit</a>
+    <a href="collection" class="active">Cheese</a>
+    <a href="gifts">Gifts</a>
+    <a href="./#about">About</a>
+    <a href="./#visit">Visit</a>
     <button type="button" data-open-order>Order <b class="count" data-count>0</b></button>
   </nav>
 

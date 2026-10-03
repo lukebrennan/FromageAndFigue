@@ -2,9 +2,9 @@
    Boards & gifts page. Items live in GIFTS (script.js); the wording shown here is below.
 ------------------------------------------------------------------ */
 const INFO = {
-  "board-petite": { serves: "Serves 2 to 4", includes: ["Three cheeses", "Bread and crackers", "A preserve", "On an oak board"] },
-  "board-classic": { serves: "Serves 4 to 8", includes: ["Five cheeses", "Bread, crackers and nuts", "A preserve and honey", "On an oak board"], flag: "Most popular" },
-  "board-grand": { serves: "Serves 8 to 12", includes: ["Seven cheeses", "Bread, fruit and nuts", "Preserves and honey", "On a large oak board"] },
+  "board-petite": { serves: "Serves 2 to 4", includes: ["Three cheeses", "Bread and crackers", "A preserve", "On a wooden board"] },
+  "board-classic": { serves: "Serves 4 to 8", includes: ["Five cheeses", "Bread, crackers and nuts", "A preserve and honey", "On a wooden board"], flag: "Most popular" },
+  "board-grand": { serves: "Serves 8 to 12", includes: ["Seven cheeses", "Bread, fruit and nuts", "Preserves and honey", "On a large wooden board"] },
   "box-tasting": { serves: "A gift for one or two", includes: ["Three cheeses, 100g each", "Crackers", "A small preserve", "Ribbon and handwritten card"] },
   "box-evening": { serves: "A gift for two to four", includes: ["Four cheeses", "Fresh bread", "Honey and a preserve", "Ribbon and handwritten card"], flag: "Most popular" },
   "box-hamper": { serves: "A generous gift", includes: ["Six cheeses", "Bread, crackers and nuts", "Preserves and honey", "Ribbon and handwritten card"] },
