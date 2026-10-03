@@ -14,6 +14,9 @@ const when = iso => (iso ? new Date(iso).toLocaleString("en-GB", { timeZone: "Eu
 const slug = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const clearCache = () => { try { localStorage.removeItem("ff-catalog-v1"); } catch (e) {} };
 const STATUSES = ["new", "preparing", "ready", "completed", "cancelled"];
+const cap = s => String(s).charAt(0).toUpperCase() + String(s).slice(1);
+const SLABEL = { new: "New", preparing: "Preparing", ready: "Ready", completed: "Order complete", cancelled: "Cancelled" };
+const sdesc = (s, o) => ({ new: "Just placed", preparing: "Being put together", ready: o.fulfilment === "delivery" ? "Out for delivery" : "Ready to collect", completed: "Handed over, all done", cancelled: "Will not go ahead" }[s]);
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DEFAULT_SHOP = { openingSoon: true, openingNote: "Spring 2027, Liverpool", openingDate: "2027-03-21", email: "hello@fromageandfigue.co.uk", phone: "0151 496 0142", phoneLink: "+441514960142", whatsapp: "447700900142", address: ["14 Gambier Lane", "Liverpool L1 4DX"], mapQuery: "14 Gambier Lane, Liverpool L1 4DX, UK", hours: [null, null, [10, 18], [10, 18], [10, 18], [10, 18], [9, 17]] };
 
@@ -66,14 +69,14 @@ function drawOrders() {
   const open = ["new", "preparing", "ready"], f = S.ofilter;
   const list = S.orders.filter(o => (f === "all" ? true : f === "open" ? open.includes(o.status) : o.status === f));
   const n = k => S.orders.filter(o => (k === "open" ? open.includes(o.status) : k === "all" ? true : o.status === k)).length;
-  const chips = ["open", ...STATUSES, "all"].map(k => `<button class="chip${f === k ? " on" : ""}" data-f="${k}">${k} ${n(k)}</button>`).join("");
+  const chips = ["open", ...STATUSES, "all"].map(k => `<button class="chip${f === k ? " on" : ""}" data-f="${k}">${k === "open" || k === "all" ? cap(k) : SLABEL[k]} ${n(k)}</button>`).join("");
   $("#view").innerHTML = `
     <div class="page-head"><h1>Orders</h1><div class="tools"><button class="btn sm" id="o-refresh">Refresh</button></div></div>
-    ${lede("Orders placed through the website checkout appear here, newest first. Click an order to open it. For now these are test orders and no money is taken.")}
+    ${lede("Orders placed through the website checkout appear here, newest first. Click an order to open it, then use the buttons to show where it is up to. For now these are test orders and no money is taken.")}
     <div class="chips">${chips}</div>
-    <p class="legend"><b>New</b> just came in &middot; <b>Preparing</b> you are putting it together &middot; <b>Ready</b> waiting for collection or on its way &middot; <b>Completed</b> handed over &middot; <b>Cancelled</b> will not go ahead</p>
+
     ${list.length ? `<table class="tbl"><thead><tr><th>Order</th><th>Placed</th><th>Customer</th><th class="hide-s">Type</th><th class="hide-s">For</th><th class="num">Total</th><th>Status</th></tr></thead><tbody>
-    ${list.map(o => `<tr class="row" data-id="${o.id}"><td>${esc(o.ref)}</td><td>${when(o.created_at)}</td><td>${esc(o.customer_name)}</td><td class="hide-s">${esc(o.fulfilment)}</td><td class="hide-s">${when(o.slot_at) || "Not set"}</td><td class="num">${gbp.format(o.total)}</td><td><span class="tag ${o.status}">${o.status}</span></td></tr>${S.openOrder === o.id ? orderDetail(o) : ""}`).join("")}
+    ${list.map(o => `<tr class="row" data-id="${o.id}"><td>${esc(o.ref)}</td><td>${when(o.created_at)}</td><td>${esc(o.customer_name)}</td><td class="hide-s">${esc(cap(o.fulfilment))}</td><td class="hide-s">${when(o.slot_at) || "Not set"}</td><td class="num">${gbp.format(o.total)}</td><td><span class="tag ${o.status}">${SLABEL[o.status]}</span></td></tr>${S.openOrder === o.id ? orderDetail(o) : ""}`).join("")}
     </tbody></table>` : `<p class="empty">No orders here yet. Test orders placed through the site checkout will appear in this list.</p>`}`;
 }
 function orderDetail(o) {
@@ -81,19 +84,26 @@ function orderDetail(o) {
   return `<tr class="detail-row"><td colspan="7"><div class="od">
     <div><ul>${items}<li><span>Delivery</span><span>${o.delivery_fee > 0 ? gbp.format(o.delivery_fee) : "Free"}</span></li><li><b>Total</b><b>${gbp.format(o.total)}</b></li></ul></div>
     <div><dl><dt>Customer</dt><dd>${esc(o.customer_name)}</dd><dt>Email</dt><dd><a href="mailto:${esc(o.email)}">${esc(o.email)}</a></dd>
-      <dt>${esc(o.fulfilment)}</dt><dd>${when(o.slot_at) || "No time chosen"}</dd>${o.address ? `<dt>Address</dt><dd>${esc(o.address)}</dd>` : ""}<dt>Payment</dt><dd>${esc(o.payment)} (no money taken)</dd></dl>
+      <dt>${esc(cap(o.fulfilment))}</dt><dd>${o.fulfilment === "delivery" ? "Within 1 to 3 days" : when(o.slot_at) || "No time chosen"}</dd>${o.address ? `<dt>Address</dt><dd>${esc(o.address)}</dd>` : ""}<dt>Payment</dt><dd>${esc(o.payment)} (no money taken)</dd></dl>
       <label style="margin-top:1rem">Your private note<span class="hint">Only you can see this. For example "Allergic to nuts" or "Customer rang to change time".</span><textarea data-note rows="2">${esc(o.internal_note)}</textarea></label>
-      <div class="actions"><span class="hint" style="width:100%">Change the status as the order moves along, then press Save.</span><select data-status>${STATUSES.map(s => `<option${s === o.status ? " selected" : ""}>${s}</option>`).join("")}</select><button class="btn sm dark" data-save-order="${o.id}">Save</button></div></div>
+      <div class="actions"><button class="btn sm dark" data-save-note="${o.id}">Save note</button></div></div>
+    <div class="full-w"><p class="hint" style="margin:0 0 .5rem">Where is this order up to? Click a button to update it.</p>
+      <div class="steps-btns">${STATUSES.map(s => `<button type="button" class="stp${s === o.status ? " on" : ""} ${s}" data-set-status="${s}" data-oid="${o.id}" aria-pressed="${s === o.status}"><b>${SLABEL[s]}</b><small>${sdesc(s, o)}</small></button>`).join("")}</div></div>
   </div></td></tr>`;
 }
 $("#view").addEventListener("click", async e => {
   if (S.tab !== "orders") return;
   const chip = e.target.closest("[data-f]"); if (chip) { S.ofilter = chip.dataset.f; S.openOrder = null; return drawOrders(); }
   if (e.target.closest("#o-refresh")) return viewOrders().catch(fail);
-  const save = e.target.closest("[data-save-order]");
-  if (save) {
-    const row = save.closest(".detail-row"), id = save.dataset.saveOrder;
-    try { await q(sb.from("orders").update({ status: $("[data-status]", row).value, internal_note: $("[data-note]", row).value }).eq("id", id)); toast("Order updated"); await viewOrders(); } catch (err) { fail(err); }
+  const st = e.target.closest("[data-set-status]");
+  if (st) {
+    try { await q(sb.from("orders").update({ status: st.dataset.setStatus }).eq("id", st.dataset.oid)); toast(`Marked as ${SLABEL[st.dataset.setStatus]}`); await viewOrders(); } catch (err) { fail(err); }
+    return;
+  }
+  const sn = e.target.closest("[data-save-note]");
+  if (sn) {
+    const row = sn.closest(".detail-row");
+    try { await q(sb.from("orders").update({ internal_note: $("[data-note]", row).value }).eq("id", sn.dataset.saveNote)); toast("Note saved"); await viewOrders(); } catch (err) { fail(err); }
     return;
   }
   if (e.target.closest(".detail-row")) return;
@@ -259,7 +269,7 @@ async function viewSettings() {
     <div class="card"><h2>Opening</h2>
       <label class="check" style="margin-bottom:1rem"><input type="checkbox" name="openingSoon"${s.openingSoon ? " checked" : ""}> <span>The shop has not opened yet<span class="hint">While ticked, the site says "Opening soon" and shows the countdown. Untick this on opening day to show real opening hours instead.</span></span></label>
       <div class="grid2">${fld("Opening message", "openingNote", s.openingNote, 'placeholder="Spring 2027, Liverpool"', "A short line shown near the top of the site.")}${fld("Opening date", "openingDate", s.openingDate, 'type="date"', "Used for the countdown line on the home page.")}</div></div>
-    <div class="card"><h2>Contact</h2><div class="grid2">${fld("Email address", "email", s.email, 'type="email"', "Where customers write to you.")}${fld("Phone number", "phone", s.phone, 'placeholder="0151 496 0142"', "Shown on the site. Customers can tap it to call.")}${fld("WhatsApp number", "whatsapp", s.whatsapp, 'placeholder="447700900123"', "Numbers only, starting with the country code (44 for the UK, no leading 0 and no +). Leave empty to hide the WhatsApp button.")}<span></span>${fld("Address, first line", "a1", s.address[0] || "", 'placeholder="14 Gambier Lane"')}${fld("Address, second line", "a2", s.address[1] || "", 'placeholder="Liverpool L1 4DX"', "Include the postcode. It is also used for the map.")}</div></div>
+    <div class="card"><h2>Contact</h2><div class="grid2">${fld("Email address", "email", s.email, 'type="email"', "Where customers write to you.")}${fld("Phone number", "phone", s.phone, 'placeholder="0151 496 0142"', "Shown on the site. Customers can tap it to call.")}${fld("Address, first line", "a1", s.address[0] || "", 'placeholder="14 Gambier Lane"')}${fld("Address, second line", "a2", s.address[1] || "", 'placeholder="Liverpool L1 4DX"', "Include the postcode. It is also used for the map.")}</div></div>
     <div class="card"><h2>Opening hours</h2><p class="hint" style="margin:-.6rem 0 1rem">Use the 24 hour clock: 9 is 9am, 17 is 5pm. Tick Closed for days the shop is shut. These show on the site once the shop has opened.</p><div class="hours"><span></span><b class="hint">Opens at</b><b class="hint">Closes at</b><span></span>${hours}</div></div>
     <div class="save-bar"><button class="btn dark" type="submit">Save settings</button><span class="hint">Changes appear on the site within a few minutes.</span></div>
   </form>`;
@@ -268,7 +278,7 @@ async function viewSettings() {
     e.preventDefault(); const f = e.target;
     const digits = f.phone.value.replace(/\D/g, ""), link = f.phone.value.trim().startsWith("+") ? "+" + digits : "+44" + digits.replace(/^0/, "");
     const address = [f.a1.value.trim(), f.a2.value.trim()].filter(Boolean);
-    const value = { openingSoon: f.openingSoon.checked, openingNote: f.openingNote.value.trim(), openingDate: f.openingDate.value || DEFAULT_SHOP.openingDate, email: f.email.value.trim(), phone: f.phone.value.trim(), phoneLink: link, whatsapp: f.whatsapp.value.replace(/\D/g, ""), address, mapQuery: address.join(", ") + ", UK",
+    const value = { openingSoon: f.openingSoon.checked, openingNote: f.openingNote.value.trim(), openingDate: f.openingDate.value || DEFAULT_SHOP.openingDate, email: f.email.value.trim(), phone: f.phone.value.trim(), phoneLink: link, address, mapQuery: address.join(", ") + ", UK",
       hours: DAYS.map((_, i) => ($(`[data-closed="${i}"]`).checked ? null : [Math.min(24, +$(`[data-h="${i}-0"]`).value || 0), Math.min(24, +$(`[data-h="${i}-1"]`).value || 0)])) };
     try { await q(sb.from("settings").upsert({ key: "shop", value })); clearCache(); toast("Settings saved"); } catch (err) { fail(err); }
   });
@@ -282,7 +292,7 @@ async function viewHelp() {
     <div class="card"><h2>Add a new product</h2><ol><li>Open <b>Products</b> and press <b>Add product</b>.</li><li>Fill in the name, choose a category and enter the price.</li><li>Choose a main photo. Anything from your phone works.</li><li>Press <b>Save</b>. It appears on the website within a few minutes.</li></ol></div>
     <div class="card"><h2>Change a price or description</h2><ol><li>Open <b>Products</b> and click the product.</li><li>Change what you need and press <b>Save</b>.</li></ol></div>
     <div class="card"><h2>Take something off the website for a while</h2><p>Open the product and untick <b>Show on the website</b>. It stays saved, so you can bring it back later. Use <b>Delete</b> only if you never want it again.</p></div>
-    <div class="card"><h2>Deal with an order</h2><ol><li>Open <b>Orders</b>. New orders have a gold <b>New</b> tag, and the Orders tab shows how many are waiting.</li><li>Click an order to see what was bought, who by, and when they want it.</li><li>Move it along with the status: <b>Preparing</b>, then <b>Ready</b>, then <b>Completed</b>. Press <b>Save</b> each time.</li></ol><p>Customers are not emailed automatically yet, so contact them yourself using the email shown.</p></div>
+    <div class="card"><h2>Deal with an order</h2><ol><li>Open <b>Orders</b>. New orders have a gold <b>New</b> tag, and the Orders tab shows how many are waiting.</li><li>Click an order to see what was bought, who by, and when they want it.</li><li>Move it along with the buttons at the bottom: <b>Preparing</b>, then <b>Ready</b>, then <b>Order complete</b>. Each click saves straight away.</li></ol><p>Customers are not emailed automatically yet, so contact them yourself using the email shown. Delivery orders have no set time: they are promised within 1 to 3 days.</p></div>
     <div class="card"><h2>Add a category</h2><p>Open <b>Categories</b> and add one, for example "Goat" on The collection page. Then add products to it. Collection categories become filter buttons automatically. Gifts categories get their own section on the Boards &amp; gifts page, with the heading and introduction you write.</p></div>
     <div class="card"><h2>Open the shop</h2><p>When you open, go to <b>Shop settings</b> and untick <b>The shop has not opened yet</b>. Check your opening hours are right, then press <b>Save</b>.</p></div>
     <div class="card"><h2>Good to know</h2><ul><li>Changes appear on the website within about 5 minutes. If you edit on this computer, you will see them straight away.</li><li>Photos are shrunk automatically, so there is no need to resize them first.</li><li>The checkout on the site is a demo. No money is taken, and test orders appear in the list like real ones.</li><li>Sign out when you are done, especially on a shared computer.</li></ul></div>

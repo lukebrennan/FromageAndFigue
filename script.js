@@ -266,27 +266,9 @@ function renderOrder(bump) {
   hint.hidden = !(method === "delivery" && ids.length && left > 0);
   if (!hint.hidden) hint.textContent = `Add ${gbp.format(left)} more for free delivery.`;
   $("#addr-wrap").hidden = method !== "delivery";
-  $("#when-label").textContent = `${whenWord()} date and time`;
-  updateLinks();
-}
-function message() {
-  const f = new FormData($("#order-form"));
-  const lines = Object.keys(order).map(id => `- ${order[id]} x ${byId[id].name} (${byId[id].price})`);
-  let m = `Hello ${SHOP.name},\n\nI would like to put together an order:\n\n${lines.join("\n")}\n\nSubtotal: ${gbp.format(orderTotal())}\n${shipLabel()}: ${shipText()}\nEstimated total: ${gbp.format(grandTotal())}\n`;
-  if (f.get("name")) m += `\nName: ${f.get("name")}`;
-  if (method === "delivery" && f.get("address")) m += `\nDelivery address: ${String(f.get("address")).replace(/\s*\n\s*/g, ", ")}`;
-  if (f.get("when")) m += `\n${whenWord()}: ${fmtWhen(f.get("when"))}`;
-  return m + "\n\nThank you!";
-}
-function updateLinks() {
-  const m = message();
-  $("#send-email").href = `mailto:${SHOP.email}?subject=${encodeURIComponent("Order list")}&body=${encodeURIComponent(m)}`;
-  const wa = $("#send-wa");
-  wa.hidden = !SHOP.whatsapp;
-  if (SHOP.whatsapp) wa.href = `https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(m)}`;
+  $("#when-wrap").hidden = method === "delivery"; $("#delivery-note").hidden = method !== "delivery";
 }
 $$("input[name=method]").forEach(r => r.addEventListener("change", () => { method = r.value; renderOrder(); }));
-$("#order-form").addEventListener("input", updateLinks);
 $("#order-form").addEventListener("submit", e => e.preventDefault());
 $("#order-items").addEventListener("click", e => {
   const li = e.target.closest("li"); if (!li) return; const id = li.dataset.id;
@@ -340,14 +322,17 @@ function showView(v) {
 const lineItems = () => Object.keys(order).map(id => `<li><span>${order[id]} x ${byId[id].name}</span><span>${gbp.format(unitPrice(byId[id]) * order[id])}</span></li>`).join("") + `<li><span>${shipLabel()}</span><span>${shipText()}</span></li>`;
 $("#go-checkout").addEventListener("click", () => {
   if (!total()) return;
+  const em = $("#list-email");
+  if (!em.checkValidity()) { em.reportValidity(); em.focus(); return; }
   $("#pay-summary").innerHTML = lineItems();
   const t = gbp.format(grandTotal());
   $("#pay-total").textContent = t; $(".label", payBtn).textContent = `Pay ${t}`;
   payError.hidden = true; payForm.reset(); showView("pay");
   const nm = $("input[name=name]", $("#order-form")).value; if (nm) payForm.elements["demo-name"].value = nm;
-  payForm.elements["demo-when"].value = $("#when-list").value;
+  payForm.elements["demo-email"].value = em.value.trim();
+  payForm.elements["demo-when"].value = method === "delivery" ? "" : $("#when-list").value;
   payForm.elements["demo-address"].value = $("#order-form").elements.address.value;
-  $("#pay-addr-wrap").hidden = method !== "delivery"; $("#pay-when-label").textContent = `${whenWord()} date and time`;
+  $("#pay-addr-wrap").hidden = method !== "delivery"; $("#pay-when-wrap").hidden = method === "delivery"; $("#pay-delivery-note").hidden = method !== "delivery";
   payForm.elements["demo-name"].focus({ preventScroll: true });
 });
 $("#pay-back").addEventListener("click", () => showView("list"));
@@ -380,7 +365,7 @@ payForm.addEventListener("submit", e => {
     payBtn.classList.remove("busy");
     if (num === "4000000000000002") { $(".label", payBtn).textContent = `Pay ${gbp.format(grandTotal())}`; return fail("Your card was declined. This is the demo decline card, try 4242 4242 4242 4242.", $("#card-number")); }
     const ref = "FF-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    const slot = payForm.elements["demo-when"].value, slotDate = slot ? new Date(slot) : null;
+    const slot = method === "delivery" ? "" : payForm.elements["demo-when"].value, slotDate = slot ? new Date(slot) : null;
     recordOrder({
       ref, customer_name: name.value.trim().slice(0, 120), email: email.value.trim().slice(0, 200), fulfilment: method === "delivery" ? "delivery" : "collection",
       slot_at: slotDate && !isNaN(slotDate) ? slotDate.toISOString() : null,
@@ -388,8 +373,8 @@ payForm.addEventListener("submit", e => {
       items: Object.keys(order).map(id => ({ id, name: byId[id].name, price: byId[id].price, unit_price: unitPrice(byId[id]), qty: order[id] })),
       subtotal: +orderTotal().toFixed(2), delivery_fee: +shipping().toFixed(2), total: +grandTotal().toFixed(2),
     });
-    const when = fmtWhen(payForm.elements["demo-when"].value);
-    $("#done-ref").textContent = ref; $("#done-summary").innerHTML = lineItems() + (when ? `<li><span>${whenWord()} time</span><span>${when}</span></li>` : "") + (method === "delivery" ? `<li><span>Deliver to</span><span>${payForm.elements["demo-address"].value.trim().replace(/\s*\n\s*/g, ", ")}</span></li>` : ""); $("#done-total").textContent = gbp.format(grandTotal());
+    const when = method === "delivery" ? "" : fmtWhen(payForm.elements["demo-when"].value);
+    $("#done-ref").textContent = ref; $("#done-summary").innerHTML = lineItems() + (method === "delivery" ? `<li><span>Expected</span><span>In 1 to 3 days</span></li>` : when ? `<li><span>Collection time</span><span>${when}</span></li>` : "") + (method === "delivery" ? `<li><span>Deliver to</span><span>${payForm.elements["demo-address"].value.trim().replace(/\s*\n\s*/g, ", ")}</span></li>` : ""); $("#done-total").textContent = gbp.format(grandTotal());
     $("#done-name").textContent = name.value.trim() ? `, ${name.value.trim().split(" ")[0]}` : "";
     order = {}; save(); renderOrder(); payForm.reset(); showView("done");
   }, reduce ? 300 : 1800);

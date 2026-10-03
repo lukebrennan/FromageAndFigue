@@ -218,7 +218,7 @@
     <div class="view" id="view-list">
       <div class="order-body">
         <ul id="order-items"></ul>
-        <p class="order-empty" id="order-empty">Nothing here yet. Add something from the collection and send us the list, and we will have it ready for collection.</p>
+        <p class="order-empty" id="order-empty">Nothing here yet. Add something from the collection and we will have it ready for collection, or delivered to your door.</p>
       </div>
       <div class="order-totals" id="order-total">
         <div><span>Subtotal</span><b id="sub-amount">&pound;0.00</b></div>
@@ -233,15 +233,15 @@
           <label class="opt"><input type="radio" name="method" value="delivery"><span><b>Delivery</b><small>&pound;4.99, free over &pound;60</small></span></label>
         </fieldset>
         <label>Your name<input name="name" type="text" autocomplete="name"></label>
+        <label>Email address<input name="email" id="list-email" type="email" autocomplete="email" required placeholder="We will send your confirmation here"></label>
         <label id="addr-wrap" hidden>Delivery address<textarea name="address" rows="2" placeholder="Street, city and postcode" autocomplete="street-address"></textarea></label>
-        <label><span id="when-label">Collection date and time</span><input name="when" id="when-list" type="datetime-local" step="900"></label>
+        <label id="when-wrap"><span id="when-label">Collection date and time</span><input name="when" id="when-list" type="datetime-local" step="900"></label>
+        <p class="delivery-note" id="delivery-note" hidden><b>Delivery in 1 to 3 days.</b> We will email you to confirm a day that suits.</p>
         <div class="order-actions">
           <button type="button" class="btn btn-gold" id="go-checkout">Checkout (demo)</button>
-          <a class="btn btn-line" id="send-email" href="#">Send list by email</a>
-          <a class="btn btn-line" id="send-wa" href="#" target="_blank" rel="noopener" hidden>Send on WhatsApp</a>
           <button type="button" class="link-btn" id="clear-order">Clear list</button>
         </div>
-        <p class="fine">We will confirm availability and final prices. Checkout here is a demonstration, so no real payment is taken.</p>
+        <p class="fine">We will confirm availability and final prices by email. Checkout here is a demonstration, so no real payment is taken.</p>
       </form>
     </div>
 
@@ -255,7 +255,8 @@
           <label>Full name<input name="demo-name" type="text" autocomplete="off" required></label>
           <label>Email<input name="demo-email" type="email" autocomplete="off" required></label>
           <label id="pay-addr-wrap" hidden>Delivery address<textarea name="demo-address" rows="2" autocomplete="off"></textarea></label>
-          <label><span id="pay-when-label">Collection date and time</span><input name="demo-when" id="when-pay" type="datetime-local" step="900"></label>
+          <label id="pay-when-wrap"><span id="pay-when-label">Collection date and time</span><input name="demo-when" id="when-pay" type="datetime-local" step="900"></label>
+          <p class="delivery-note" id="pay-delivery-note" hidden><b>Delivery in 1 to 3 days.</b> We will email you to confirm a day that suits.</p>
         </fieldset>
         <fieldset>
           <legend>Card (test only)</legend>
@@ -281,7 +282,7 @@
         <p>Your demo order <b id="done-ref"></b> is complete.</p>
         <ul class="pay-summary" id="done-summary"></ul>
         <div class="order-total flat"><span>Total</span><b id="done-total"></b></div>
-        <p class="demo-banner">This was a demonstration. No payment was taken and no order was placed.</p>
+        <p class="demo-banner">This was a demonstration. No payment was taken.</p>
       </div>
       <div class="order-form"><button type="button" class="btn btn-dark" id="done-close">Back to the shop</button></div>
     </div>

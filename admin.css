@@ -145,3 +145,14 @@ label.check .hint { margin-top: .15rem; }
 @media (max-width: 800px) { .help { grid-template-columns: 1fr; } }
 label:not(.check) { display: flex; flex-direction: column; gap: .35rem; }
 label:not(.check) > input, label:not(.check) > select, label:not(.check) > textarea { margin-top: auto; }
+
+.od .full-w { grid-column: 1 / -1; }
+.steps-btns { display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem; }
+.stp { display: flex; flex-direction: column; gap: .15rem; text-align: left; padding: .8rem .9rem; border: 1px solid var(--line); background: var(--paper); cursor: pointer; transition: background .2s, border-color .2s; }
+.stp b { font-weight: 500; font-size: .86rem; }
+.stp small { color: var(--muted); font-size: .76rem; line-height: 1.3; }
+.stp:hover { border-color: var(--ink); }
+.stp.on { background: var(--ink); border-color: var(--ink); color: var(--ivory); cursor: default; }
+.stp.on small { color: rgba(247, 243, 236, .7); }
+.stp.cancelled:not(.on):hover { border-color: var(--warn); }
+@media (max-width: 800px) { .steps-btns { grid-template-columns: 1fr 1fr; } }

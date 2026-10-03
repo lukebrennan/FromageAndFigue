@@ -885,3 +885,6 @@ html.leaving body { opacity: 0; transition: opacity .28s ease; }
   body.mnav-open .mnav nav > :nth-child(2) a:nth-child(n), body.mnav-open .mnav nav > * { transition-delay: .08s; }
   .tabbar { z-index: 48; }
 }
+
+.delivery-note { margin: 0; padding: .9rem 1rem; background: var(--sand); border-left: 2px solid var(--gold); font-size: .9rem; line-height: 1.45; }
+.delivery-note b { font-weight: 500; }
