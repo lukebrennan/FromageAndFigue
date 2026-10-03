@@ -27,8 +27,10 @@ a { color: inherit; }
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-.logo { font-size: 1.35rem; text-decoration: none; letter-spacing: -0.01em; }
-.logo span { color: var(--accent); font-style: italic; }
+.logo { display: block; line-height: 0; }
+.logo img { height: 34px; width: auto; display: block; }
+.footer-logo { height: 22px; width: auto; margin-bottom: 1rem; opacity: .85; }
+@media (prefers-color-scheme: dark) { .logo img, .footer-logo { filter: invert(1); } }
 .nav { display: flex; gap: 2rem; }
 .nav a { text-decoration: none; font-size: .9rem; letter-spacing: .04em; color: var(--muted); transition: color .2s; }
 .nav a:hover { color: var(--fg); }
@@ -78,6 +80,7 @@ a { color: inherit; }
 .site-footer p { margin: 0; }
 
 @media (max-width: 640px) {
+  .logo img { height: 26px; }
   .menu-toggle { display: block; }
   .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; gap: 0;
     background: var(--bg); border-bottom: 1px solid var(--line); }
