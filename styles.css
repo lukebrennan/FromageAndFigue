@@ -927,3 +927,9 @@ html.leaving body { opacity: 0; transition: opacity .28s ease; }
 .picker[hidden] { display: none; }
 
 .toast { z-index: 95; }
+
+.cal-back { display: inline-flex; align-items: center; gap: .3rem; padding: .35rem 0; border: 0; background: none; font: inherit; font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); cursor: pointer; border-bottom: 1px solid var(--ink); }
+.cal-back:hover { color: #8a6d33; border-color: var(--gold); }
+.cal-day-title { margin: 1rem 0 0; font-family: var(--serif); font-size: 1.6rem; line-height: 1.15; }
+.picker-panel .cal-sub { margin-top: .9rem; padding-top: 0; border-top: 0; }
+.slots { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); max-height: none; }

@@ -305,7 +305,9 @@ function hoursSummary() {
   const names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], seq = [1, 2, 3, 4, 5, 6, 0], key = i => JSON.stringify(SHOP.hours[i]);
   const groups = [];
   seq.forEach(i => { const g = groups[groups.length - 1]; if (g && key(g.days[0]) === key(i)) g.days.push(i); else groups.push({ days: [i] }); });
-  return groups.map(g => { const h = SHOP.hours[g.days[0]], d = g.days.length > 1 ? `${names[g.days[0]]} to ${names[g.days[g.days.length - 1]]}` : names[g.days[0]]; return h ? `${d}, ${hourWord(h[0])} to ${hourWord(h[1])}` : `${d}, closed`; }).join(" · ");
+  const openTxt = groups.filter(g => SHOP.hours[g.days[0]]).map(g => { const h = SHOP.hours[g.days[0]]; return `${g.days.length > 1 ? `${names[g.days[0]]} to ${names[g.days[g.days.length - 1]]}` : names[g.days[0]]}, ${hourWord(h[0])} to ${hourWord(h[1])}`; });
+  const shut = seq.filter(i => !SHOP.hours[i]).map(i => names[i]);
+  return openTxt.join(" · ") + (shut.length ? `. Closed ${shut.length > 1 ? `${shut.slice(0, -1).join(", ")} and ${shut[shut.length - 1]}` : shut[0]}.` : ".");
 }
 const londonToISO = str => {
   const [dp, tp] = str.split("T"), [y, m, d] = parseDay(dp), [h, mi] = tp.split(":").map(Number);
@@ -316,7 +318,7 @@ const londonToISO = str => {
 const slotValid = () => { if (!slot) return false; const [d, t] = slot.split("T"), [h, m] = t.split(":").map(Number); return slotsFor(d).includes(h * 60 + m); };
 const pickers = $$("[data-picker]").map(root => {
   const field = $(".picker-field", root), text = $(".pf-text", field), panel = $(".picker-panel", root), err = $(".picker-err", root);
-  let view = "", selDay = "";
+  let view = "", selDay = "", step = "day";
   const firstOpen = () => { let d = minDay(); for (let i = 0; i <= WINDOW; i++, d = addDays(d, 1)) if (slotsFor(d).length) return d; return minDay(); };
   function draw() {
     const [vy, vm] = parseDay(view), first = `${vy}-${pad(vm)}-01`, lead = (dow(first) + 6) % 7, count = new Date(Date.UTC(vy, vm, 0)).getUTCDate();
@@ -327,12 +329,20 @@ const pickers = $$("[data-picker]").map(root => {
       const day = `${vy}-${pad(vm)}-${pad(d)}`, ok = slotsFor(day).length > 0;
       cells += `<button type="button" class="cal-day${day === selDay ? " on" : ""}" data-day="${day}"${ok ? "" : " disabled"} aria-label="${fmtDay(day, { weekday: "long", day: "numeric", month: "long" })}${ok ? "" : ", unavailable"}">${d}</button>`;
     }
-    const times = selDay ? slotsFor(selDay) : [];
     panel.innerHTML = `<div class="cal-head"><button type="button" data-nav="-1" aria-label="Previous month"${canPrev ? "" : " disabled"}>&lsaquo;</button><b>${fmtDay(first, { month: "long", year: "numeric" })}</b><button type="button" data-nav="1" aria-label="Next month"${canNext ? "" : " disabled"}>&rsaquo;</button></div>
       <div class="cal-week"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div><div class="cal-grid">${cells}</div>
-      ${selDay ? `<p class="cal-sub">Choose a time on ${fmtDay(selDay, { weekday: "long", day: "numeric", month: "long" })}</p><div class="slots">${times.map(m => `<button type="button" class="slot${slot === `${selDay}T${fmtClock(m)}` ? " on" : ""}" data-min="${m}">${fmtClock(m)}</button>`).join("")}</div>` : `<p class="cal-sub">Choose a day to see the times.</p>`}
       <p class="cal-hours">Open ${hoursSummary()}</p>`;
   }
+  function drawTimes() {
+    const times = slotsFor(selDay);
+    panel.innerHTML = `<button type="button" class="cal-back" data-back>&lsaquo; Change day</button>
+      <p class="cal-day-title">${fmtDay(selDay, { weekday: "long", day: "numeric", month: "long" })}</p>
+      <p class="cal-sub">Choose a time</p>
+      <div class="slots">${times.map(m => `<button type="button" class="slot${slot === `${selDay}T${fmtClock(m)}` ? " on" : ""}" data-min="${m}">${fmtClock(m)}</button>`).join("")}</div>
+      <p class="cal-hours">Open ${hoursSummary()}</p>`;
+  }
+  const show = () => { (step === "time" && selDay ? drawTimes : draw)(); };
+  const reveal = () => { const r = panel.getBoundingClientRect(); if (r.top < 60 || r.bottom > innerHeight - 90) field.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" }); };
   function refresh() {
     if (slot && !slotValid()) slot = "";
     text.textContent = slot ? fmtWhen(slot) : "Choose a day and time";
@@ -340,14 +350,15 @@ const pickers = $$("[data-picker]").map(root => {
     selDay = slot ? slot.split("T")[0] : "";
   }
   function open(on) {
-    if (on) { refresh(); view = (selDay || firstOpen()).slice(0, 7) + "-01"; draw(); }
+    if (on) { refresh(); view = (selDay || firstOpen()).slice(0, 7) + "-01"; step = selDay ? "time" : "day"; show(); setTimeout(reveal, 60); }
     panel.hidden = !on; field.setAttribute("aria-expanded", on);
   }
   field.addEventListener("click", () => open(panel.hidden));
   panel.addEventListener("click", e => {
-    const nav = e.target.closest("[data-nav]"), day = e.target.closest("[data-day]"), t = e.target.closest("[data-min]");
+    const nav = e.target.closest("[data-nav]"), day = e.target.closest("[data-day]"), t = e.target.closest("[data-min]"), back = e.target.closest("[data-back]");
     if (nav) { const [y, m] = parseDay(view), d = new Date(Date.UTC(y, m - 1 + +nav.dataset.nav, 1)); view = `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-01`; draw(); }
-    else if (day && !day.disabled) { selDay = day.dataset.day; draw(); const s = $(".cal-sub", panel); if (s) s.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); }
+    else if (back) { step = "day"; view = selDay.slice(0, 7) + "-01"; draw(); }
+    else if (day && !day.disabled) { selDay = day.dataset.day; step = "time"; drawTimes(); reveal(); }
     else if (t) { slot = `${selDay}T${fmtClock(+t.dataset.min)}`; err.hidden = true; pickers.forEach(p => p.refresh()); open(false); }
   });
   return { refresh, close: () => open(false), error: m => { err.textContent = m; err.hidden = false; field.focus(); } };
