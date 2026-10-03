@@ -271,9 +271,20 @@ async function viewSettings() {
       <div class="grid2">${fld("Opening message", "openingNote", s.openingNote, 'placeholder="Spring 2027, Liverpool"', "A short line shown near the top of the site.")}${fld("Opening date", "openingDate", s.openingDate, 'type="date"', "Used for the countdown line on the home page.")}</div></div>
     <div class="card"><h2>Contact</h2><div class="grid2">${fld("Email address", "email", s.email, 'type="email"', "Where customers write to you.")}${fld("Phone number", "phone", s.phone, 'placeholder="0151 496 0142"', "Shown on the site. Customers can tap it to call.")}${fld("Address, first line", "a1", s.address[0] || "", 'placeholder="14 Gambier Lane"')}${fld("Address, second line", "a2", s.address[1] || "", 'placeholder="Liverpool L1 4DX"', "Include the postcode. It is also used for the map.")}</div></div>
     <div class="card"><h2>Opening hours</h2><p class="hint" style="margin:-.6rem 0 1rem">Use the 24 hour clock: 9 is 9am, 17 is 5pm. Tick Closed for days the shop is shut. These show on the site once the shop has opened.</p><div class="hours"><span></span><b class="hint">Opens at</b><b class="hint">Closes at</b><span></span>${hours}</div></div>
+    <div class="card"><h2>Emails</h2><p class="hint" style="margin:-.6rem 0 1rem">Checks that the shop can send email. A short test message is sent to your own login address (${esc(ADMIN_EMAIL)}).</p>
+      <button class="btn" type="button" id="test-email">Send me a test email</button> <span class="hint" id="test-email-msg"></span></div>
     <div class="save-bar"><button class="btn dark" type="submit">Save settings</button><span class="hint">Changes appear on the site within a few minutes.</span></div>
   </form>`;
   $$("[data-closed]").forEach(c => c.addEventListener("change", () => { $$(`[data-h^="${c.dataset.closed}-"]`).forEach(i => (i.disabled = c.checked)); }));
+  $("#test-email").addEventListener("click", async () => {
+    const btn = $("#test-email"), msg = $("#test-email-msg"); btn.disabled = true; msg.textContent = "Sending";
+    try {
+      const { data, error } = await sb.functions.invoke("send-email", { body: { action: "test" } });
+      if (error) { let m = error.message; try { const b = await error.context.json(); m = b.error || m; } catch (e) {} throw new Error(m); }
+      msg.textContent = "Sent. Check your inbox, and your spam folder."; toast("Test email sent");
+    } catch (err) { msg.textContent = ""; fail(err); }
+    btn.disabled = false;
+  });
   $("#shop-form").addEventListener("submit", async e => {
     e.preventDefault(); const f = e.target;
     const digits = f.phone.value.replace(/\D/g, ""), link = f.phone.value.trim().startsWith("+") ? "+" + digits : "+44" + digits.replace(/^0/, "");
