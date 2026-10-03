@@ -152,7 +152,7 @@ Deno.serve(async (req) => {
     const kind = String(body.template || "plain");
     const o = sample(kind) as any;
     const mail = kind === "plain" ? { subject: "Test email from Fromage & Figue", html: layout({ shop, preheader: "It works.", eyebrow: "Test email", title: "It *works.*", excerpt: "This is a test email from your shop website. If you can read this, the shop can send emails to customers." }) }
-      : kind === "confirmation" ? T.confirmation(o, shop) : kind === "alert" ? T.alert(o, shop)
+      : kind.startsWith("confirmation") ? T.confirmation(o, shop) : kind === "alert" ? T.alert(o, shop)
       : kind.startsWith("ready") ? T.ready(o, shop) : kind === "cancelled" ? T.cancelled(o, shop) : null;
     if (!mail) return json({ error: "Unknown sample." }, 400);
     const r = await send(ADMIN, "[Sample] " + mail.subject, mail.html);
