@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Admin | Fromage &amp; Figue</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#141312">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main id="login" class="login" hidden>
+    <form id="login-form" class="login-box" autocomplete="on">
+      <img src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380" class="login-logo">
+      <p class="eyebrow">Shop admin</p>
+      <label>Email<input name="email" type="email" autocomplete="username" required></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="msg err" id="login-msg" hidden></p>
+      <button class="btn dark" type="submit">Sign in</button>
+    </form>
+  </main>
+
+  <div id="app" hidden>
+    <header class="top">
+      <img src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380" class="top-logo">
+      <nav class="tabs" id="tabs" aria-label="Admin sections">
+        <button data-tab="orders" class="on">Orders <b id="new-count" hidden>0</b></button>
+        <button data-tab="products">Products</button>
+        <button data-tab="categories">Categories</button>
+        <button data-tab="settings">Shop settings</button>
+      </nav>
+      <div class="top-right"><a href="./" target="_blank" rel="noopener">View site</a><button id="signout" class="link">Sign out</button></div>
+    </header>
+    <main class="wrap" id="view"></main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="drawer-scrim" id="scrim" hidden></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" inert></aside>
+
+  <script src="assets/vendor/supabase.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
