@@ -784,3 +784,30 @@ body { font-size: 18px; line-height: 1.7; }
 .thumb { aspect-ratio: 1 / 1 !important; }
 .grid .card:last-child:nth-child(odd) .thumb { aspect-ratio: 1 / 1 !important; }
 @media (max-width: 1000px) { .grid .card:last-child:nth-child(odd) { grid-column: auto; } }
+
+
+/* ---- counter band: shorter, with a caption, then four facts ---- */
+.about .band { height: clamp(260px, 36vw, 470px); margin-top: clamp(3.5rem, 8vw, 6.5rem); }
+.about .band img { object-position: center 78%; }
+.band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,19,18,0) 45%, rgba(20,19,18,.72) 100%); pointer-events: none; z-index: 1; }
+.band figcaption { position: absolute; z-index: 2; left: max(clamp(1.25rem, 4vw, 2.5rem), calc((100vw - var(--max)) / 2 + clamp(1.25rem, 4vw, 2.5rem))); right: 1.25rem; bottom: clamp(1.4rem, 3.2vw, 2.4rem); color: #fff; max-width: 30rem; }
+.band figcaption span { display: block; font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; color: var(--gold-soft); margin-bottom: .6rem; }
+.band figcaption p { margin: 0; font-family: var(--serif); font-size: clamp(1.5rem, 2.8vw, 2.4rem); line-height: 1.15; color: #fff; }
+.band-window { height: clamp(240px, 32vw, 420px); }
+.facts { padding-top: clamp(2.5rem, 5vw, 4rem); padding-bottom: clamp(4rem, 8vw, 7rem); }
+.facts dl { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; border-top: 1px solid var(--ink); }
+.facts dl > div { padding: 1.6rem clamp(.8rem, 2vw, 1.8rem) 0 0; }
+.facts dl > div + div { padding-left: clamp(.8rem, 2vw, 1.8rem); border-left: 1px solid rgba(20, 19, 18, .16); }
+.facts dt { font-family: var(--serif); font-size: clamp(2.2rem, 4.6vw, 4rem); line-height: 1; letter-spacing: -.02em; }
+.facts dd { margin: .6rem 0 0; color: var(--muted); font-size: .95rem; max-width: 12rem; }
+@media (max-width: 700px) {
+  .facts dl { grid-template-columns: 1fr 1fr; }
+  .facts dl > div { padding: 1.3rem 1rem 1.3rem 0; border-bottom: 1px solid rgba(20, 19, 18, .16); }
+  .facts dl > div:nth-child(even) { padding-left: 1rem; border-left: 1px solid rgba(20, 19, 18, .16); }
+  .facts dl > div:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .facts dl > div + div { padding-left: 1rem; }
+  .facts dl > div:nth-child(3) { padding-left: 0; }
+}
+.band::after { background: linear-gradient(180deg, rgba(20,19,18,0) 25%, rgba(20,19,18,.55) 62%, rgba(20,19,18,.88) 100%); }
+.band figcaption span { color: #f1e2b8; text-shadow: 0 1px 8px rgba(0,0,0,.6); font-weight: 500; }
+.band figcaption p { text-shadow: 0 1px 14px rgba(0,0,0,.45); }
