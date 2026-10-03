@@ -79,6 +79,10 @@
           <a class="btn btn-gold" href="#cheese">Explore the collection</a>
           <a class="btn btn-ghost" href="#visit">Visit the shop</a>
         </div>
+        <div class="countdown" data-countdown>
+          <div class="cd-row"><span>Opening Spring 2027</span><b data-cd-days></b></div>
+          <div class="cd-line"><i data-cd-fill></i></div>
+        </div>
       </div>
       <a class="scroll-cue" href="#cheese" aria-label="Scroll to the collection"><span></span></a>
     </section>
@@ -127,29 +131,40 @@
       <div class="wrap">
         <div class="section-head" data-reveal>
           <div>
-            <p class="eyebrow dark"><span>03 · Ideas for the table</span></p>
+            <p class="eyebrow dark"><span>02 · Ideas for the table</span></p>
             <h2>Simply <em>served.</em></h2>
             <p class="section-intro">Good cheese asks for very little. Four ways to bring it to the table at home.</p>
           </div>
         </div>
-        <div class="ideas-progress" aria-hidden="true"><i></i></div>
-        <div class="ideas-grid">
-          <figure class="idea" data-reveal>
-            <div class="img-frame pwrap"><img src="assets/camembert.jpg" srcset="assets/camembert-800.jpg 800w, assets/camembert.jpg 1536w" sizes="(max-width: 800px) 100vw, 560px" loading="lazy" width="1536" height="1024" alt="A baked camembert with rosemary and honey, with toasted bread for dipping"></div>
-            <figcaption><h3>Baked camembert</h3><p>Score the rind, tuck in rosemary and a thread of honey, and bake until molten. Serve with warm baguette.</p></figcaption>
-          </figure>
-          <figure class="idea offset" data-reveal style="--d:.12s">
-            <div class="img-frame pwrap"><img src="assets/lunch.jpg" srcset="assets/lunch-800.jpg 800w, assets/lunch.jpg 1536w" sizes="(max-width: 800px) 100vw, 560px" loading="lazy" width="1536" height="1024" alt="A baguette with a wedge of cheese, radishes and cornichons on a wooden board"></div>
-            <figcaption><h3>The easy lunch</h3><p>A fresh baguette, a wedge of Comté, radishes and cornichons. Nothing more is needed.</p></figcaption>
-          </figure>
-          <figure class="idea" data-reveal>
-            <div class="img-frame pwrap"><img src="assets/tasting.jpg" srcset="assets/tasting-800.jpg 800w, assets/tasting.jpg 1536w" sizes="(max-width: 800px) 100vw, 560px" loading="lazy" width="1536" height="1024" alt="A small table for two with red and white wine, a bread basket and plates of cheese"></div>
-            <figcaption><h3>Cheese and wine for two</h3><p>Two glasses, three cheeses, and an unhurried evening.</p></figcaption>
-          </figure>
-          <figure class="idea offset" data-reveal style="--d:.12s">
-            <div class="img-frame pwrap"><img src="assets/shelves.jpg" srcset="assets/shelves-800.jpg 800w, assets/shelves.jpg 1536w" sizes="(max-width: 800px) 100vw, 560px" loading="lazy" width="1536" height="1024" alt="Shop shelves of jams, jars, crackers and wine"></div>
-            <figcaption><h3>From the shelves</h3><p>Preserves, crackers and wines chosen to sit beautifully alongside the cheese.</p></figcaption>
-          </figure>
+        <div class="serve">
+          <ol class="serve-list">
+        <li class="serve-item is-active" data-i="0" tabindex="0" data-reveal style="--d:0.00s">
+          <span class="n">01</span>
+          <div class="body"><h3>Baked camembert</h3><div class="more"><p>Score the rind, tuck in rosemary and a thread of honey, and bake until molten. Serve with warm baguette.</p></div>
+            <img class="serve-inline" src="assets/camembert-800.jpg" loading="lazy" width="800" height="533" alt="A baked camembert with rosemary and honey, with toasted bread for dipping"></div>
+        </li>
+        <li class="serve-item" data-i="1" tabindex="0" data-reveal style="--d:0.08s">
+          <span class="n">02</span>
+          <div class="body"><h3>The easy lunch</h3><div class="more"><p>A fresh baguette, a wedge of Comté, radishes and cornichons. Nothing more is needed.</p></div>
+            <img class="serve-inline" src="assets/lunch-800.jpg" loading="lazy" width="800" height="533" alt="A baguette with a wedge of cheese, radishes and cornichons on a wooden board"></div>
+        </li>
+        <li class="serve-item" data-i="2" tabindex="0" data-reveal style="--d:0.16s">
+          <span class="n">03</span>
+          <div class="body"><h3>Cheese and wine for two</h3><div class="more"><p>Two glasses, three cheeses, and an unhurried evening.</p></div>
+            <img class="serve-inline" src="assets/tasting-800.jpg" loading="lazy" width="800" height="533" alt="A small table for two with red and white wine, a bread basket and plates of cheese"></div>
+        </li>
+        <li class="serve-item" data-i="3" tabindex="0" data-reveal style="--d:0.24s">
+          <span class="n">04</span>
+          <div class="body"><h3>From the shelves</h3><div class="more"><p>Preserves, crackers and wines chosen to sit beautifully alongside the cheese.</p></div>
+            <img class="serve-inline" src="assets/shelves-800.jpg" loading="lazy" width="800" height="533" alt="Shop shelves of jams, jars, crackers and wine"></div>
+        </li>
+          </ol>
+          <div class="serve-media" aria-hidden="true">
+        <img src="assets/camembert.jpg" loading="lazy" width="1536" height="1024" alt="" class="is-on">
+        <img src="assets/lunch.jpg" loading="lazy" width="1536" height="1024" alt="">
+        <img src="assets/tasting.jpg" loading="lazy" width="1536" height="1024" alt="">
+        <img src="assets/shelves.jpg" loading="lazy" width="1536" height="1024" alt="">
+          </div>
         </div>
       </div>
     </section>
@@ -158,7 +173,7 @@
       <div class="wrap">
         <div class="gifts-layout">
         <div class="gifts-head" data-reveal>
-          <p class="eyebrow"><span>04 · Boards &amp; gifts</span></p>
+          <p class="eyebrow"><span>03 · Boards &amp; gifts</span></p>
           <h2>A gift worth<br><em>unwrapping.</em></h2>
           <p class="section-intro">Hand-composed cheese boards and gift boxes, wrapped with care. Tell Benoit the occasion and he will compose something to suit it.</p>
           <a class="btn btn-gold" href="mailto:hello@fromageandfigue.co.uk?subject=Boards%20and%20gift%20boxes" data-shop-email>Enquire by email</a>
@@ -197,7 +212,7 @@
 
     <section id="about" class="section about">
       <div class="wrap">
-        <p class="eyebrow dark" data-reveal><span>05 · Benoit</span></p>
+        <p class="eyebrow dark" data-reveal><span>04 · Benoit</span></p>
         <p class="statement" id="statement">A great cheese needs very little: good bread, a glass of something fine, and the patience to let it speak.</p>
       </div>
       <div class="about-grid">
@@ -217,6 +232,25 @@
       </figure>
     </section>
 
+    <section id="faq" class="section faq">
+      <div class="wrap faq-grid">
+        <div class="faq-head" data-reveal>
+          <p class="eyebrow dark"><span>05 · Questions</span></p>
+          <h2>Good <em>questions.</em></h2>
+          <p class="section-intro">Cannot find your answer? Write to <a data-shop-email-text href="mailto:hello@fromageandfigue.co.uk">hello@fromageandfigue.co.uk</a> and we will reply.</p>
+        </div>
+        <div class="faq-list" data-reveal style="--d:.12s">
+          <details name="faq" open><summary>How does ordering work?</summary><div class="ans"><p>Add what you like to your order list, choose collection or delivery and a time, and send it to us. We confirm availability and final prices before anything is prepared.</p></div></details>
+          <details name="faq"><summary>Do you deliver?</summary><div class="ans"><p>Yes, across Liverpool and the surrounding area. Delivery is &pound;4.99, and free on orders over &pound;60. Collection in store is always free.</p></div></details>
+          <details name="faq"><summary>How is the cheese packed?</summary><div class="ans"><p>Cut to order and wrapped in paper. For delivery, it travels with chilled insulation so it arrives in good condition.</p></div></details>
+          <details name="faq"><summary>How long will it keep?</summary><div class="ans"><p>Most cheeses keep well for a week or two in the fridge, in the paper we wrap them in. We will tell you how to look after each one and when it is at its best.</p></div></details>
+          <details name="faq"><summary>What about allergens and dietary needs?</summary><div class="ans"><p>Please ask when you order. Cheese contains milk, and some of our pantry items contain nuts and gluten. We are glad to help you choose.</p></div></details>
+          <details name="faq"><summary>Can you compose a board or gift box for me?</summary><div class="ans"><p>Yes. Tell us the occasion, how many people and any budget, and Benoit will put something together. Use the enquiry button in Boards and gifts.</p></div></details>
+          <details name="faq"><summary>When do you open?</summary><div class="ans"><p>Spring 2027. Add your email in the footer and we will write as soon as we have a date.</p></div></details>
+        </div>
+      </div>
+    </section>
+
     <section id="visit" class="section visit">
       <div class="wrap visit-grid">
         <div class="visit-info" data-reveal>
@@ -227,6 +261,10 @@
             <div><dt>Address</dt><dd id="address">14 Gambier Lane<br>Liverpool L1 4DX</dd></div>
             <div><dt>Contact</dt><dd><a id="email-link" href="mailto:hello@fromageandfigue.co.uk">hello@fromageandfigue.co.uk</a><br><a id="phone-link" href="tel:+441514960142">0151 496 0142</a></dd></div>
           </dl>
+          <div class="countdown on-dark" data-countdown>
+            <div class="cd-row"><span>Opening Spring 2027</span><b data-cd-days></b></div>
+            <div class="cd-line"><i data-cd-fill></i></div>
+          </div>
           <ul class="hours" id="hours"></ul>
           <div class="visit-cta">
             <a class="btn btn-gold" id="directions" href="#" target="_blank" rel="noopener">Get directions</a>
@@ -277,6 +315,7 @@
         <a href="#cheese">The collection</a>
         <a href="#gifts">Boards &amp; gifts</a>
         <a href="#about">About</a>
+        <a href="#faq">Questions</a>
         <a href="#visit">Visit</a>
         <a href="#top">Back to top</a>
       </nav>

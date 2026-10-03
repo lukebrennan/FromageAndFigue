@@ -12,6 +12,8 @@ const SHOP = {
   whatsapp: "447700900142",            // digits only with country code, for example 447700900123. Leave empty to hide.
   openingSoon: true,      // true shows "Opening soon" everywhere instead of live hours. Set false at launch.
   openingNote: "Spring 2027, Liverpool",
+  openingDate: "2027-03-21",   // used for the countdown line
+  countdownStart: "2026-10-01", // where the progress line starts
   owner: "Benoit Severin-Delos",
   timeZone: "Europe/London",
   // Opening hours by weekday: [open hour, close hour] in 24h time, or null when closed. Sunday first.
@@ -461,19 +463,6 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
 
   const mm = gsap.matchMedia();
 
-  // pinned horizontal gallery (large screens only; phones keep the swipeable row)
-  mm.add("(min-width: 1000px)", () => {
-    const sec = $("#ideas"), track = $(".ideas-grid", sec), wrap = $(".wrap", sec), bar = $(".ideas-progress i", sec);
-    sec.classList.add("is-pinned");
-    const dist = () => Math.max(0, track.scrollWidth - wrap.clientWidth);
-    gsap.to(track, {
-      x: () => -dist(), ease: "none",
-      scrollTrigger: { trigger: sec, start: "top top", end: () => "+=" + Math.round(dist() * 0.7 + innerHeight * 0.1), pin: true, scrub: 0.25, anticipatePin: 1, invalidateOnRefresh: true,
-        onUpdate: self => { bar.style.transform = `scaleX(${self.progress})`; } }
-    });
-    return () => sec.classList.remove("is-pinned");
-  });
-
   // wide photos open up from inset frames as they arrive
   $$(".band").forEach(b => gsap.fromTo(b,
     { clipPath: "inset(9% 6% 9% 6% round 14px)" },
@@ -503,5 +492,30 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
     msg.classList.remove("ok");
     if (!/^\S+@\S+\.\S+$/.test(v)) { msg.textContent = "Please enter a valid email address."; return; }
     msg.textContent = "Thank you. We will write when the doors open. (Demo: nothing was saved.)"; msg.classList.add("ok"); f.reset();
+  });
+})();
+
+/* ---------- "Simply served": hover or tap a row to change the photograph ---------- */
+(() => {
+  const items = $$(".serve-item"), imgs = $$(".serve-media img"); if (!items.length) return;
+  const set = i => { items.forEach((it, n) => it.classList.toggle("is-active", n === i)); imgs.forEach((im, n) => im.classList.toggle("is-on", n === i)); };
+  items.forEach((it, i) => {
+    it.addEventListener("mouseenter", () => { if (finePointer) set(i); });
+    it.addEventListener("focus", () => set(i));
+    it.addEventListener("click", () => set(i));
+  });
+})();
+
+/* ---------- opening countdown line ---------- */
+(() => {
+  const els = $$("[data-countdown]"); if (!els.length) return;
+  if (!SHOP.openingSoon) { els.forEach(e => (e.hidden = true)); return; }
+  const start = new Date(SHOP.countdownStart).getTime(), end = new Date(SHOP.openingDate).getTime(), now = Date.now();
+  const left = Math.max(0, Math.ceil((end - now) / 86400000));
+  const pct = Math.min(1, Math.max(0.02, (now - start) / (end - start)));
+  els.forEach(e => {
+    $("[data-cd-days]", e).textContent = left > 1 ? `${left} days to go` : left === 1 ? "1 day to go" : "Opening now";
+    e.style.setProperty("--p", pct);
+    new IntersectionObserver((es, ob) => es.forEach(x => { if (x.isIntersecting) { e.classList.add("go"); ob.disconnect(); } }), { threshold: 0.4 }).observe(e);
   });
 })();
