@@ -83,6 +83,14 @@ a { color: inherit; }
 .about .counter img { aspect-ratio: 16 / 9; }
 @media (max-width: 800px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } .about .counter { margin-top: 2.5rem; } }
 
+.gift-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr 1fr; margin: 2rem 0 2.5rem; }
+.gifts figure, .interior { margin: 0; }
+.gifts img, .interior img { display: block; width: 100%; height: auto; border-radius: 4px; aspect-ratio: 3 / 2; object-fit: cover; }
+.gifts figcaption { margin-top: .75rem; font-size: .85rem; letter-spacing: .04em; color: var(--muted); }
+.interior { margin-bottom: 2.5rem; }
+.interior img { aspect-ratio: 16 / 9; }
+@media (max-width: 800px) { .gift-grid { grid-template-columns: 1fr; } }
+
 .visit h2 { margin-bottom: 2.5rem; }
 .visit-grid { display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .visit h3 { font-size: .75rem; font-family: "Inter", sans-serif; text-transform: uppercase; letter-spacing: .16em; color: var(--muted); margin-bottom: .6rem; font-weight: 400; }
