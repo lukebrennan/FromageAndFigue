@@ -53,5 +53,8 @@
 - Gift voucher, £50: £50 per voucher. A voucher for the shop, in a black envelope.
 - Gift voucher, £100: £100 per voucher. A voucher for the shop, in a black envelope.
 
+## Blog posts
+- [Why a great Comté is worth the wait](https://fromageandfigue.co.uk/blog/why-a-great-comte-is-worth-the-wait/): Forty kilos of cheese, four hundred litres of milk and up to three years in a cellar. The story of the wheel we are most excited to put on the counter.
+
 ## Optional
 - [Sitemap](https://fromageandfigue.co.uk/sitemap.xml)
