@@ -893,3 +893,35 @@ html.leaving body { opacity: 0; transition: opacity .28s ease; }
 .order-form .note-check input { width: 18px; height: 18px; padding: 0; accent-color: var(--ink); }
 
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+/* ---------- collection day and time picker ---------- */
+.picker { position: relative; display: grid; gap: .3rem; }
+.picker-label { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.picker-field { display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: 100%; text-align: left; min-height: 48px; padding: .7rem .9rem; border: 1px solid var(--line); border-radius: 0; background: var(--ivory); color: var(--muted); font: inherit; font-size: .95rem; cursor: pointer; transition: border-color .25s; }
+.picker-field.set { color: var(--ink); }
+.picker-field:hover, .picker-field[aria-expanded="true"] { border-color: var(--gold); }
+.picker-field i { width: 7px; height: 7px; flex: none; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .4s var(--ease); }
+.picker-field[aria-expanded="true"] i { transform: translateY(1px) rotate(-135deg); }
+.picker-panel { background: #fff; border: 1px solid var(--ink); padding: 1.1rem 1.1rem 1rem; box-shadow: 0 24px 50px -28px rgba(20, 19, 18, .45); animation: pickIn .45s var(--ease); }
+@keyframes pickIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.picker-panel[hidden] { display: none; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .8rem; }
+.cal-head b { font-family: var(--serif); font-weight: 400; font-size: 1.45rem; letter-spacing: 0; }
+.cal-head button { width: 36px; height: 36px; border: 1px solid var(--line); background: none; border-radius: 0; font-size: 1.3rem; line-height: 1; cursor: pointer; color: var(--ink); transition: background .2s, border-color .2s; }
+.cal-head button:hover:not(:disabled) { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+.cal-head button:disabled { opacity: .25; cursor: default; }
+.cal-week, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-week span { text-align: center; font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding-bottom: .4rem; }
+.cal-day { aspect-ratio: 1; min-height: 36px; border: 1px solid transparent; background: var(--ivory); border-radius: 0; font: inherit; font-size: .9rem; color: var(--ink); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+.cal-day:hover:not(:disabled) { border-color: var(--gold); }
+.cal-day:disabled { background: none; color: rgba(20, 19, 18, .28); cursor: default; text-decoration: line-through; text-decoration-thickness: 1px; }
+.cal-day.on { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+.cal-sub { margin: 1rem 0 .6rem; padding-top: .9rem; border-top: 1px solid var(--line); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: #8a6d33; }
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 5px; max-height: 190px; overflow-y: auto; }
+.slot { padding: .6rem 0; border: 1px solid var(--line); background: none; border-radius: 0; font: inherit; font-size: .85rem; color: var(--ink); cursor: pointer; transition: background .2s, border-color .2s; }
+.slot:hover { border-color: var(--gold); }
+.slot.on { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.cal-hours { margin: .9rem 0 0; font-size: .74rem; line-height: 1.5; color: var(--muted); }
+.picker-err { margin: 0; font-size: .85rem; color: #9a3b2e; }
+.picker-hint { margin: 0; font-size: .78rem; line-height: 1.45; color: var(--muted); }
+.picker[hidden] { display: none; }

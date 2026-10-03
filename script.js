@@ -227,7 +227,6 @@ const fmtWhen = v => {
   const d = new Date(v);
   return isNaN(d) ? v : new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d).replace(",", "");
 };
-const localNow = () => { const d = new Date(Date.now() + 60 * 60 * 1000); d.setMinutes(Math.ceil(d.getMinutes() / 15) * 15, 0, 0); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
 const gbp = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
 const unitPrice = p => parseFloat((p.price.match(/[\d.]+/) || [0])[0]);
 const orderTotal = () => Object.entries(order).reduce((s, [id, q]) => s + unitPrice(byId[id]) * q, 0);
@@ -282,9 +281,81 @@ $("#order-items").addEventListener("click", e => {
   save(); renderOrder();
 });
 $("#clear-order").addEventListener("click", () => { order = {}; save(); renderOrder(); });
-function setWhenMin() { $$("#when-list, #when-pay").forEach(i => (i.min = localNow())); }
+/* ---------- collection time picker: only days and times the shop is open ---------- */
+let slot = "";   // "YYYY-MM-DDTHH:MM", shop (London) time
+const TZ = SHOP.timeZone || "Europe/London", LEAD = 60, STEP = 30, WINDOW = 60;   // minutes of notice, slot length, days ahead
+const pad = n => String(n).padStart(2, "0");
+const lparts = d => Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(d).map(x => [x.type, x.value]));
+const parseDay = s => s.split("-").map(Number);
+const dow = s => { const [y, m, d] = parseDay(s); return new Date(Date.UTC(y, m - 1, d)).getUTCDay(); };
+const addDays = (s, n) => { const [y, m, d] = parseDay(s), t = new Date(Date.UTC(y, m - 1, d + n)); return `${t.getUTCFullYear()}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}`; };
+const nowL = () => { const p = lparts(new Date()); return { day: `${p.year}-${p.month}-${p.day}`, min: +p.hour * 60 + +p.minute }; };
+const minDay = () => { const d = nowL().day; return SHOP.openingSoon && SHOP.openingDate > d ? SHOP.openingDate : d; };
+const maxDay = () => addDays(minDay(), WINDOW);
+function slotsFor(day) {
+  const h = SHOP.hours[dow(day)], n = nowL(), out = [];
+  if (!h || day < minDay() || day > maxDay()) return out;
+  for (let m = h[0] * 60; m <= h[1] * 60 - STEP; m += STEP) { if (day === n.day && m < n.min + LEAD) continue; out.push(m); }
+  return out;
+}
+const fmtClock = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+const fmtDay = (s, o) => new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", ...o }).format(new Date(Date.UTC(...parseDay(s).map((v, i) => (i === 1 ? v - 1 : v)))));
+const hourWord = h => (h === 0 || h === 24 ? "midnight" : h === 12 ? "12pm" : h < 12 ? `${h}am` : `${h - 12}pm`);
+function hoursSummary() {
+  const names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], seq = [1, 2, 3, 4, 5, 6, 0], key = i => JSON.stringify(SHOP.hours[i]);
+  const groups = [];
+  seq.forEach(i => { const g = groups[groups.length - 1]; if (g && key(g.days[0]) === key(i)) g.days.push(i); else groups.push({ days: [i] }); });
+  return groups.map(g => { const h = SHOP.hours[g.days[0]], d = g.days.length > 1 ? `${names[g.days[0]]} to ${names[g.days[g.days.length - 1]]}` : names[g.days[0]]; return h ? `${d}, ${hourWord(h[0])} to ${hourWord(h[1])}` : `${d}, closed`; }).join(" · ");
+}
+const londonToISO = str => {
+  const [dp, tp] = str.split("T"), [y, m, d] = parseDay(dp), [h, mi] = tp.split(":").map(Number);
+  let utc = Date.UTC(y, m - 1, d, h, mi); const p = lparts(new Date(utc));
+  utc += utc - Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute);
+  return new Date(utc).toISOString();
+};
+const slotValid = () => { if (!slot) return false; const [d, t] = slot.split("T"), [h, m] = t.split(":").map(Number); return slotsFor(d).includes(h * 60 + m); };
+const pickers = $$("[data-picker]").map(root => {
+  const field = $(".picker-field", root), text = $(".pf-text", field), panel = $(".picker-panel", root), err = $(".picker-err", root);
+  let view = "", selDay = "";
+  const firstOpen = () => { let d = minDay(); for (let i = 0; i <= WINDOW; i++, d = addDays(d, 1)) if (slotsFor(d).length) return d; return minDay(); };
+  function draw() {
+    const [vy, vm] = parseDay(view), first = `${vy}-${pad(vm)}-01`, lead = (dow(first) + 6) % 7, count = new Date(Date.UTC(vy, vm, 0)).getUTCDate();
+    const canPrev = view.slice(0, 7) > minDay().slice(0, 7), canNext = view.slice(0, 7) < maxDay().slice(0, 7);
+    let cells = "";
+    for (let i = 0; i < lead; i++) cells += "<span></span>";
+    for (let d = 1; d <= count; d++) {
+      const day = `${vy}-${pad(vm)}-${pad(d)}`, ok = slotsFor(day).length > 0;
+      cells += `<button type="button" class="cal-day${day === selDay ? " on" : ""}" data-day="${day}"${ok ? "" : " disabled"} aria-label="${fmtDay(day, { weekday: "long", day: "numeric", month: "long" })}${ok ? "" : ", unavailable"}">${d}</button>`;
+    }
+    const times = selDay ? slotsFor(selDay) : [];
+    panel.innerHTML = `<div class="cal-head"><button type="button" data-nav="-1" aria-label="Previous month"${canPrev ? "" : " disabled"}>&lsaquo;</button><b>${fmtDay(first, { month: "long", year: "numeric" })}</b><button type="button" data-nav="1" aria-label="Next month"${canNext ? "" : " disabled"}>&rsaquo;</button></div>
+      <div class="cal-week"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div><div class="cal-grid">${cells}</div>
+      ${selDay ? `<p class="cal-sub">Choose a time on ${fmtDay(selDay, { weekday: "long", day: "numeric", month: "long" })}</p><div class="slots">${times.map(m => `<button type="button" class="slot${slot === `${selDay}T${fmtClock(m)}` ? " on" : ""}" data-min="${m}">${fmtClock(m)}</button>`).join("")}</div>` : `<p class="cal-sub">Choose a day to see the times.</p>`}
+      <p class="cal-hours">Open ${hoursSummary()}</p>`;
+  }
+  function refresh() {
+    if (slot && !slotValid()) slot = "";
+    text.textContent = slot ? fmtWhen(slot) : "Choose a day and time";
+    field.classList.toggle("set", !!slot);
+    selDay = slot ? slot.split("T")[0] : "";
+  }
+  function open(on) {
+    if (on) { refresh(); view = (selDay || firstOpen()).slice(0, 7) + "-01"; draw(); }
+    panel.hidden = !on; field.setAttribute("aria-expanded", on);
+  }
+  field.addEventListener("click", () => open(panel.hidden));
+  panel.addEventListener("click", e => {
+    const nav = e.target.closest("[data-nav]"), day = e.target.closest("[data-day]"), t = e.target.closest("[data-min]");
+    if (nav) { const [y, m] = parseDay(view), d = new Date(Date.UTC(y, m - 1 + +nav.dataset.nav, 1)); view = `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-01`; draw(); }
+    else if (day && !day.disabled) { selDay = day.dataset.day; draw(); const s = $(".cal-sub", panel); if (s) s.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); }
+    else if (t) { slot = `${selDay}T${fmtClock(+t.dataset.min)}`; err.hidden = true; pickers.forEach(p => p.refresh()); open(false); }
+  });
+  return { refresh, close: () => open(false), error: m => { err.textContent = m; err.hidden = false; field.focus(); } };
+});
+const refreshPickers = () => pickers.forEach(p => p.refresh());
+const hint = $$("[data-picker-hint]"); hint.forEach(h => (h.textContent = SHOP.openingSoon ? `We open on ${fmtDay(SHOP.openingDate, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}. You can reserve a collection time from then.` : "Collection is available from one hour after you order."));
 function openOrder() {
-  setWhenMin();
+  refreshPickers();
   $("#toast").classList.remove("show");
   if (view === "done") showView("list");
   scrim.hidden = false; requestAnimationFrame(() => scrim.classList.add("show"));
@@ -326,13 +397,14 @@ $("#go-checkout").addEventListener("click", () => {
   if (!total()) return;
   const em = $("#list-email");
   if (!em.checkValidity()) { em.reportValidity(); em.focus(); return; }
+  refreshPickers();
+  if (method !== "delivery" && !slot) { pickers[0].error("Please choose a day and time for collection."); return; }
   $("#pay-summary").innerHTML = lineItems();
   const t = gbp.format(grandTotal());
   $("#pay-total").textContent = t; $(".label", payBtn).textContent = `Pay ${t}`;
   payError.hidden = true; payForm.reset(); showView("pay");
   const nm = $("input[name=name]", $("#order-form")).value; if (nm) payForm.elements["demo-name"].value = nm;
   payForm.elements["demo-email"].value = em.value.trim();
-  payForm.elements["demo-when"].value = method === "delivery" ? "" : $("#when-list").value;
   payForm.elements["demo-address"].value = $("#order-form").elements.address.value;
   $("#pay-addr-wrap").hidden = method !== "delivery"; $("#pay-when-wrap").hidden = method === "delivery"; $("#pay-delivery-note").hidden = method !== "delivery";
   payForm.elements["demo-name"].focus({ preventScroll: true });
@@ -367,19 +439,19 @@ payForm.addEventListener("submit", e => {
     payBtn.classList.remove("busy");
     if (num === "4000000000000002") { $(".label", payBtn).textContent = `Pay ${gbp.format(grandTotal())}`; return fail("Your card was declined. This is the demo decline card, try 4242 4242 4242 4242.", $("#card-number")); }
     const ref = "FF-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    const slot = method === "delivery" ? "" : payForm.elements["demo-when"].value, slotDate = slot ? new Date(slot) : null;
+    const chosen = method === "delivery" ? "" : slot;
     recordOrder({
       ref, customer_name: name.value.trim().slice(0, 120), email: email.value.trim().slice(0, 200), fulfilment: method === "delivery" ? "delivery" : "collection",
-      slot_at: slotDate && !isNaN(slotDate) ? slotDate.toISOString() : null,
+      slot_at: chosen ? londonToISO(chosen) : null,
       address: method === "delivery" ? payForm.elements["demo-address"].value.trim().slice(0, 500) : "",
       items: Object.keys(order).map(id => ({ id, name: byId[id].name, price: byId[id].price, unit_price: unitPrice(byId[id]), qty: order[id] })),
       ...(orderNote() ? { customer_note: orderNote() } : {}),
       subtotal: +orderTotal().toFixed(2), delivery_fee: +shipping().toFixed(2), total: +grandTotal().toFixed(2),
     });
-    const when = method === "delivery" ? "" : fmtWhen(payForm.elements["demo-when"].value);
+    const when = chosen ? fmtWhen(chosen) : "";
     $("#done-ref").textContent = ref; $("#done-summary").innerHTML = lineItems() + (method === "delivery" ? `<li><span>Expected</span><span>In 1 to 3 days</span></li>` : when ? `<li><span>Collection time</span><span>${when}</span></li>` : "") + (orderNote() ? `<li><span>Your note</span><span>${orderNote().replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]))}</span></li>` : "") + (method === "delivery" ? `<li><span>Deliver to</span><span>${payForm.elements["demo-address"].value.trim().replace(/\s*\n\s*/g, ", ")}</span></li>` : ""); $("#done-total").textContent = gbp.format(grandTotal());
     $("#done-name").textContent = name.value.trim() ? `, ${name.value.trim().split(" ")[0]}` : "";
-    order = {}; save(); renderOrder(); payForm.reset(); $("#note-toggle").checked = false; $("#note-wrap").hidden = true; $("#order-note").value = ""; showView("done");
+    order = {}; slot = ""; refreshPickers(); save(); renderOrder(); payForm.reset(); $("#note-toggle").checked = false; $("#note-wrap").hidden = true; $("#order-note").value = ""; showView("done");
   }, reduce ? 300 : 1800);
 });
 $("#done-close").addEventListener("click", () => { closeOrder(); setTimeout(() => showView("list"), 700); });
@@ -463,7 +535,7 @@ function splitWords(root, counter) {
 $$(".section h2").forEach(h => { h.setAttribute("aria-label", h.textContent.replace(/\s+/g, " ").trim()); splitWords(h, { i: 0 }); });
 
 /* ---------- go ---------- */
-setWhenMin(); renderDetails(); renderHours(); setInterval(renderHours, 60000);
+renderDetails(); renderHours(); setInterval(renderHours, 60000);
 if (HOME) { renderFilters(); renderGrid(true); }
 renderOrder();
 onScroll();
