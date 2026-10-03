@@ -34,7 +34,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/shopfront.webp" imagesrcset="assets/shopfront-800.webp 800w, assets/shopfront.webp 1536w" imagesizes="100vw" fetchpriority="high">
   <link rel="stylesheet" href="styles.css">
-  <script>document.documentElement.classList.replace('no-js','js')</script>
+  <script>document.documentElement.classList.replace('no-js','js');try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
 </head>
 <body>
   <div class="progress" aria-hidden="true"></div>
@@ -49,7 +49,7 @@
       <img src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380">
     </a>
     <nav class="nav" aria-label="Main">
-      <a href="#cheese" data-spy="cheese">The collection</a>
+      <a href="collection.html">The collection</a>
       <a href="#gifts" data-spy="gifts">Boards &amp; gifts</a>
       <a href="#about" data-spy="about">About</a>
       <a href="#visit" data-spy="visit">Visit</a>
@@ -112,6 +112,7 @@
         <div class="filters" role="group" aria-label="Filter the collection" id="filters" data-reveal></div>
         <ul class="grid" id="grid" aria-live="polite"></ul>
         <p class="empty" id="empty" hidden>Nothing matches that. Try another word, or ask us in store.</p>
+        <p class="more-link" data-reveal><a href="collection.html">View the full collection <span aria-hidden="true">&rarr;</span></a></p>
         <ol class="steps" data-reveal>
           <li><span class="n">01</span><h3>Choose</h3><p>Browse the collection and add what you like to your list.</p></li>
           <li><span class="n">02</span><h3>Reserve</h3><p>Pick a day and time for collection, or have it delivered.</p></li>
@@ -322,7 +323,7 @@
         </form>
       </div>
       <nav class="footer-nav" aria-label="Footer">
-        <a href="#cheese">The collection</a>
+        <a href="collection.html">The collection</a>
         <a href="#gifts">Boards &amp; gifts</a>
         <a href="#about">About</a>
         <a href="#faq">Questions</a>
@@ -334,7 +335,7 @@
   </footer>
 
   <nav class="tabbar" aria-label="Quick navigation">
-    <a href="#cheese" data-spy="cheese">Cheese</a>
+    <a href="collection.html">Cheese</a>
     <a href="#gifts" data-spy="gifts">Gifts</a>
     <a href="#about" data-spy="about">About</a>
     <a href="#visit" data-spy="visit">Visit</a>

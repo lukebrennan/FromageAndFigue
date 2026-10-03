@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>The Collection | Fromage &amp; Figue, Liverpool</title>
+  <meta name="description" content="Browse the full Fromage &amp; Figue collection: soft, hard and blue cheeses, plus bread and pantry goods. Reserve for free collection in Liverpool, or have it delivered.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#141312">
+  <link rel="canonical" href="https://fromageandfigue.co.uk/collection.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fromage &amp; Figue">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:url" content="https://fromageandfigue.co.uk/collection.html">
+  <meta property="og:title" content="The Collection | Fromage &amp; Figue">
+  <meta property="og:description" content="Every cheese on the counter, and the pantry that goes with it. Opening soon in Liverpool.">
+  <meta property="og:image" content="https://fromageandfigue.co.uk/assets/social.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Fromage &amp; Figue, artisan fromagerie in Liverpool, opening soon">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Collection | Fromage &amp; Figue">
+  <meta name="twitter:description" content="Every cheese on the counter, and the pantry that goes with it. Opening soon in Liverpool.">
+  <meta name="twitter:image" content="https://fromageandfigue.co.uk/assets/social.jpg">
+  <meta name="twitter:image:alt" content="Fromage &amp; Figue, artisan fromagerie in Liverpool, opening soon">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="collection.css">
+  <script>document.documentElement.classList.replace('no-js','js');try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <div id="loader" aria-hidden="true">
+    <img src="assets/logo.png" alt="" width="1901" height="380">
+    <span class="loader-line"></span>
+  </div>
+
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Fromage &amp; Figue, home">
+      <img src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380">
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="collection.html" class="active" aria-current="page">The collection</a>
+      <a href="index.html#gifts">Boards &amp; gifts</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#visit">Visit</a>
+    </nav>
+    <div class="header-right">
+      <a class="status" href="index.html#visit"><i class="dot"></i><span id="status-text">Opening hours</span></a>
+      <button class="order-btn" type="button" data-open-order aria-label="Open your order list">
+        Order list <b class="count" data-count>0</b>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="cat">
+    <header class="cat-hero">
+      <div class="wrap">
+        <p class="eyebrow dark hero-in" style="--i:0"><span>The collection</span></p>
+        <h1 class="cat-title" aria-label="The collection"><span class="hero-in" style="--i:1">The</span> <em class="hero-in" style="--i:2">collection</em></h1>
+        <div class="cat-intro hero-in" style="--i:3">
+          <p>Every cheese on the counter, and the pantry that goes with it. Choose any one to read more, see it up close and add it to your list.</p>
+          <ul class="perks"><li>Free collection from store</li><li>Delivery &pound;4.99</li><li>Free delivery over &pound;60</li></ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="cat-bar" id="cat-bar">
+      <div class="wrap cat-bar-in">
+        <div class="filters" role="group" aria-label="Filter the collection" id="filters"></div>
+        <div class="cat-tools">
+          <label class="search"><span class="sr-only">Search the collection</span><input id="search" type="search" placeholder="Search" autocomplete="off"></label>
+          <label class="sort"><span class="sr-only">Sort by</span>
+            <select id="sort" aria-label="Sort by">
+              <option value="featured">Featured</option>
+              <option value="name">Name, A to Z</option>
+              <option value="low">Price, low to high</option>
+              <option value="high">Price, high to low</option>
+            </select>
+          </label>
+          <p class="cat-count" id="count" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+
+    <section class="cat-body">
+      <div class="wrap">
+        <ul class="grid cat-grid" id="grid"></ul>
+        <p class="empty" id="empty" hidden>Nothing matches that. Try another word, or ask us in store.</p>
+
+        <ol class="steps" data-reveal>
+          <li><span class="n">01</span><h3>Choose</h3><p>Add what you like to your list from any card or from the details.</p></li>
+          <li><span class="n">02</span><h3>Reserve</h3><p>Pick a day and time for collection, or have it delivered.</p></li>
+          <li><span class="n">03</span><h3>Enjoy</h3><p>Collection in store is free. Delivery is &pound;4.99, and free over &pound;60.</p></li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <img class="footer-logo" src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380" loading="lazy">
+          <p>An artisan fromagerie and delicatessen, opening in Liverpool in Spring 2027.</p>
+        </div>
+        <div class="foot-col">
+          <h3>Visit</h3>
+          <p data-shop-address>14 Gambier Lane<br>Liverpool L1 4DX</p>
+          <p class="soft">Opening Spring 2027</p>
+        </div>
+        <div class="foot-col">
+          <h3>Contact</h3>
+          <p><a data-shop-email-text href="mailto:hello@fromageandfigue.co.uk">hello@fromageandfigue.co.uk</a></p>
+          <p><a data-shop-phone-text href="tel:+441514960142">0151 496 0142</a></p>
+        </div>
+        <form class="foot-news" id="news-form" novalidate>
+          <h3>Be first through the door</h3>
+          <p>Opening news, nothing else.</p>
+          <div class="news-field">
+            <label class="sr-only" for="news-email">Email address</label>
+            <input id="news-email" type="email" placeholder="Your email address" autocomplete="email">
+            <button type="submit">Notify me</button>
+          </div>
+          <p class="news-msg" id="news-msg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="collection.html">The collection</a>
+        <a href="index.html#gifts">Boards &amp; gifts</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#faq">Questions</a>
+        <a href="index.html#visit">Visit</a>
+        <a href="#top">Back to top</a>
+      </nav>
+      <p class="copy">&copy; <span id="year"></span> Fromage &amp; Figue &middot; Liverpool</p>
+    </div>
+  </footer>
+
+  <nav class="tabbar" aria-label="Quick navigation">
+    <a href="collection.html" class="active">Cheese</a>
+    <a href="index.html#gifts">Gifts</a>
+    <a href="index.html#about">About</a>
+    <a href="index.html#visit">Visit</a>
+    <button type="button" data-open-order>Order <b class="count" data-count>0</b></button>
+  </nav>
+
+  <div class="scrim" id="scrim" hidden></div>
+  <aside id="order" aria-label="Your order list" aria-hidden="true" inert data-lenis-prevent>
+    <header>
+      <button type="button" class="icon-btn back-btn" id="pay-back" aria-label="Back to your list" hidden>&larr;</button>
+      <h2 id="order-title">Your order list</h2>
+      <button type="button" class="icon-btn" data-close-order aria-label="Close order list">&times;</button>
+    </header>
+
+    <div class="view" id="view-list">
+      <div class="order-body">
+        <ul id="order-items"></ul>
+        <p class="order-empty" id="order-empty">Nothing here yet. Add something from the collection and send us the list, and we will have it ready for collection.</p>
+      </div>
+      <div class="order-totals" id="order-total">
+        <div><span>Subtotal</span><b id="sub-amount">&pound;0.00</b></div>
+        <div><span id="ship-label">Collection in store</span><b id="ship-amount">Free</b></div>
+        <div class="grand"><span>Estimated total</span><b id="total-amount">&pound;0.00</b></div>
+        <p class="ship-hint" id="ship-hint" hidden></p>
+      </div>
+      <form class="order-form" id="order-form" autocomplete="on">
+        <fieldset class="method">
+          <legend class="sr-only">Collection or delivery</legend>
+          <label class="opt"><input type="radio" name="method" value="collect" checked><span><b>Collect in store</b><small>Free</small></span></label>
+          <label class="opt"><input type="radio" name="method" value="delivery"><span><b>Delivery</b><small>&pound;4.99, free over &pound;60</small></span></label>
+        </fieldset>
+        <label>Your name<input name="name" type="text" autocomplete="name"></label>
+        <label id="addr-wrap" hidden>Delivery address<textarea name="address" rows="2" placeholder="Street, city and postcode" autocomplete="street-address"></textarea></label>
+        <label><span id="when-label">Collection date and time</span><input name="when" id="when-list" type="datetime-local" step="900"></label>
+        <div class="order-actions">
+          <button type="button" class="btn btn-gold" id="go-checkout">Checkout (demo)</button>
+          <a class="btn btn-line" id="send-email" href="#">Send list by email</a>
+          <a class="btn btn-line" id="send-wa" href="#" target="_blank" rel="noopener" hidden>Send on WhatsApp</a>
+          <button type="button" class="link-btn" id="clear-order">Clear list</button>
+        </div>
+        <p class="fine">We will confirm availability and final prices. Checkout here is a demonstration, so no real payment is taken.</p>
+      </form>
+    </div>
+
+    <form class="view" id="pay-form" hidden novalidate autocomplete="off">
+      <div class="order-body">
+        <p class="demo-banner"><b>Demo checkout.</b> No payment is taken, and nothing you type is sent or stored. Please use only the test card shown below.</p>
+        <ul class="pay-summary" id="pay-summary"></ul>
+        <div class="order-total flat"><span>Total</span><b id="pay-total"></b></div>
+        <fieldset>
+          <legend>Contact</legend>
+          <label>Full name<input name="demo-name" type="text" autocomplete="off" required></label>
+          <label>Email<input name="demo-email" type="email" autocomplete="off" required></label>
+          <label id="pay-addr-wrap" hidden>Delivery address<textarea name="demo-address" rows="2" autocomplete="off"></textarea></label>
+          <label><span id="pay-when-label">Collection date and time</span><input name="demo-when" id="when-pay" type="datetime-local" step="900"></label>
+        </fieldset>
+        <fieldset>
+          <legend>Card (test only)</legend>
+          <label>Card number<input id="card-number" name="demo-card" type="text" inputmode="numeric" autocomplete="off" placeholder="4242 4242 4242 4242" maxlength="19"></label>
+          <div class="two">
+            <label>Expiry<input id="card-exp" name="demo-exp" type="text" inputmode="numeric" autocomplete="off" placeholder="MM / YY" maxlength="7"></label>
+            <label>CVC<input id="card-cvc" name="demo-cvc" type="text" inputmode="numeric" autocomplete="off" placeholder="123" maxlength="3"></label>
+          </div>
+          <button type="button" class="link-btn left" id="fill-test">Fill in the test card</button>
+          <p class="pay-error" id="pay-error" role="alert" hidden></p>
+        </fieldset>
+      </div>
+      <div class="order-form">
+        <button type="submit" class="btn btn-dark pay-btn" id="pay-btn"><span class="label">Pay</span><i class="spinner" aria-hidden="true"></i></button>
+        <p class="fine">Test card 4242 4242 4242 4242, any future expiry, any three digits. The card 4000 0000 0000 0002 shows a declined payment.</p>
+      </div>
+    </form>
+
+    <div class="view" id="view-done" hidden>
+      <div class="order-body done-body">
+        <svg class="tick" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l8 8 14-16"/></svg>
+        <h3>Thank you<span id="done-name"></span></h3>
+        <p>Your demo order <b id="done-ref"></b> is complete.</p>
+        <ul class="pay-summary" id="done-summary"></ul>
+        <div class="order-total flat"><span>Total</span><b id="done-total"></b></div>
+        <p class="demo-banner">This was a demonstration. No payment was taken and no order was placed.</p>
+      </div>
+      <div class="order-form"><button type="button" class="btn btn-dark" id="done-close">Back to the shop</button></div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script src="assets/vendor/ScrollTrigger.min.js"></script>
+  <script src="assets/vendor/lenis.min.js"></script>
+  <script src="script.js"></script>
+  <script src="collection.js"></script>
+</body>
+</html>

@@ -818,3 +818,12 @@ body { font-size: 18px; line-height: 1.7; }
 .site-header.scrolled .nav a { opacity: .9; }
 .site-header.scrolled .order-btn { color: var(--ink); }
 .site-header.scrolled .status { opacity: 1; }
+
+/* ---- page-to-page fade, and link to the full collection ---- */
+html.from-nav body { animation: pageIn .6s var(--ease) both; }
+@keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+html.leaving body { opacity: 0; transition: opacity .28s ease; }
+.more-link { margin: clamp(2.2rem, 5vw, 3.5rem) 0 0; text-align: center; }
+.more-link a { display: inline-block; font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; padding: 1rem 0; border-bottom: 1px solid var(--ink); transition: color .3s, border-color .3s, letter-spacing .5s var(--ease); }
+.more-link a:hover { color: #8a6d33; border-color: var(--gold); letter-spacing: .26em; }
+@media (prefers-reduced-motion: reduce) { html.from-nav body { animation: none; } html.leaving body { transition: none; } }

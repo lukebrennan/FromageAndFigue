@@ -45,6 +45,7 @@ let lenis = null;
 function lockScroll(on) { document.body.classList.toggle("locked", on); if (lenis) { if (on) lenis.stop(); else lenis.start(); } }
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
+const HOME = !!document.getElementById("product");   // the home page has the product dialog
 const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
 const imgSrc = p => `assets/products/${p.img}.webp`;
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
@@ -54,7 +55,7 @@ const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
   let seen = false;
   try { seen = sessionStorage.getItem("ff-seen") === "1"; } catch (e) {}
   const go = () => { html.classList.add("ready"); try { sessionStorage.setItem("ff-seen", "1"); } catch (e) {} };
-  if (seen || reduce) { $("#loader").style.display = "none"; html.classList.add("ready"); return; }
+  if (!$("#loader") || seen || reduce) { if ($("#loader")) $("#loader").style.display = "none"; html.classList.add("ready"); return; }
   const min = new Promise(r => setTimeout(r, 1300));
   const loaded = new Promise(r => (document.readyState === "complete" ? r() : addEventListener("load", r, { once: true })));
   Promise.all([min, loaded]).then(go);
@@ -81,19 +82,20 @@ function openStatus() {
   }
   return { open: false, short: "Closed", long: "Closed" };
 }
+const setText = (sel, t) => { const e = $(sel); if (e) e.textContent = t; };
 function renderHours() {
   if (SHOP.openingSoon) {
-    $("#status-text").textContent = "Opening soon";
-    $("#open-line").textContent = `Opening soon, ${SHOP.openingNote}`;
+    setText("#status-text", "Opening soon");
+    setText("#open-line", `Opening soon, ${SHOP.openingNote}`);
     $$(".status .dot, .open-line .dot").forEach(d => { d.classList.remove("open"); d.classList.add("soon"); });
-    $("#hours").innerHTML = `<li><span>Opening hours</span><span>To be announced</span></li>`;
+    if ($("#hours")) $("#hours").innerHTML = `<li><span>Opening hours</span><span>To be announced</span></li>`;
     return;
   }
   const s = openStatus(), { day } = shopNow();
-  $("#status-text").textContent = s.short;
-  $("#open-line").textContent = s.long;
+  setText("#status-text", s.short);
+  setText("#open-line", s.long);
   $$(".status .dot, .open-line .dot").forEach(d => d.classList.toggle("open", s.open));
-  $("#hours").innerHTML = [1, 2, 3, 4, 5, 6, 0].map(d => {
+  if ($("#hours")) $("#hours").innerHTML = [1, 2, 3, 4, 5, 6, 0].map(d => {
     const h = SHOP.hours[d];
     return `<li class="${d === day ? "today" : ""}"><span>${DAYS[d]}</span><span>${h ? `${fmt(h[0])} to ${fmt(h[1])}` : "Closed"}</span></li>`;
   }).join("");
@@ -104,11 +106,13 @@ function renderDetails() {
   $$("[data-shop-address]").forEach(e => (e.innerHTML = SHOP.address.join("<br>")));
   $$("[data-shop-email-text]").forEach(e => { e.href = `mailto:${SHOP.email}`; e.textContent = SHOP.email; });
   $$("[data-shop-phone-text]").forEach(e => { e.href = `tel:${SHOP.phoneLink}`; e.textContent = SHOP.phone; });
-  $("#address").innerHTML = SHOP.address.join("<br>");
-  const em = $("#email-link"); em.href = `mailto:${SHOP.email}`; em.textContent = SHOP.email;
-  const ph = $("#phone-link"); ph.href = `tel:${SHOP.phoneLink}`; ph.textContent = SHOP.phone;
-  $("#call").href = `tel:${SHOP.phoneLink}`;
-  $("#directions").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapQuery)}`;
+  if ($("#address")) {
+    $("#address").innerHTML = SHOP.address.join("<br>");
+    const em = $("#email-link"); em.href = `mailto:${SHOP.email}`; em.textContent = SHOP.email;
+    const ph = $("#phone-link"); ph.href = `tel:${SHOP.phoneLink}`; ph.textContent = SHOP.phone;
+    $("#call").href = `tel:${SHOP.phoneLink}`;
+    $("#directions").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapQuery)}`;
+  }
   $$("[data-shop-email]").forEach(a => (a.href = `mailto:${SHOP.email}?subject=${encodeURIComponent("Boards and gift boxes")}`));
   $("#year").textContent = new Date().getFullYear();
 }
@@ -149,12 +153,12 @@ function renderGrid(initial = false) {
   if (!initial && !reduce && document.startViewTransition) document.startViewTransition(draw);
   else draw();
 }
-$("#filters").addEventListener("click", e => {
+if (HOME) $("#filters").addEventListener("click", e => {
   const b = e.target.closest("[data-filter]"); if (!b) return;
   filter = b.dataset.filter; renderFilters(); renderGrid();
 });
-let st; $("#search").addEventListener("input", e => { query = e.target.value; clearTimeout(st); st = setTimeout(() => renderGrid(), 120); });
-grid.addEventListener("click", e => {
+let st; if (HOME) $("#search").addEventListener("input", e => { query = e.target.value; clearTimeout(st); st = setTimeout(() => renderGrid(), 120); });
+if (HOME) grid.addEventListener("click", e => {
   const add = e.target.closest("[data-add]");
   if (add) { addToOrder(add.dataset.add); return; }
   const open = e.target.closest("[data-open]");
@@ -187,12 +191,12 @@ function openProduct(id, trigger) {
     </div>`;
   dlg.showModal(); lockScroll(true);
 }
-dlg.addEventListener("click", e => {
+dlg && dlg.addEventListener("click", e => {
   if (e.target === dlg || e.target.closest("[data-close]")) dlg.close();
   const a = e.target.closest("[data-add-close]");
   if (a) { addToOrder(a.dataset.addClose); dlg.close(); }
 });
-dlg.addEventListener("close", () => { lockScroll(false); if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); });
+dlg && dlg.addEventListener("close", () => { lockScroll(false); if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); });
 
 /* ---------- order list ---------- */
 let order = {};
@@ -373,9 +377,8 @@ const pars = supportsScrollAnim || !finePointer ? [] : $$("[data-parallax]");
 function onScroll() {
   const y = scrollY, vh = innerHeight, doc = document.documentElement.scrollHeight - vh;
   bar.style.transform = `scaleX(${doc > 0 ? y / doc : 0})`;
-  const heroH = hero.offsetHeight;
   header.classList.toggle("scrolled", y > 40);
-  header.classList.toggle("on-hero", y < heroH - header.offsetHeight);
+  if (hero) header.classList.toggle("on-hero", y < hero.offsetHeight - header.offsetHeight);
   if (y > lastY + 6 && y > 240) tabbar.classList.add("away");
   else if (y < lastY - 6 || y < 240) tabbar.classList.remove("away");
   lastY = y;
@@ -407,8 +410,8 @@ $$("[data-reveal]").forEach(el => io.observe(el));
 const spy = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) $$("[data-spy]").forEach(a => a.classList.toggle("active", a.dataset.spy === e.target.id));
 }), { rootMargin: "-45% 0px -50% 0px" });
-["cheese", "gifts", "about", "visit"].forEach(id => spy.observe($("#" + id)));
-new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) $$("[data-spy]").forEach(a => a.classList.remove("active")); }), { threshold: 0.4 }).observe(hero);
+["cheese", "gifts", "about", "visit"].forEach(id => { const el = $("#" + id); if (el) spy.observe(el); });
+if (hero) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) $$("[data-spy]").forEach(a => a.classList.remove("active")); }), { threshold: 0.4 }).observe(hero);
 
 /* ---------- magnetic buttons (desktop only) ---------- */
 if (finePointer && !reduce) {
@@ -437,7 +440,8 @@ $$(".section h2").forEach(h => { h.setAttribute("aria-label", h.textContent.repl
 
 /* ---------- go ---------- */
 setWhenMin(); renderDetails(); renderHours(); setInterval(renderHours, 60000);
-renderFilters(); renderGrid(true); renderOrder();
+if (HOME) { renderFilters(); renderGrid(true); }
+renderOrder();
 onScroll();
 
 /* ---------- scroll effects: GSAP + ScrollTrigger + Lenis (all self-hosted in assets/vendor) ---------- */
@@ -518,3 +522,19 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
     new IntersectionObserver((es, ob) => es.forEach(x => { if (x.isIntersecting) { e.classList.add("go"); ob.disconnect(); } }), { threshold: 0.4 }).observe(e);
   });
 })();
+
+/* ---------- fade between pages ---------- */
+document.addEventListener("click", e => {
+  const a = e.target.closest("a[href]");
+  if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+  if (a.target && a.target !== "_self") return;
+  const u = new URL(a.href, location.href);
+  if (u.origin !== location.origin || !/\.html$|\/$/.test(u.pathname)) return;
+  if (u.pathname === location.pathname && u.hash) return;     // same page: normal anchor
+  if (reduce) return;
+  e.preventDefault();
+  try { sessionStorage.setItem("ff-nav", "1"); } catch (err) {}
+  html.classList.add("leaving");
+  setTimeout(() => (location.href = u.href), 260);
+});
+addEventListener("pageshow", ev => { if (ev.persisted) html.classList.remove("leaving"); });
