@@ -7,7 +7,7 @@
 window.FF_SB = { url: "https://gshowmtmibiqaytnyqkr.supabase.co", key: "sb_publishable_8EgFC7RJcarnTit6LlNlLw_ExSnvtXt" };
 (() => {
   const { url, key } = window.FF_SB, CK = "ff-catalog-v1", FRESH = 5 * 60 * 1000;
-  const tag = document.currentScript, scripts = ["script.js", tag && tag.dataset.page].filter(Boolean);
+  const tag = document.currentScript, V = (/[?&]v=([\w]+)/.exec(tag.src) || [])[1] || "", scripts = ["script.js", tag && tag.dataset.page].filter(Boolean).map(f => (V ? `${f}?v=${V}` : f));
   const price = r => {
     const n = Number(r.price), t = Number.isInteger(n) ? String(n) : n.toFixed(2);
     return r.price_from ? `From £${t}` : r.unit ? `£${t} / ${r.unit}` : `£${t}`;
