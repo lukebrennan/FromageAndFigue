@@ -76,7 +76,7 @@ function drawOrders() {
     <div class="chips">${chips}</div>
 
     ${list.length ? `<table class="tbl"><thead><tr><th>Order</th><th>Placed</th><th>Customer</th><th class="hide-s">Type</th><th class="hide-s">For</th><th class="num">Total</th><th>Status</th></tr></thead><tbody>
-    ${list.map(o => `<tr class="row" data-id="${o.id}"><td>${esc(o.ref)}</td><td>${when(o.created_at)}</td><td>${esc(o.customer_name)}${o.customer_note ? ' <span class="tag note">Note</span>' : ""}</td><td class="hide-s">${esc(cap(o.fulfilment))}</td><td class="hide-s">${when(o.slot_at) || "Not set"}</td><td class="num">${gbp.format(o.total)}</td><td><span class="tag ${o.status}">${SLABEL[o.status]}</span></td></tr>${S.openOrder === o.id ? orderDetail(o) : ""}`).join("")}
+    ${list.map(o => `<tr class="row" data-id="${o.id}"><td>${esc(o.ref)}</td><td>${when(o.created_at)}</td><td>${esc(o.customer_name)}${o.customer_note ? ' <span class="tag note">Note</span>' : ""}</td><td class="hide-s">${esc(cap(o.fulfilment))}</td><td class="hide-s">${o.fulfilment === "delivery" ? "Within 1 to 3 days" : when(o.slot_at) || "Not set"}</td><td class="num">${gbp.format(o.total)}</td><td><span class="tag ${o.status}">${SLABEL[o.status]}</span></td></tr>${S.openOrder === o.id ? orderDetail(o) : ""}`).join("")}
     </tbody></table>` : `<p class="empty">No orders here yet. Test orders placed through the site checkout will appear in this list.</p>`}`;
 }
 function orderDetail(o) {
