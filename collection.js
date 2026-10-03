@@ -241,7 +241,7 @@ function openDetail(id, fromHash) {
     detailEl = document.createElement("div");
     detailEl.className = "detail";
     detailEl.setAttribute("role", "dialog"); detailEl.setAttribute("aria-modal", "true"); detailEl.setAttribute("aria-label", `${p.name} details`);
-    detailEl.setAttribute("data-lenis-prevent", "");
+    detailEl.setAttribute("data-lenis-prevent", ""); detailEl.tabIndex = -1; detailEl.style.outline = "none";
     detailEl.innerHTML = `<div class="d-scrim" data-close></div><div class="d-box"><div class="d-wrap">${detailHTML(p, live)}</div><button type="button" class="d-hint" aria-hidden="true" tabindex="-1">Scroll for more <i>&darr;</i></button></div>`;
     const w = $(".d-wrap", detailEl);
     w.addEventListener("scroll", () => hintState(), { passive: true });
@@ -251,7 +251,7 @@ function openDetail(id, fromHash) {
     document.body.classList.add("modal-open");
     if (lenis) lenis.stop();
     requestAnimationFrame(() => requestAnimationFrame(() => { detailEl && detailEl.classList.add("open"); }));
-    setTimeout(() => { const c = detailEl && $(".d-close", detailEl); if (c) c.focus({ preventScroll: true }); }, 60);
+    setTimeout(() => { if (detailEl) detailEl.focus({ preventScroll: true }); }, 60);
   }
   openId = id;
   $$(".card", gridEl).forEach(c => { const on = c.dataset.id === id; c.classList.toggle("is-open", on); $(".card-btn", c).setAttribute("aria-expanded", on); });
