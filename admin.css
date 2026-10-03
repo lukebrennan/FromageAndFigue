@@ -156,3 +156,6 @@ label:not(.check) > input, label:not(.check) > select, label:not(.check) > texta
 .stp.on small { color: rgba(247, 243, 236, .7); }
 .stp.cancelled:not(.on):hover { border-color: var(--warn); }
 @media (max-width: 800px) { .steps-btns { grid-template-columns: 1fr 1fr; } }
+
+.tag.note { background: var(--sand); border-color: var(--stone); margin-left: .4rem; }
+.cnote { background: var(--paper); border-left: 2px solid var(--gold); padding: .6rem .8rem; white-space: pre-wrap; }

@@ -888,3 +888,6 @@ html.leaving body { opacity: 0; transition: opacity .28s ease; }
 
 .delivery-note { margin: 0; padding: .9rem 1rem; background: var(--sand); border-left: 2px solid var(--gold); font-size: .9rem; line-height: 1.45; }
 .delivery-note b { font-weight: 500; }
+
+.order-form label.note-check { display: flex; align-items: center; gap: .6rem; font-size: .9rem; letter-spacing: 0; text-transform: none; color: var(--ink); cursor: pointer; }
+.order-form .note-check input { width: 18px; height: 18px; padding: 0; accent-color: var(--ink); }

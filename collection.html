@@ -224,6 +224,8 @@
         <label id="addr-wrap" hidden>Delivery address<textarea name="address" rows="2" placeholder="Street, city and postcode" autocomplete="street-address"></textarea></label>
         <label id="when-wrap"><span id="when-label">Collection date and time</span><input name="when" id="when-list" type="datetime-local" step="900"></label>
         <p class="delivery-note" id="delivery-note" hidden><b>Delivery in 1 to 3 days.</b> We will email you to confirm a day that suits.</p>
+        <label class="note-check"><input type="checkbox" id="note-toggle"><span>Leave a note with your order</span></label>
+        <label id="note-wrap" hidden>Your note<textarea name="note" id="order-note" rows="3" maxlength="500" placeholder="Allergies, a gift message, or anything we should know"></textarea></label>
         <div class="order-actions">
           <button type="button" class="btn btn-gold" id="go-checkout">Checkout (demo)</button>
           <button type="button" class="link-btn" id="clear-order">Clear list</button>

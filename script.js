@@ -268,6 +268,8 @@ function renderOrder(bump) {
   $("#addr-wrap").hidden = method !== "delivery";
   $("#when-wrap").hidden = method === "delivery"; $("#delivery-note").hidden = method !== "delivery";
 }
+$("#note-toggle").addEventListener("change", e => { $("#note-wrap").hidden = !e.target.checked; if (e.target.checked) $("#order-note").focus({ preventScroll: false }); });
+const orderNote = () => ($("#note-toggle").checked ? $("#order-note").value.trim().slice(0, 500) : "");
 $$("input[name=method]").forEach(r => r.addEventListener("change", () => { method = r.value; renderOrder(); }));
 $("#order-form").addEventListener("submit", e => e.preventDefault());
 $("#order-items").addEventListener("click", e => {
@@ -371,12 +373,13 @@ payForm.addEventListener("submit", e => {
       slot_at: slotDate && !isNaN(slotDate) ? slotDate.toISOString() : null,
       address: method === "delivery" ? payForm.elements["demo-address"].value.trim().slice(0, 500) : "",
       items: Object.keys(order).map(id => ({ id, name: byId[id].name, price: byId[id].price, unit_price: unitPrice(byId[id]), qty: order[id] })),
+      ...(orderNote() ? { customer_note: orderNote() } : {}),
       subtotal: +orderTotal().toFixed(2), delivery_fee: +shipping().toFixed(2), total: +grandTotal().toFixed(2),
     });
     const when = method === "delivery" ? "" : fmtWhen(payForm.elements["demo-when"].value);
-    $("#done-ref").textContent = ref; $("#done-summary").innerHTML = lineItems() + (method === "delivery" ? `<li><span>Expected</span><span>In 1 to 3 days</span></li>` : when ? `<li><span>Collection time</span><span>${when}</span></li>` : "") + (method === "delivery" ? `<li><span>Deliver to</span><span>${payForm.elements["demo-address"].value.trim().replace(/\s*\n\s*/g, ", ")}</span></li>` : ""); $("#done-total").textContent = gbp.format(grandTotal());
+    $("#done-ref").textContent = ref; $("#done-summary").innerHTML = lineItems() + (method === "delivery" ? `<li><span>Expected</span><span>In 1 to 3 days</span></li>` : when ? `<li><span>Collection time</span><span>${when}</span></li>` : "") + (orderNote() ? `<li><span>Your note</span><span>${orderNote().replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]))}</span></li>` : "") + (method === "delivery" ? `<li><span>Deliver to</span><span>${payForm.elements["demo-address"].value.trim().replace(/\s*\n\s*/g, ", ")}</span></li>` : ""); $("#done-total").textContent = gbp.format(grandTotal());
     $("#done-name").textContent = name.value.trim() ? `, ${name.value.trim().split(" ")[0]}` : "";
-    order = {}; save(); renderOrder(); payForm.reset(); showView("done");
+    order = {}; save(); renderOrder(); payForm.reset(); $("#note-toggle").checked = false; $("#note-wrap").hidden = true; $("#order-note").value = ""; showView("done");
   }, reduce ? 300 : 1800);
 });
 $("#done-close").addEventListener("click", () => { closeOrder(); setTimeout(() => showView("list"), 700); });
