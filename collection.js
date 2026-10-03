@@ -296,6 +296,7 @@ let rz, lastCols = cols();
 addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { const c = cols(); if (c !== lastCols && detailEl) { const cardEl = $(`.card[data-id="${openId}"]`, gridEl); if (cardEl) placeAfter(cardEl); } lastCols = c; }, 160); });
 
 /* ---------- go ---------- */
+{ const t = new URLSearchParams(location.search).get("type"); if (TYPES.some(([k]) => k === t)) f = t; }
 drawFilters(); draw(true);
 $$(".hero-in").forEach(el => el.classList.add("go"));
 requestAnimationFrame(() => document.documentElement.classList.contains("ready") && $$(".hero-in").forEach(el => el.classList.add("go")));

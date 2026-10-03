@@ -35,6 +35,18 @@ const PRODUCTS = [
   { id: "jam", name: "Fig jam", type: "pantry", note: "Small batch, slowly cooked.", pair: "Comté, brie, goat cheese", price: "£9 / jar", img: "jam" },
   { id: "pantry", name: "Preserves and crackers", type: "pantry", note: "Small-batch preserves, crackers and nuts, chosen to sit alongside the cheese.", pair: "Any cheese in the collection", price: "From £5", img: "pantry" },
 ];
+/* Boards, gift boxes and vouchers. They share the order list but are not part of the collection grid. */
+const GIFTS = [
+  { id: "board-petite", name: "The Petite Board", type: "board", note: "Three cheeses, bread and a preserve on an oak board.", pair: "A crisp white", price: "£45 / board", img: "gift-petite" },
+  { id: "board-classic", name: "The Classic Board", type: "board", note: "Five cheeses, bread, nuts and a preserve, composed by Benoit.", pair: "A light red or white", price: "£85 / board", img: "gift-classic" },
+  { id: "board-grand", name: "The Grand Board", type: "board", note: "Seven cheeses with bread, fruit, nuts and preserves, for a crowd.", pair: "Sparkling and still", price: "£150 / board", img: "gift-grand" },
+  { id: "box-tasting", name: "The Tasting Box", type: "box", note: "Three cheeses, crackers and a preserve, wrapped and ribboned.", pair: "A glass of something", price: "£38 / box", img: "gift-tasting" },
+  { id: "box-evening", name: "The Evening Box", type: "box", note: "Four cheeses, bread, honey and a preserve for a slow evening.", pair: "A bottle to share", price: "£65 / box", img: "gift-evening" },
+  { id: "box-hamper", name: "The Hamper", type: "box", note: "A generous mixed hamper of cheeses and pantry goods.", pair: "Wine and bread", price: "£120 / hamper", img: "gift-hamper" },
+  { id: "voucher-25", name: "Gift voucher, £25", type: "voucher", note: "A voucher for the shop, in a black envelope.", pair: "Any cheese", price: "£25 / voucher", img: "gift-v25" },
+  { id: "voucher-50", name: "Gift voucher, £50", type: "voucher", note: "A voucher for the shop, in a black envelope.", pair: "Any cheese", price: "£50 / voucher", img: "gift-v50" },
+  { id: "voucher-100", name: "Gift voucher, £100", type: "voucher", note: "A voucher for the shop, in a black envelope.", pair: "Any cheese", price: "£100 / voucher", img: "gift-v100" },
+];
 const TYPES = [["all", "All"], ["soft", "Soft"], ["hard", "Hard"], ["blue", "Blue"], ["pantry", "Pantry"]];
 
 /* ------------------------------------------------------------------ */
@@ -46,7 +58,7 @@ function lockScroll(on) { document.body.classList.toggle("locked", on); if (leni
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
 const HOME = !!document.getElementById("product");   // the home page has the product dialog
-const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+const byId = Object.fromEntries([...PRODUCTS, ...GIFTS].map(p => [p.id, p]));
 const imgSrc = p => `assets/products/${p.img}.webp`;
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -538,3 +550,26 @@ document.addEventListener("click", e => {
   setTimeout(() => (location.href = u.href), 260);
 });
 addEventListener("pageshow", ev => { if (ev.persisted) html.classList.remove("leaving"); });
+
+
+/* ---------- shop dropdown in the main heading ---------- */
+(() => {
+  const wrap = $(".has-menu"); if (!wrap) return;
+  const trigger = $(".menu-trigger", wrap), panel = $(".mega", wrap);
+  let t;
+  const set = on => {
+    clearTimeout(t);
+    wrap.classList.toggle("open", on); trigger.setAttribute("aria-expanded", on); header.classList.toggle("menu-open", on);
+    panel.toggleAttribute("inert", !on);
+  };
+  panel.setAttribute("inert", "");
+  trigger.addEventListener("click", () => set(!wrap.classList.contains("open")));
+  if (finePointer) {
+    wrap.addEventListener("mouseenter", () => { clearTimeout(t); t = setTimeout(() => set(true), 80); });
+    wrap.addEventListener("mouseleave", () => { clearTimeout(t); t = setTimeout(() => set(false), 220); });
+  }
+  wrap.addEventListener("focusout", e => { if (!wrap.contains(e.relatedTarget)) set(false); });
+  addEventListener("keydown", e => { if (e.key === "Escape" && wrap.classList.contains("open")) { set(false); trigger.focus(); } });
+  document.addEventListener("click", e => { if (!wrap.contains(e.target)) set(false); });
+  panel.addEventListener("click", e => { if (e.target.closest("a")) set(false); });
+})();

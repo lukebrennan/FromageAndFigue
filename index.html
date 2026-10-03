@@ -49,8 +49,32 @@
       <img src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380">
     </a>
     <nav class="nav" aria-label="Main">
-      <a href="collection.html">The collection</a>
-      <a href="#gifts" data-spy="gifts">Boards &amp; gifts</a>
+      <div class="has-menu">
+        <button class="menu-trigger" type="button" aria-expanded="false" aria-controls="shop-menu" aria-haspopup="true">Shop <i class="caret" aria-hidden="true"></i></button>
+        <div class="mega" id="shop-menu">
+          <div class="mega-in">
+            <div class="mega-col">
+              <a class="mega-head" href="collection.html"><span>The collection</span><small>Cheeses, bread and pantry goods</small></a>
+              <ul>
+                <li><a href="collection.html">All 12 items</a></li>
+                <li><a href="collection.html?type=soft">Soft cheeses</a></li>
+                <li><a href="collection.html?type=hard">Hard cheeses</a></li>
+                <li><a href="collection.html?type=blue">Blue cheeses</a></li>
+                <li><a href="collection.html?type=pantry">Pantry</a></li>
+              </ul>
+            </div>
+            <div class="mega-col">
+              <a class="mega-head" href="gifts.html"><span>Boards &amp; gifts</span><small>Composed by Benoit</small></a>
+              <ul>
+                <li><a href="gifts.html#boards">Cheese boards</a></li>
+                <li><a href="gifts.html#boxes">Gift boxes and hampers</a></li>
+                <li><a href="gifts.html#vouchers">Gift vouchers</a></li>
+              </ul>
+            </div>
+            <a class="mega-img" href="gifts.html" tabindex="-1" aria-hidden="true"><img src="assets/board-800.webp" alt="" width="800" height="533" loading="lazy"><span>Boards, boxes and vouchers</span></a>
+          </div>
+        </div>
+      </div>
       <a href="#about" data-spy="about">About</a>
       <a href="#visit" data-spy="visit">Visit</a>
     </nav>
@@ -179,6 +203,7 @@
           <h2>A gift worth<br><em>unwrapping.</em></h2>
           <p class="section-intro">Hand-composed cheese boards and gift boxes, wrapped with care. Tell Benoit the occasion and he will compose something to suit it.</p>
           <a class="btn btn-gold" href="mailto:hello@fromageandfigue.co.uk?subject=Boards%20and%20gift%20boxes" data-shop-email>Enquire by email</a>
+          <a class="more-link-inline" href="gifts.html">See boards, boxes and vouchers <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="gift-grid">
           <figure class="gift-card" data-reveal data-fx="wipe-l" style="--d:.1s">
@@ -324,7 +349,7 @@
       </div>
       <nav class="footer-nav" aria-label="Footer">
         <a href="collection.html">The collection</a>
-        <a href="#gifts">Boards &amp; gifts</a>
+        <a href="gifts.html">Boards &amp; gifts</a>
         <a href="#about">About</a>
         <a href="#faq">Questions</a>
         <a href="#visit">Visit</a>
@@ -336,7 +361,7 @@
 
   <nav class="tabbar" aria-label="Quick navigation">
     <a href="collection.html">Cheese</a>
-    <a href="#gifts" data-spy="gifts">Gifts</a>
+    <a href="gifts.html">Gifts</a>
     <a href="#about" data-spy="about">About</a>
     <a href="#visit" data-spy="visit">Visit</a>
     <button type="button" data-open-order>Order <b class="count" data-count>0</b></button>

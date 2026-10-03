@@ -1,0 +1,65 @@
+/* ================= Boards & gifts page ================= */
+.cat-title .amp { font-family: var(--serif); font-style: italic; color: var(--gold); }
+.jump { list-style: none; margin: clamp(1.8rem, 4vw, 2.8rem) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem 2rem; }
+.jump a { display: inline-block; font-size: .74rem; letter-spacing: .18em; text-transform: uppercase; text-decoration: none; padding: .6rem 0; border-bottom: 1px solid var(--ink); transition: color .3s, border-color .3s; }
+.jump a:hover { color: #8a6d33; border-color: var(--gold); }
+.jump.hero-in { display: flex; }
+.g-section { padding: clamp(4rem, 9vw, 7.5rem) 0; background: var(--paper); }
+.g-section.dark { background: var(--ink); color: var(--ivory); }
+.g-section.sand { background: var(--sand); }
+.g-head { max-width: 40rem; margin-bottom: clamp(2.2rem, 5vw, 3.8rem); }
+.g-head h2 { font-size: clamp(2.6rem, 6vw, 4.8rem); }
+.g-section.dark .section-intro { color: rgba(247, 243, 236, .68); }
+
+/* board and box cards */
+.g-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2.6vw, 2.2rem); align-items: stretch; }
+.g-card { position: relative; display: flex; flex-direction: column; background: var(--ivory); color: var(--ink); }
+.dark .g-card { background: #1d1b19; color: var(--ivory); }
+.g-img { aspect-ratio: 4 / 5; overflow: hidden; background: var(--stone); }
+.g-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: scale 1.4s var(--ease); }
+.g-card:hover .g-img img { scale: 1.05; }
+.g-flag { position: absolute; z-index: 2; top: 0; left: 0; padding: .55rem 1rem; background: var(--gold); color: var(--ink); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; }
+.g-body { display: flex; flex-direction: column; flex: 1; padding: clamp(1.3rem, 2.4vw, 2rem); }
+.g-body h3 { font-size: clamp(1.8rem, 2.6vw, 2.3rem); line-height: 1.05; }
+.g-serves { margin: .5rem 0 0; font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; color: #8a6d33; }
+.dark .g-serves { color: var(--gold-soft); }
+.g-body ul { list-style: none; margin: 1.2rem 0 0; padding: 0; border-top: 1px solid rgba(20, 19, 18, .16); }
+.dark .g-body ul { border-top-color: rgba(255, 255, 255, .16); }
+.g-body li { padding: .6rem 0; border-bottom: 1px solid rgba(20, 19, 18, .12); font-size: .95rem; color: var(--muted); }
+.dark .g-body li { border-bottom-color: rgba(255, 255, 255, .12); color: rgba(247, 243, 236, .75); }
+.g-buy { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: auto; padding-top: 1.5rem; flex-wrap: wrap; }
+.g-price { font-family: var(--serif); font-size: clamp(1.9rem, 3vw, 2.5rem); line-height: 1; }
+.g-buy .btn { padding: .95rem 1.3rem; font-size: .72rem; }
+.btn.added { background: var(--ink); color: var(--gold-soft); }
+.dark .btn.added { background: var(--ivory); color: var(--ink); }
+
+.g-photo { margin: clamp(2.5rem, 6vw, 4.5rem) 0 0; }
+.g-photo .img-frame { aspect-ratio: 21 / 9; }
+.g-photo figcaption { margin-top: .9rem; font-family: var(--serif); font-style: italic; font-size: 1.3rem; color: var(--gold-soft); }
+
+/* vouchers */
+.g-vouch { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
+.g-list.v { grid-template-columns: 1fr; gap: 0; margin-top: 2rem; border-top: 1px solid var(--ink); }
+.g-voucher { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid rgba(20, 19, 18, .16); }
+.g-photo.vp { margin: 0; }
+.g-photo.vp .img-frame { aspect-ratio: 4 / 3; }
+
+/* something special */
+.custom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+.custom-grid h2 { font-size: clamp(2.4rem, 5vw, 4rem); }
+.custom-grid .btn { margin-top: 2rem; }
+.steps.stacked { grid-template-columns: 1fr; margin: 0; border-top: 1px solid var(--ink); }
+.steps.stacked li, .steps.stacked li + li { display: grid; grid-template-columns: 3rem 1fr; padding: 1.4rem 0; border-left: 0; border-bottom: 1px solid rgba(20, 19, 18, .16); }
+.steps.stacked .n { grid-row: 1 / span 2; padding-top: .6rem; }
+.steps.stacked h3 { margin: 0 0 .2rem; font-size: 1.9rem; }
+
+@media (max-width: 900px) {
+  .g-list { grid-template-columns: 1fr; max-width: 34rem; }
+  .g-vouch, .custom-grid { grid-template-columns: 1fr; }
+  .g-photo.vp { order: -1; }
+  .g-photo .img-frame { aspect-ratio: 4 / 3; }
+}
+@media (max-width: 800px) {
+  .g-section { padding: 3.25rem 0; }
+  .g-img { aspect-ratio: 4 / 3; }
+}
