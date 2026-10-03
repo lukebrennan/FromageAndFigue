@@ -216,45 +216,44 @@ function detailHTML(p, items) {
 }
 
 let detailEl = null;
-function placeAfter(cardEl, items) {
-  const c = cols(), cards = $$(".card", gridEl), i = cards.indexOf(cardEl);
-  const end = Math.min(cards.length - 1, (Math.floor(i / c) + 1) * c - 1);
-  cards[end].after(detailEl);
-}
-function scrollToCard(cardEl) {
-  const y = cardEl.getBoundingClientRect().top + scrollY - (header.offsetHeight + barEl.offsetHeight + 16);
-  if (lenis) lenis.scrollTo(y, { duration: 1.1, easing: x => 1 - Math.pow(1 - x, 4) });
-  else window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
-}
 function openDetail(id, fromHash) {
-  const items = list(), p = byId[id]; if (!p) return;
+  const p = byId[id]; if (!p) return;
+  if (openId === id) return;
   let cardEl = $(`.card[data-id="${id}"]`, gridEl);
   if (!cardEl) { f = "all"; q = ""; $("#search").value = ""; drawFilters(); draw(false); cardEl = $(`.card[data-id="${id}"]`, gridEl); }
-  const same = openId === id; if (same) return;
-  const wasOpen = !!detailEl;
-  if (wasOpen) closeDetail(true);
   const live = list();
-  detailEl = document.createElement("li");
-  detailEl.className = "detail"; detailEl.id = `detail-${id}`; detailEl.dataset.id = id;
-  detailEl.setAttribute("role", "region"); detailEl.setAttribute("aria-label", `${p.name} details`);
-  detailEl.innerHTML = `<div class="d-wrap">${detailHTML(p, live)}</div>`;
-  placeAfter(cardEl, live);
+  if (detailEl) {
+    const panel = $(".d-wrap", detailEl);
+    panel.innerHTML = detailHTML(p, live);
+    panel.scrollTop = 0;
+    detailEl.setAttribute("aria-label", `${p.name} details`);
+    panel.classList.remove("swap"); void panel.offsetWidth; panel.classList.add("swap");
+  } else {
+    detailEl = document.createElement("div");
+    detailEl.className = "detail";
+    detailEl.setAttribute("role", "dialog"); detailEl.setAttribute("aria-modal", "true"); detailEl.setAttribute("aria-label", `${p.name} details`);
+    detailEl.setAttribute("data-lenis-prevent", "");
+    detailEl.innerHTML = `<div class="d-scrim" data-close></div><div class="d-wrap">${detailHTML(p, live)}</div>`;
+    document.body.appendChild(detailEl);
+    document.body.classList.add("modal-open");
+    if (lenis) lenis.stop();
+    requestAnimationFrame(() => requestAnimationFrame(() => { detailEl && detailEl.classList.add("open"); }));
+    setTimeout(() => { const c = detailEl && $(".d-close", detailEl); if (c) c.focus({ preventScroll: true }); }, 60);
+  }
   openId = id;
   $$(".card", gridEl).forEach(c => { const on = c.dataset.id === id; c.classList.toggle("is-open", on); $(".card-btn", c).setAttribute("aria-expanded", on); });
-  requestAnimationFrame(() => requestAnimationFrame(() => { detailEl.classList.add("open"); }));
-  setTimeout(() => scrollToCard(cardEl), wasOpen ? 60 : 120);
   if (!fromHash) { try { history.replaceState(null, "", `#${id}`); } catch (e) {} }
-  if (lenis) setTimeout(() => lenis.resize && lenis.resize(), 900);
 }
 function closeDetail(instant) {
   if (!detailEl) return;
   const el = detailEl, id = openId;
   detailEl = null; openId = null;
   $$(".card.is-open", gridEl).forEach(c => { c.classList.remove("is-open"); $(".card-btn", c).setAttribute("aria-expanded", "false"); });
-  if (instant || reduce) el.remove(); else { el.classList.remove("open"); setTimeout(() => el.remove(), 700); }
+  document.body.classList.remove("modal-open");
+  if (lenis) lenis.start();
+  if (instant || reduce) el.remove(); else { el.classList.remove("open"); setTimeout(() => el.remove(), 500); }
   try { if (location.hash) history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-  const cardEl = $(`.card[data-id="${id}"]`, gridEl);
-  return cardEl;
+  return $(`.card[data-id="${id}"]`, gridEl);
 }
 
 /* ---------- events ---------- */
@@ -262,7 +261,8 @@ $("#filters").addEventListener("click", e => { const b = e.target.closest("[data
 let stT; $("#search").addEventListener("input", e => { q = e.target.value; clearTimeout(stT); stT = setTimeout(redraw, 140); });
 $("#sort").addEventListener("change", e => { sortKey = e.target.value; redraw(); });
 
-gridEl.addEventListener("click", e => {
+document.addEventListener("click", e => {
+  if (!gridEl.contains(e.target) && !(detailEl && detailEl.contains(e.target))) return;
   const add = e.target.closest("[data-add]"); if (add) { addToOrder(add.dataset.add); return; }
   const addD = e.target.closest("[data-add-detail]");
   if (addD) {
@@ -292,8 +292,6 @@ addEventListener("keydown", e => {
     if (n) openDetail(n.id);
   }
 });
-let rz, lastCols = cols();
-addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { const c = cols(); if (c !== lastCols && detailEl) { const cardEl = $(`.card[data-id="${openId}"]`, gridEl); if (cardEl) placeAfter(cardEl); } lastCols = c; }, 160); });
 
 /* ---------- go ---------- */
 { const t = new URLSearchParams(location.search).get("type"); if (TYPES.some(([k]) => k === t)) f = t; }
