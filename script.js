@@ -46,7 +46,7 @@ function lockScroll(on) { document.body.classList.toggle("locked", on); if (leni
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
 const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
-const imgSrc = p => `assets/products/${p.img}.jpg`;
+const imgSrc = p => `assets/products/${p.img}.webp`;
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 /* ---------- loader ---------- */
