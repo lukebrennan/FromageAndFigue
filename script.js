@@ -438,7 +438,7 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
   html.classList.add("gsap");
 
   // inertia scrolling, kept in step with ScrollTrigger
-  lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+  lenis = new Lenis({ lerp: 0.16, wheelMultiplier: 1.15, smoothWheel: true });
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add(t => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
@@ -449,7 +449,7 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
     const id = a.getAttribute("href"); if (id.length < 2) return;
     const target = $(id); if (!target) return;
     e.preventDefault();
-    lenis.scrollTo(id === "#top" ? 0 : target, { offset: id === "#top" ? 0 : -(header.offsetHeight - 1), duration: 1.5, easing: x => 1 - Math.pow(1 - x, 4) });
+    lenis.scrollTo(id === "#top" ? 0 : target, { offset: id === "#top" ? 0 : -(header.offsetHeight - 1), duration: 1.05, easing: x => 1 - Math.pow(1 - x, 4) });
   });
 
   const mm = gsap.matchMedia();
@@ -461,7 +461,7 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
     const dist = () => Math.max(0, track.scrollWidth - wrap.clientWidth);
     gsap.to(track, {
       x: () => -dist(), ease: "none",
-      scrollTrigger: { trigger: sec, start: "top top", end: () => "+=" + (dist() + innerHeight * 0.35), pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+      scrollTrigger: { trigger: sec, start: "top top", end: () => "+=" + Math.round(dist() * 0.7 + innerHeight * 0.1), pin: true, scrub: 0.25, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate: self => { bar.style.transform = `scaleX(${self.progress})`; } }
     });
     return () => sec.classList.remove("is-pinned");
