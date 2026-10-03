@@ -130,7 +130,6 @@ function renderGrid(initial = false) {
   const items = visible();
   const cols = getComputedStyle(grid).gridTemplateColumns.split(" ").length || 1;
   const draw = () => {
-    grid.classList.toggle("featured", filter === "all" && !query.trim());
     grid.innerHTML = items.map((p, i) => `
       <li class="card${initial ? " pre" : ""}" style="--c:${i % cols};view-transition-name:card-${p.id}">
         <button class="quick-add" type="button" data-add="${p.id}" aria-label="Add ${p.name} to your order list">+</button>
