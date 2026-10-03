@@ -518,7 +518,13 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
     const v = $("#news-email").value.trim();
     msg.classList.remove("ok");
     if (!/^\S+@\S+\.\S+$/.test(v)) { msg.textContent = "Please enter a valid email address."; return; }
-    msg.textContent = "Thank you. We will write when the doors open. (Demo: nothing was saved.)"; msg.classList.add("ok"); f.reset();
+    const done = () => { msg.textContent = "Thank you. We will write when the doors open."; msg.classList.add("ok"); f.reset(); };
+    if (f.elements.company.value || !window.FF_SB) return done();   // a bot filled the hidden field
+    const btn = $("button", f); btn.disabled = true; msg.textContent = "One moment";
+    fetch(`${FF_SB.url}/rest/v1/signups`, { method: "POST", headers: { apikey: FF_SB.key, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ email: v.slice(0, 200), source: "footer" }) })
+      .then(r => { if (r.ok || r.status === 409) done(); else throw new Error(r.status); })
+      .catch(() => { msg.textContent = "Sorry, that did not go through. Please try again in a moment."; })
+      .finally(() => (btn.disabled = false));
   });
 })();
 

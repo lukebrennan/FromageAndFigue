@@ -51,7 +51,7 @@ $("#tabs").addEventListener("click", e => { const b = e.target.closest("[data-ta
 function show(tab) {
   S.tab = tab; closeDrawer();
   $$("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
-  ({ orders: viewOrders, products: viewProducts, categories: viewCategories, settings: viewSettings, help: viewHelp })[tab]().catch(fail);
+  ({ orders: viewOrders, products: viewProducts, categories: viewCategories, settings: viewSettings, signups: viewSignups, help: viewHelp })[tab]().catch(fail);
 }
 async function loadCats() { S.cats = await q(sb.from("categories").select("*").order("sort")); }
 async function loadProds() { S.prods = await q(sb.from("products").select("*").order("sort")); }
@@ -284,6 +284,23 @@ async function viewSettings() {
   });
 }
 
+/* ---------- email list ---------- */
+async function viewSignups() {
+  const rows = await q(sb.from("signups").select("*").order("created_at", { ascending: false }).limit(2000));
+  $("#view").innerHTML = `<div class="page-head"><h1>Email list</h1><div class="tools"><button class="btn sm" id="s-csv"${rows.length ? "" : " disabled"}>Download as spreadsheet</button></div></div>
+    ${lede("People who signed up for opening news using the form in the website footer. Download the list to import it into an email tool when you are ready to write to everyone.")}
+    <p class="hint" style="margin-bottom:1rem"><b>${rows.length}</b> ${rows.length === 1 ? "person" : "people"} signed up.</p>
+    ${rows.length ? `<table class="tbl"><thead><tr><th>Email</th><th>Signed up</th><th></th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r.email)}</td><td>${when(r.created_at)}</td><td class="num"><button class="link" data-del-signup="${r.id}">Remove</button></td></tr>`).join("")}</tbody></table>` : `<p class="empty">No sign-ups yet. They will appear here as soon as someone uses the footer form.</p>`}`;
+  const csv = $("#s-csv"); if (csv) csv.addEventListener("click", () => {
+    const text = "Email,Signed up\n" + rows.map(r => `"${r.email.replace(/"/g, '""')}",${r.created_at}`).join("\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/csv" })); a.download = "fromage-and-figue-email-list.csv"; a.click(); URL.revokeObjectURL(a.href);
+  });
+  $$("[data-del-signup]").forEach(b => b.addEventListener("click", async () => {
+    if (!confirm("Remove this email address from the list?")) return;
+    try { await q(sb.from("signups").delete().eq("id", b.dataset.delSignup)); toast("Removed"); viewSignups().catch(fail); } catch (err) { fail(err); }
+  }));
+}
+
 /* ---------- help ---------- */
 async function viewHelp() {
   $("#view").innerHTML = `<div class="page-head"><h1>How this works</h1></div>
@@ -294,6 +311,7 @@ async function viewHelp() {
     <div class="card"><h2>Take something off the website for a while</h2><p>Open the product and untick <b>Show on the website</b>. It stays saved, so you can bring it back later. Use <b>Delete</b> only if you never want it again.</p></div>
     <div class="card"><h2>Deal with an order</h2><ol><li>Open <b>Orders</b>. New orders have a gold <b>New</b> tag, and the Orders tab shows how many are waiting.</li><li>Click an order to see what was bought, who by, when they want it, and any note the customer left (shown with a <b>Note</b> tag in the list).</li><li>Move it along with the buttons at the bottom: <b>Preparing</b>, then <b>Ready</b>, then <b>Order complete</b>. Each click saves straight away.</li></ol><p>Customers are not emailed automatically yet, so contact them yourself using the email shown. Delivery orders have no set time: they are promised within 1 to 3 days.</p></div>
     <div class="card"><h2>Add a category</h2><p>Open <b>Categories</b> and add one, for example "Goat" on Main Collection page. Then add products to it. Collection categories become filter buttons automatically. Gifts categories get their own section on the Boards &amp; gifts page, with the heading and introduction you write.</p></div>
+    <div class="card"><h2>See who has signed up for news</h2><p>Open <b>Email list</b>. Everyone who used the footer form is listed there. Press <b>Download as spreadsheet</b> to get the addresses as a file you can open in Excel or import into an email tool. Remove anyone who asks to be taken off.</p></div>
     <div class="card"><h2>Open the shop</h2><p>When you open, go to <b>Shop settings</b> and untick <b>The shop has not opened yet</b>. Check your opening hours are right, then press <b>Save</b>.</p></div>
     <div class="card"><h2>Good to know</h2><ul><li>Changes appear on the website within about 5 minutes. If you edit on this computer, you will see them straight away.</li><li>Photos are shrunk automatically, so there is no need to resize them first.</li><li>The checkout on the site is a demo. No money is taken, and test orders appear in the list like real ones.</li><li>Sign out when you are done, especially on a shared computer.</li></ul></div>
   </div>`;

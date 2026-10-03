@@ -891,3 +891,5 @@ html.leaving body { opacity: 0; transition: opacity .28s ease; }
 
 .order-form label.note-check { display: flex; align-items: center; gap: .6rem; font-size: .9rem; letter-spacing: 0; text-transform: none; color: var(--ink); cursor: pointer; }
 .order-form .note-check input { width: 18px; height: 18px; padding: 0; accent-color: var(--ink); }
+
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
