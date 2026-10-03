@@ -925,3 +925,5 @@ html.leaving body { opacity: 0; transition: opacity .28s ease; }
 .picker-err { margin: 0; font-size: .85rem; color: #9a3b2e; }
 .picker-hint { margin: 0; font-size: .78rem; line-height: 1.45; color: var(--muted); }
 .picker[hidden] { display: none; }
+
+.toast { z-index: 95; }

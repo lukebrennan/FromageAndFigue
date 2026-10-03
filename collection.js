@@ -283,7 +283,9 @@ document.addEventListener("click", e => {
   if (addD) {
     const n = parseInt($("#d-qty").textContent, 10) || 1, id = addD.dataset.addDetail;
     order[id] = (order[id] || 0) + n; save(); renderOrder(true);
-    toast(`${n} x ${byId[id].name} added to your list`); return;
+    toast(`${n} x ${byId[id].name} added to your list`);
+    const t = addD.textContent; addD.textContent = "Added to your list"; addD.classList.add("added"); setTimeout(() => { addD.textContent = t; addD.classList.remove("added"); }, 1800);
+    return;
   }
   const qb = e.target.closest("[data-q]");
   if (qb) { const el = $("#d-qty"); el.textContent = Math.min(20, Math.max(1, (parseInt(el.textContent, 10) || 1) + parseInt(qb.dataset.q, 10))); return; }
