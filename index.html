@@ -1,121 +1,217 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Fromage &amp; Figue</title>
   <meta name="description" content="A small cheese shop and deli. Carefully chosen cheese, figs, and everything that goes with them.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Fraunces:opsz,wght@9..144,300;9..144,400&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#141312">
   <meta property="og:title" content="Fromage &amp; Figue">
   <meta property="og:description" content="A small cheese shop and deli. Carefully chosen cheese, figs, and everything that goes with them.">
   <meta property="og:image" content="assets/social.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.replace('no-js','js')</script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="logo" href="#top" aria-label="Fromage &amp; Figue, home"><img src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380"></a>
-    <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">Menu</button>
-    <nav class="nav" id="nav">
-      <a href="#cheese">Cheese</a>
-      <a href="#about">About</a>
-      <a href="#visit">Visit</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <div id="loader" aria-hidden="true">
+    <img src="assets/logo.png" alt="" width="1901" height="380">
+    <span class="loader-line"></span>
+  </div>
+
+  <header class="site-header on-hero">
+    <a class="logo" href="#top" aria-label="Fromage &amp; Figue, back to top">
+      <img src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380">
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#cheese" data-spy="cheese">The counter</a>
+      <a href="#gifts" data-spy="gifts">Boards &amp; gifts</a>
+      <a href="#about" data-spy="about">About</a>
+      <a href="#visit" data-spy="visit">Visit</a>
     </nav>
+    <div class="header-right">
+      <a class="status" href="#visit"><i class="dot"></i><span id="status-text">Opening hours</span></a>
+      <button class="order-btn" type="button" data-open-order aria-label="Open your order list">
+        Order list <b class="count" data-count>0</b>
+      </button>
+    </div>
   </header>
 
   <main id="top">
     <section class="hero">
-      <p class="eyebrow">Cheese shop &amp; deli</p>
-      <h1>Good cheese,<br>simply done.</h1>
-      <p class="lead">A small, carefully chosen selection of cheese, figs, and the things that go with them.</p>
-      <a class="button" href="#cheese">Browse the counter</a>
+      <div class="hero-media pwrap">
+        <img src="assets/shopfront.jpg" srcset="assets/shopfront-800.jpg 800w, assets/shopfront.jpg 1536w" sizes="100vw" width="1536" height="1024" alt="The Fromage &amp; Figue shopfront at golden hour, with a cheese counter glowing in the window" data-parallax="-0.18" fetchpriority="high">
+      </div>
+      <div class="hero-shade"></div>
+      <div class="hero-inner">
+        <p class="eyebrow hero-line" style="--i:0"><span>Cheese shop &amp; deli</span></p>
+        <h1>
+          <span class="line"><span style="--i:1">Good cheese,</span></span>
+          <span class="line"><span style="--i:2"><em>simply done.</em></span></span>
+        </h1>
+        <p class="lead hero-line" style="--i:3"><span>A small, carefully chosen selection of cheese, figs, and the things that go with them.</span></p>
+        <div class="hero-cta hero-line" style="--i:4">
+          <a class="btn btn-gold" href="#cheese">Browse the counter</a>
+          <a class="btn btn-ghost" href="#visit">Visit the shop</a>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#cheese" aria-label="Scroll to the counter"><span></span></a>
     </section>
 
-    <figure class="shopfront">
-      <img src="assets/shopfront.jpg"
-           srcset="assets/shopfront-800.jpg 800w, assets/shopfront.jpg 1536w"
-           sizes="(max-width: 1080px) 100vw, 1080px"
-           width="1536" height="1024" alt="The Fromage &amp; Figue shopfront, with a cheese counter glowing in the window">
-    </figure>
-
-    <section id="cheese" class="section">
-      <h2>From the counter</h2>
-      <p class="section-intro">Our selection changes with the seasons. Ask us what is ripe today.</p>
-      <div class="filters" role="group" aria-label="Filter cheese">
-        <button class="filter active" data-filter="all">All</button>
-        <button class="filter" data-filter="soft">Soft</button>
-        <button class="filter" data-filter="hard">Hard</button>
-        <button class="filter" data-filter="blue">Blue</button>
-        <button class="filter" data-filter="pairing">Pairings</button>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Brie de Meaux</span><i></i><span>Comte</span><i></i><span>Roquefort</span><i></i><span>Fresh figs</span><i></i><span>Manchego</span><i></i><span>Fig jam</span><i></i><span>Gorgonzola</span><i></i><span>Walnut bread</span><i></i>
+        <span>Brie de Meaux</span><i></i><span>Comte</span><i></i><span>Roquefort</span><i></i><span>Fresh figs</span><i></i><span>Manchego</span><i></i><span>Fig jam</span><i></i><span>Gorgonzola</span><i></i><span>Walnut bread</span><i></i>
       </div>
-      <ul class="grid" id="grid"></ul>
+    </div>
+
+    <section id="cheese" class="section counter-section">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <div>
+            <p class="eyebrow dark"><span>01 · The counter</span></p>
+            <h2>From the <em>counter</em></h2>
+            <p class="section-intro">Our selection changes with the seasons. Tap anything to see more, and build a list to collect in store.</p>
+          </div>
+          <label class="search">
+            <span class="sr-only">Search the counter</span>
+            <input id="search" type="search" placeholder="Search the counter" autocomplete="off">
+          </label>
+        </div>
+        <div class="filters" role="group" aria-label="Filter the counter" id="filters" data-reveal></div>
+        <ul class="grid" id="grid" aria-live="polite"></ul>
+        <p class="empty" id="empty" hidden>Nothing matches that. Try another word, or ask us in store.</p>
+      </div>
     </section>
 
-    <section id="gifts" class="section gifts">
-      <h2>Boards &amp; gift boxes</h2>
-      <p class="section-intro">Cheese for the table, or for someone else. Ask us about boards for gatherings and boxed gifts, wrapped and ready to go.</p>
-      <div class="gift-grid">
-        <figure>
-          <img src="assets/board.jpg" srcset="assets/board-800.jpg 800w, assets/board.jpg 1536w" sizes="(max-width: 800px) 100vw, 520px" loading="lazy" width="1536" height="1024" alt="An oak cheese board engraved with the Fromage &amp; Figue logo, with brie, aged cheese, blue cheese, goat cheese, grapes and bread">
-          <figcaption>Boards for sharing</figcaption>
-        </figure>
-        <figure>
-          <img src="assets/giftbox.jpg" srcset="assets/giftbox-800.jpg 800w, assets/giftbox.jpg 1536w" sizes="(max-width: 800px) 100vw, 520px" loading="lazy" width="1536" height="1024" alt="A Fromage &amp; Figue gift box with brie, aged cheese, goat cheese, fig jam and crackers, beside a gift card">
-          <figcaption>Gift boxes and gift cards</figcaption>
-        </figure>
+    <section id="gifts" class="section dark gifts">
+      <div class="wrap">
+        <div class="gifts-head" data-reveal>
+          <p class="eyebrow"><span>02 · Boards &amp; gifts</span></p>
+          <h2>Cheese for the table,<br><em>or for someone else.</em></h2>
+          <p class="section-intro">Boards for gatherings and boxed gifts, wrapped and ready to go. Tell us who it is for and we will build it with you.</p>
+          <a class="btn btn-gold" href="mailto:hello@example.com?subject=Boards%20and%20gift%20boxes" data-shop-email>Enquire by email</a>
+        </div>
+        <div class="gift-grid">
+          <figure class="gift-card" data-reveal style="--d:.1s">
+            <div class="img-frame pwrap">
+              <img src="assets/board.jpg" srcset="assets/board-800.jpg 800w, assets/board.jpg 1536w" sizes="(max-width: 800px) 100vw, 520px" loading="lazy" width="1536" height="1024" alt="An oak cheese board engraved with the Fromage &amp; Figue logo, with brie, aged cheese, blue cheese, goat cheese, grapes and bread">
+            </div>
+            <figcaption><span>Boards for sharing</span><i>Engraved oak</i></figcaption>
+          </figure>
+          <figure class="gift-card offset" data-reveal style="--d:.25s">
+            <div class="img-frame pwrap">
+              <img src="assets/giftbox.jpg" srcset="assets/giftbox-800.jpg 800w, assets/giftbox.jpg 1536w" sizes="(max-width: 800px) 100vw, 520px" loading="lazy" width="1536" height="1024" alt="A Fromage &amp; Figue gift box with brie, aged cheese, goat cheese, fig jam and crackers, beside a gift card">
+            </div>
+            <figcaption><span>Gift boxes and gift cards</span><i>Wrapped and ribboned</i></figcaption>
+          </figure>
+        </div>
       </div>
-      <a class="button" href="mailto:hello@example.com?subject=Boards%20and%20gift%20boxes">Enquire by email</a>
     </section>
 
     <section id="about" class="section about">
-      <div class="about-grid">
-        <div class="about-text">
-          <h2>About</h2>
-          <p>Fromage &amp; Figue is built on a simple idea: a great piece of cheese needs very little. A fresh fig, some good bread, a little patience.</p>
-          <p>We work with small producers and age, sell, and talk about cheese we are proud of.</p>
+      <div class="wrap">
+        <p class="eyebrow dark" data-reveal><span>03 · About</span></p>
+        <p class="statement" id="statement">A great piece of cheese needs very little. A fresh fig, some good bread, a little patience.</p>
+        <div class="about-grid">
+          <figure class="img-reveal" data-reveal>
+            <div class="img-frame pwrap">
+              <img src="assets/cheesemonger.jpg" srcset="assets/cheesemonger-800.jpg 800w, assets/cheesemonger.jpg 1536w" sizes="(max-width: 800px) 100vw, 560px" loading="lazy" width="1536" height="1024" alt="A cheesemonger cutting a wedge from a wheel of aged cheese" data-parallax="0.08">
+            </div>
+          </figure>
+          <div class="about-text" data-reveal style="--d:.15s">
+            <p>We work with small producers, and we age, sell, and talk about cheese we are proud of.</p>
+            <p>Come in, ask for a taste, and tell us what is on the table tonight. We will find the right piece.</p>
+          </div>
         </div>
-        <figure>
-          <img src="assets/cheesemonger.jpg" srcset="assets/cheesemonger-800.jpg 800w, assets/cheesemonger.jpg 1536w" sizes="(max-width: 800px) 100vw, 520px" loading="lazy" width="1536" height="1024" alt="A cheesemonger cutting a wedge from a wheel of aged cheese">
-        </figure>
       </div>
-      <figure class="counter">
-        <img src="assets/counter.jpg" srcset="assets/counter-800.jpg 800w, assets/counter.jpg 1536w" sizes="(max-width: 1080px) 100vw, 1080px" loading="lazy" width="1536" height="1024" alt="The cheese counter, with wheels and wedges on marble under warm brass lights">
+      <figure class="band pwrap">
+        <img src="assets/counter.jpg" srcset="assets/counter-800.jpg 800w, assets/counter.jpg 1536w" sizes="100vw" loading="lazy" width="1536" height="1024" alt="The cheese counter, with wheels and wedges on marble under warm brass lights" data-parallax="0.12">
       </figure>
     </section>
 
     <section id="visit" class="section visit">
-      <h2>Visit</h2>
-      <figure class="interior">
-        <img src="assets/interior.jpg" srcset="assets/interior-800.jpg 800w, assets/interior.jpg 1536w" sizes="(max-width: 1080px) 100vw, 1080px" loading="lazy" width="1536" height="1024" alt="Inside the shop, with the cheese counter on the left and sunlight from the street windows">
-      </figure>
-      <div class="visit-grid">
-        <div>
-          <h3>Address</h3>
-          <p>123 Placeholder Street<br>Your City</p>
+      <div class="wrap visit-grid">
+        <div class="visit-info" data-reveal>
+          <p class="eyebrow dark"><span>04 · Visit</span></p>
+          <h2>Come in, <em>say hello.</em></h2>
+          <p class="open-line"><i class="dot"></i><span id="open-line">Opening hours</span></p>
+          <dl class="details">
+            <div><dt>Address</dt><dd id="address">123 Placeholder Street<br>Your City</dd></div>
+            <div><dt>Contact</dt><dd><a id="email-link" href="mailto:hello@example.com">hello@example.com</a><br><a id="phone-link" href="tel:+0000000000">(000) 000 0000</a></dd></div>
+          </dl>
+          <ul class="hours" id="hours"></ul>
+          <div class="visit-cta">
+            <a class="btn btn-dark" id="directions" href="#" target="_blank" rel="noopener">Get directions</a>
+            <a class="btn btn-line" id="call" href="tel:+0000000000">Call the shop</a>
+          </div>
         </div>
-        <div>
-          <h3>Hours</h3>
-          <p>Tue to Fri 10 to 18<br>Sat 9 to 17<br>Sun and Mon closed</p>
-        </div>
-        <div>
-          <h3>Contact</h3>
-          <p><a href="mailto:hello@example.com">hello@example.com</a><br>(000) 000 0000</p>
-        </div>
+        <figure class="visit-img img-reveal" data-reveal style="--d:.15s">
+          <div class="img-frame pwrap">
+            <img src="assets/interior.jpg" srcset="assets/interior-800.jpg 800w, assets/interior.jpg 1536w" sizes="(max-width: 900px) 100vw, 560px" loading="lazy" width="1536" height="1024" alt="Inside the shop, with the cheese counter on the left and sunlight from the street windows" data-parallax="0.08">
+          </div>
+        </figure>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <img class="footer-logo" src="assets/logo.png" alt="" width="1901" height="380">
-    <p>&copy; <span id="year"></span> Fromage &amp; Figue</p>
-    <p class="credits">Photos by
-      <a href="https://unsplash.com/@kekse_und_ich">Svitlana</a> and
-      <a href="https://unsplash.com/@vikaelefant">Victoria Druc</a>
-      on <a href="https://unsplash.com">Unsplash</a></p>
+    <div class="wrap">
+      <img class="footer-logo" src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380" loading="lazy">
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="#cheese">The counter</a>
+        <a href="#gifts">Boards &amp; gifts</a>
+        <a href="#about">About</a>
+        <a href="#visit">Visit</a>
+        <a href="#top">Back to top</a>
+      </nav>
+      <p class="copy">&copy; <span id="year"></span> Fromage &amp; Figue</p>
+      <p class="credits">Fig photos by
+        <a href="https://unsplash.com/@kekse_und_ich">Svitlana</a> and
+        <a href="https://unsplash.com/@vikaelefant">Victoria Druc</a>
+        on <a href="https://unsplash.com">Unsplash</a></p>
+    </div>
   </footer>
+
+  <nav class="tabbar" aria-label="Quick navigation">
+    <a href="#cheese" data-spy="cheese">Counter</a>
+    <a href="#gifts" data-spy="gifts">Gifts</a>
+    <a href="#about" data-spy="about">About</a>
+    <a href="#visit" data-spy="visit">Visit</a>
+    <button type="button" data-open-order>Order <b class="count" data-count>0</b></button>
+  </nav>
+
+  <dialog id="product" aria-labelledby="p-name"></dialog>
+
+  <div class="scrim" id="scrim" hidden></div>
+  <aside id="order" aria-label="Your order list" aria-hidden="true" inert>
+    <header>
+      <h2>Your order list</h2>
+      <button type="button" class="icon-btn" data-close-order aria-label="Close order list">&times;</button>
+    </header>
+    <div class="order-body">
+      <ul id="order-items"></ul>
+      <p class="order-empty" id="order-empty">Nothing here yet. Add something from the counter and send us the list, we will have it ready.</p>
+    </div>
+    <form class="order-form" id="order-form" autocomplete="on">
+      <label>Your name<input name="name" type="text" autocomplete="name"></label>
+      <label>When will you collect?<input name="when" type="text" placeholder="For example, Saturday morning"></label>
+      <div class="order-actions">
+        <a class="btn btn-dark" id="send-email" href="#">Send by email</a>
+        <a class="btn btn-line" id="send-wa" href="#" target="_blank" rel="noopener" hidden>Send on WhatsApp</a>
+        <button type="button" class="link-btn" id="clear-order">Clear list</button>
+      </div>
+      <p class="fine">We will confirm availability and prices. No payment is taken online.</p>
+    </form>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="script.js"></script>
 </body>
