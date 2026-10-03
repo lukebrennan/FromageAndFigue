@@ -11,7 +11,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=20261003j">
+  <link rel="stylesheet" href="assets/vendor/quill.snow.css">
+  <link rel="stylesheet" href="admin.css?v=20261003k">
 </head>
 <body>
   <main id="login" class="login" hidden>
@@ -32,6 +33,7 @@
         <button data-tab="orders" class="on">Orders <b id="new-count" hidden>0</b></button>
         <button data-tab="products">Products</button>
         <button data-tab="categories">Categories</button>
+        <button data-tab="blog">Blog</button>
         <button data-tab="signups">Email list</button>
         <button data-tab="settings">Shop settings</button>
         <button data-tab="help">Help</button>
@@ -46,6 +48,7 @@
   <aside class="drawer" id="drawer" aria-hidden="true" inert></aside>
 
   <script src="assets/vendor/supabase.min.js"></script>
-  <script src="admin.js?v=20261003j"></script>
+  <script src="assets/vendor/quill.min.js"></script>
+  <script src="admin.js?v=20261003k"></script>
 </body>
 </html>

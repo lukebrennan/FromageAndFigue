@@ -51,7 +51,7 @@ $("#tabs").addEventListener("click", e => { const b = e.target.closest("[data-ta
 function show(tab) {
   S.tab = tab; closeDrawer();
   $$("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
-  ({ orders: viewOrders, products: viewProducts, categories: viewCategories, settings: viewSettings, signups: viewSignups, help: viewHelp })[tab]().catch(fail);
+  ({ orders: viewOrders, products: viewProducts, categories: viewCategories, settings: viewSettings, signups: viewSignups, blog: viewBlog, help: viewHelp })[tab]().catch(fail);
 }
 async function loadCats() { S.cats = await q(sb.from("categories").select("*").order("sort")); }
 async function loadProds() { S.prods = await q(sb.from("products").select("*").order("sort")); }
@@ -222,6 +222,11 @@ function editProduct(id) {
     } catch (err) { btn.disabled = false; fail(err.code === "23505" ? { message: "A product with that web address ID already exists." } : err); }
   });
 }
+async function uploadImg(file, label) {
+  const blob = await toWebp(file), path = `${slug(label || "photo") || "photo"}-${Date.now().toString(36)}.webp`;
+  await q(sb.storage.from("product-images").upload(path, blob, { contentType: "image/webp", cacheControl: "31536000" }));
+  return sb.storage.from("product-images").getPublicUrl(path).data.publicUrl;
+}
 async function toWebp(file) {
   const bmp = await createImageBitmap(file), max = 1600, k = Math.min(1, max / Math.max(bmp.width, bmp.height));
   const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
@@ -326,6 +331,139 @@ async function viewSignups() {
   }));
 }
 
+
+/* ---------- blog ---------- */
+const londonParts = d => Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(d).map(x => [x.type, x.value]));
+const toLocalInput = iso => { if (!iso) return ""; const p = londonParts(new Date(iso)); return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`; };
+const fromLocalInput = str => {
+  const [dp, tp] = str.split("T"), [y, m, d] = dp.split("-").map(Number), [h, mi] = tp.split(":").map(Number);
+  let utc = Date.UTC(y, m - 1, d, h, mi); const p = londonParts(new Date(utc));
+  utc += utc - Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute);
+  return new Date(utc).toISOString();
+};
+const postState = p => (p.status !== "published" ? "Draft" : new Date(p.published_at) > new Date() ? "Scheduled" : "Published");
+async function viewBlog() {
+  S.posts = await q(sb.from("posts").select("id,slug,title,category,status,published_at,updated_at,featured_image").order("created_at", { ascending: false }));
+  drawBlog();
+}
+function drawBlog() {
+  const posts = S.posts || [];
+  $("#view").innerHTML = `
+    <div class="page-head"><h1>Blog</h1><div class="tools"><button class="btn dark" id="b-new">Write a new post</button></div></div>
+    ${lede("Write and publish stories for the blog. Save a post as a draft while you work on it, then publish it when it is ready. Published posts appear on the blog page of the website.")}
+    ${posts.length ? `<table class="tbl"><thead><tr><th></th><th>Title</th><th class="hide-s">Category</th><th>Status</th><th class="hide-s">Date</th><th></th></tr></thead><tbody>
+    ${posts.map(p => { const st = postState(p); return `<tr class="row" data-id="${p.id}"><td>${p.featured_image ? `<img class="thumb" src="${esc(p.featured_image)}" alt="" loading="lazy">` : '<div class="thumb"></div>'}</td><td><b>${esc(p.title)}</b><br><small style="color:var(--muted)">${esc(p.slug)}</small></td><td class="hide-s">${esc(p.category || "")}</td><td><span class="tag ${st === "Published" ? "ready" : st === "Scheduled" ? "preparing" : "off"}">${st}</span></td><td class="hide-s">${p.published_at ? when(p.published_at) : "Not published"}</td><td class="num">${st === "Published" ? `<a href="post?slug=${encodeURIComponent(p.slug)}" target="_blank" rel="noopener" data-stop>View</a>` : ""}</td></tr>`; }).join("")}
+    </tbody></table>` : `<p class="empty">No posts yet. Press "Write a new post" to start your first story.</p>`}`;
+  $("#b-new").addEventListener("click", () => editPost(null));
+  $$("tr.row", $("#view")).forEach(r => r.addEventListener("click", e => { if (e.target.closest("[data-stop]")) return; editPost(r.dataset.id); }));
+}
+const counter = (el, min, max) => { const n = el.value.length; return `${n} character${n === 1 ? "" : "s"}${n > max ? ". A little long, search results may cut it off." : n && n < min ? ". You have room for more." : ""}`; };
+async function editPost(id) {
+  let p = { slug: "", title: "", excerpt: "", featured_image: "", featured_alt: "", category: "", author: "Benoit Severin-Delos", content: "", editor_mode: "visual", status: "draft", published_at: null, seo_title: "", seo_description: "" };
+  if (id) { try { p = await q(sb.from("posts").select("*").eq("id", id).single()); } catch (err) { return fail(err); } }
+  const isNew = !id, cats = [...new Set((S.posts || []).map(x => x.category).filter(Boolean))];
+  const published = p.status === "published";
+  const body = `<form id="bform" class="drawer-body" autocomplete="off">
+    <p class="sec">1. The story <span class="hint">What readers see at the top of the post.</span></p>
+    ${fld("Title", "title", p.title, 'required placeholder="Why Comté is worth the wait"', "The headline of the post.")}
+    <div class="grid2">${fld("Category", "category", p.category, 'list="b-cats" placeholder="Guides"', "Optional. Posts with the same category can be filtered on the blog page.")}<datalist id="b-cats">${cats.map(c => `<option value="${esc(c)}">`).join("")}</datalist>
+    ${fld("Written by", "author", p.author)}</div>
+    ${area("Short summary", "excerpt", p.excerpt, 2, "One or two sentences. Shown on the blog page and under the title.", "A few lines that make people want to read on.")}
+    <p class="sec">2. Featured image <span class="hint">The large picture at the top of the post and on the blog page. Wide photos (16 by 9) look best.</span></p>
+    <div class="photo"><img class="main" id="f-img" style="width:200px;height:112px" src="${esc(p.featured_image)}" alt="">
+      <div style="display:grid;gap:.6rem;flex:1;min-width:220px"><input type="hidden" name="featured_image" value="${esc(p.featured_image)}">
+      <label class="btn sm" style="text-align:center;cursor:pointer">${p.featured_image ? "Change image" : "Choose image"}<input type="file" accept="image/*" id="f-up" hidden></label>
+      ${fld("Describe the image", "featured_alt", p.featured_alt, 'placeholder="A wooden board with five cheeses"', "A few words for people who cannot see it. Also helps search engines.")}</div></div>
+    <p class="sec">3. The article</p>
+    <div class="mode" role="tablist" aria-label="Editor"><button type="button" data-mode="visual" class="on">Visual editor</button><button type="button" data-mode="html">HTML</button></div>
+    <p class="hint" id="mode-hint">Write like in a word processor. Use the toolbar for headings, bold, links, lists, quotes and pictures.</p>
+    <div id="vis-wrap"><div id="editor"></div></div>
+    <textarea id="html-editor" class="html-editor" rows="18" spellcheck="false" placeholder="<h2>A heading</h2>&#10;<p>Your paragraph...</p>" hidden></textarea>
+    <p class="sec">4. Search engines <span class="hint">How the post looks on Google. Leave these blank and the title and summary are used.</span></p>
+    ${fld("SEO title", "seo_title", p.seo_title, 'placeholder="Same as the title"', "About 50 to 60 characters works best.")}<p class="hint count" id="c-title"></p>
+    ${area("Meta description", "seo_description", p.seo_description, 3, "About 120 to 160 characters. This is the grey text under the title on Google.")}<p class="hint count" id="c-desc"></p>
+    <div class="serp" id="serp"><small id="serp-url"></small><b id="serp-title"></b><p id="serp-desc"></p></div>
+    ${fld("Web address", "slug", p.slug, 'pattern="[a-z0-9\\-]+" placeholder="made from the title"', "The last part of the post's link. Filled in from the title. Avoid changing it after publishing, as old links would stop working.")}
+    <p class="sec">5. Publishing</p>
+    <div class="grid2"><label>Publish date and time<span class="hint">Leave empty to publish immediately. Choose a future time to schedule the post.</span><input type="datetime-local" name="published_at" value="${esc(toLocalInput(p.published_at))}"></label>
+    <div class="hint" style="align-self:end">${published ? `This post is <b>${postState(p).toLowerCase()}</b>.` : "This post is a <b>draft</b>. Only you can see it."}</div></div>
+  </form>`;
+  const foot = `${isNew ? "" : '<button class="btn danger sm" id="b-del" type="button">Delete</button>'}<span class="sp"></span><button class="btn sm" id="b-prev" type="button">Preview</button>${published ? '<button class="btn" id="b-draft" type="button">Move to drafts</button><button class="btn dark" id="b-pub" type="button">Update</button>' : '<button class="btn" id="b-draft" type="button">Save draft</button><button class="btn dark" id="b-pub" type="button">Publish</button>'}`;
+  openDrawer(isNew ? "Write a new post" : "Edit post", body, foot, true);
+  const form = $("#bform"); let mode = p.editor_mode, quill;
+  quill = new Quill("#editor", { theme: "snow", placeholder: "Start writing your story here", modules: { toolbar: { container: [[{ header: [2, 3, false] }], ["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }], ["blockquote", "link", "image", "video"], [{ align: [] }], ["clean"]], handlers: { image: async () => {
+    const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*";
+    inp.onchange = async () => { const f = inp.files[0]; if (!f) return; try { toast("Uploading image"); const u = await uploadImg(f, `blog-${form.title.value || "image"}`); const r = quill.getSelection(true); quill.insertEmbed(r.index, "image", u, "user"); quill.setSelection(r.index + 1); toast("Image added"); } catch (err) { fail(err); } };
+    inp.click(); } } } } });
+  const htmlBox = $("#html-editor"), hint = $("#mode-hint");
+  const semantic = () => quill.getSemanticHTML().replace(/&nbsp;/g, " ");   // Quill turns every space into a non-breaking one, which would stop the text wrapping
+  const applyMode = () => {
+    $("#vis-wrap").hidden = mode !== "visual"; htmlBox.hidden = mode !== "html";
+    $$("[data-mode]").forEach(b => b.classList.toggle("on", b.dataset.mode === mode));
+    hint.textContent = mode === "html" ? "Type or paste plain HTML. It is shown on the website exactly as you write it (scripts are always removed)." : "Write like in a word processor. Use the toolbar for headings, bold, links, lists, quotes and pictures.";
+  };
+  const setMode = to => {
+    if (to === mode) return;
+    if (to === "html") { htmlBox.value = semantic().replace(/<\/(p|h2|h3|ul|ol|blockquote)>/g, "</$1>\n"); }
+    else {
+      if (htmlBox.value.trim() && !confirm("The visual editor may change or remove some custom HTML, such as unusual tags or styles. Switch anyway?")) return;
+      quill.setContents([]); quill.clipboard.dangerouslyPasteHTML(htmlBox.value, "silent");
+    }
+    mode = to; applyMode();
+  };
+  $$("[data-mode]").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
+  // load existing content
+  if (p.editor_mode === "html") { htmlBox.value = p.content; mode = "html"; applyMode(); }
+  else if (p.content) quill.clipboard.dangerouslyPasteHTML(p.content, "silent");
+  const content = () => (mode === "html" ? htmlBox.value : quill.getText().trim() ? semantic() : "");
+  // slug + SEO helpers
+  const upd = () => {
+    const t = form.seo_title.value.trim() || form.title.value.trim() || "Post title", d = form.seo_description.value.trim() || form.excerpt.value.trim() || "A short description of the post appears here.";
+    $("#serp-title").textContent = `${t} | Fromage & Figue`.slice(0, 70); $("#serp-desc").textContent = d.slice(0, 160); $("#serp-url").textContent = `fromageandfigue.co.uk › post › ${form.slug.value || slug(form.title.value) || "your-post"}`;
+    $("#c-title").textContent = counter(form.seo_title, 30, 60); $("#c-desc").textContent = counter(form.seo_description, 70, 160);
+  };
+  let touched = !!p.slug;
+  form.title.addEventListener("input", () => { if (!touched) form.slug.value = slug(form.title.value); });
+  form.slug.addEventListener("input", () => (touched = true));
+  form.addEventListener("input", upd); upd();
+  $("#f-up").addEventListener("change", async e => { const f = e.target.files[0]; if (!f) return; try { toast("Uploading"); const u = await uploadImg(f, `blog-${form.title.value || "image"}`); form.featured_image.value = u; $("#f-img").src = u; toast("Image added"); } catch (err) { fail(err); } e.target.value = ""; });
+  const collect = status => {
+    const title = form.title.value.trim(), text = (mode === "html" ? htmlBox.value.replace(/<[^>]+>/g, " ") : quill.getText()), words = text.trim().split(/\s+/).filter(Boolean).length;
+    if (!title) throw new Error("Please give the post a title.");
+    const sl = (form.slug.value || slug(title)).trim();
+    if (!/^[a-z0-9-]+$/.test(sl)) throw new Error("The web address can only use lowercase letters, numbers and hyphens.");
+    const row = { title, slug: sl, category: form.category.value.trim(), author: form.author.value.trim() || "Benoit Severin-Delos", excerpt: form.excerpt.value.trim(), featured_image: form.featured_image.value, featured_alt: form.featured_alt.value.trim(),
+      content: content(), editor_mode: mode, seo_title: form.seo_title.value.trim(), seo_description: form.seo_description.value.trim(), read_minutes: Math.max(1, Math.ceil(words / 200)), status, updated_at: new Date().toISOString() };
+    if (status === "published") {
+      if (!row.content) throw new Error("Please write something before publishing.");
+      row.published_at = form.published_at.value ? fromLocalInput(form.published_at.value) : (p.published_at || new Date().toISOString());
+    } else row.published_at = form.published_at.value ? fromLocalInput(form.published_at.value) : p.published_at;
+    return row;
+  };
+  const save = async status => {
+    let row; try { row = collect(status); } catch (err) { return fail(err); }
+    $$("#b-pub, #b-draft").forEach(b => (b.disabled = true));
+    try {
+      if (isNew) await q(sb.from("posts").insert(row)); else await q(sb.from("posts").update(row).eq("id", id));
+      toast(status === "published" ? "Published" : "Saved as a draft"); closeDrawer(); await viewBlog();
+    } catch (err) { $$("#b-pub, #b-draft").forEach(b => (b.disabled = false)); fail(err.code === "23505" ? { message: "A post with that web address already exists. Change the web address." } : err); }
+  };
+  $("#b-draft").addEventListener("click", () => save("draft"));
+  $("#b-pub").addEventListener("click", () => save("published"));
+  const del = $("#b-del"); if (del) del.addEventListener("click", async () => {
+    if (!confirm(`Delete "${p.title}"? This cannot be undone. To keep it but hide it, use Move to drafts instead.`)) return;
+    try { await q(sb.from("posts").delete().eq("id", id)); toast("Post deleted"); closeDrawer(); await viewBlog(); } catch (err) { fail(err); }
+  });
+  $("#b-prev").addEventListener("click", () => {
+    let row; try { row = collect(p.status); } catch (err) { return fail(err); }
+    const base = location.origin + "/", d = row.published_at || new Date().toISOString();
+    const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${base}"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="blog.css"><style>html,body{background:#fffdf9}.post-hero{padding-top:3rem}.rise{opacity:1;transform:none;animation:none}</style></head><body><article class="post-page"><header class="post-hero"><div class="wrap narrow"><p class="bmeta">${[row.category, fmtPrev(d), `${row.read_minutes} min read`].filter(Boolean).map(esc).join(" &middot; ")}</p><h1>${esc(row.title)}</h1>${row.excerpt ? `<p class="standfirst">${esc(row.excerpt)}</p>` : ""}<p class="byline">By ${esc(row.author)}</p></div></header>${row.featured_image ? `<figure class="post-image"><img src="${esc(row.featured_image)}" alt=""></figure>` : ""}<div class="wrap narrow"><div class="prose">${row.content.replace(/<script[\s\S]*?<\/script>/gi, "")}</div></div></article></body></html>`;
+    const ov = document.createElement("div"); ov.className = "pv-modal"; ov.innerHTML = `<div class="pv-bar"><span>Preview, not published</span><button class="btn sm" type="button">Close preview</button></div><iframe title="Post preview"></iframe>`;
+    document.body.appendChild(ov); $("iframe", ov).srcdoc = html; $("button", ov).addEventListener("click", () => ov.remove());
+  });
+}
+const fmtPrev = iso => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" });
+
 /* ---------- help ---------- */
 async function viewHelp() {
   $("#view").innerHTML = `<div class="page-head"><h1>How this works</h1></div>
@@ -337,6 +475,7 @@ async function viewHelp() {
     <div class="card"><h2>Deal with an order</h2><ol><li>Open <b>Orders</b>. New orders have a gold <b>New</b> tag, and the Orders tab shows how many are waiting.</li><li>Click an order to see what was bought, who by, when they want it, and any note the customer left (shown with a <b>Note</b> tag in the list).</li><li>Move it along with the buttons at the bottom: <b>Preparing</b>, then <b>Ready</b>, then <b>Order complete</b>. Each click saves straight away.</li></ol><p>Customers are emailed automatically: a confirmation when they order, then again when you mark the order <b>Ready</b> or <b>Cancelled</b>. When you cancel you can type a reason, which goes in the email. Delivery orders have no set time: they are promised within 1 to 3 days.</p></div>
     <div class="card"><h2>Add a category</h2><p>Open <b>Categories</b> and add one, for example "Goat" on Main Collection page. Then add products to it. Collection categories become filter buttons automatically. Gifts categories get their own section on the Boards &amp; gifts page, with the heading and introduction you write.</p></div>
     <div class="card"><h2>See who has signed up for news</h2><p>Open <b>Email list</b>. Everyone who used the footer form is listed there. Press <b>Download as spreadsheet</b> to get the addresses as a file you can open in Excel or import into an email tool. Remove anyone who asks to be taken off.</p></div>
+    <div class="card"><h2>Write a blog post</h2><ol><li>Open <b>Blog</b> and press <b>Write a new post</b>.</li><li>Add a title, a short summary and a featured image.</li><li>Write the article in the visual editor. Use <b>HTML</b> instead if you want to paste your own code.</li><li>Fill in the search engine boxes if you like, then press <b>Save draft</b> or <b>Publish</b>.</li></ol><p>Choose a future date and time to schedule a post. Use <b>Preview</b> to see how it will look first.</p></div>
     <div class="card"><h2>Open the shop</h2><p>When you open, go to <b>Shop settings</b> and untick <b>The shop has not opened yet</b>. Check your opening hours are right, then press <b>Save</b>.</p></div>
     <div class="card"><h2>Good to know</h2><ul><li>Changes appear on the website within about 5 minutes. If you edit on this computer, you will see them straight away.</li><li>Photos are shrunk automatically, so there is no need to resize them first.</li><li>The checkout on the site is a demo. No money is taken, and test orders appear in the list like real ones.</li><li>Sign out when you are done, especially on a shared computer.</li></ul></div>
   </div>`;
@@ -344,7 +483,8 @@ async function viewHelp() {
 
 /* ---------- drawer ---------- */
 const drawer = $("#drawer"), scrim = $("#scrim");
-function openDrawer(title, body, foot) {
+function openDrawer(title, body, foot, wide) {
+  drawer.classList.toggle("wide", !!wide);
   drawer.innerHTML = `<div class="drawer-head"><h2>${esc(title)}</h2><button class="link" id="d-x" aria-label="Close">Close</button></div>${body}<div class="drawer-foot">${foot || ""}</div>`;
   $("#d-x").addEventListener("click", closeDrawer);
   scrim.hidden = false; requestAnimationFrame(() => scrim.classList.add("show"));
