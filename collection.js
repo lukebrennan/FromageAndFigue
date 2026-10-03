@@ -3,7 +3,7 @@
    Edit the DETAILS block to change the text and photographs for each product.
    images: extra photographs, files in assets/ (a -800 version must exist too).
 ------------------------------------------------------------------ */
-const DETAILS = {
+const DETAILS_FALLBACK = {
   brie: {
     origin: "Ile-de-France", milk: "Cow's milk", age: "5 to 8 weeks", texture: "Soft, bloomy rind", intensity: 2,
     notes: ["Mushroom", "Fresh cream", "Hazelnut"],
@@ -122,6 +122,8 @@ const sortFns = {
 };
 const gridEl = $("#grid"), emptyEl = $("#empty"), countEl = $("#count"), barEl = $("#cat-bar");
 let f = "all", q = "", sortKey = "featured", openId = null;
+const DETAILS = CAT ? CAT.details : DETAILS_FALLBACK;
+const galSrc = k => (/^https?:/.test(k) ? k : `assets/${k}-800.webp`);
 const unitOf = p => { const m = p.price.split("/")[1]; return m ? m.trim() : "item"; };
 const list = () => {
   const t = q.trim().toLowerCase();
@@ -170,7 +172,7 @@ function redraw() {
 /* ---------- the expanding detail panel ---------- */
 function detailHTML(p, items) {
   const d = DETAILS[p.id] || {};
-  const unit = unitOf(p), gallery = [`assets/products/${p.img}.webp`, ...(d.images || []).map(k => `assets/${k}-800.webp`)];
+  const unit = unitOf(p), gallery = [imgSrc(p), ...(d.images || []).map(galSrc)];
   const idx = items.findIndex(x => x.id === p.id);
   const prev = items[(idx - 1 + items.length) % items.length], next = items[(idx + 1) % items.length];
   const related = items.filter(x => x.type === p.type && x.id !== p.id).slice(0, 3);

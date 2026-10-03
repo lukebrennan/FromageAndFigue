@@ -234,7 +234,7 @@
 
     <form class="view" id="pay-form" hidden novalidate autocomplete="off">
       <div class="order-body">
-        <p class="demo-banner"><b>Demo checkout.</b> No payment is taken, and nothing you type is sent or stored. Please use only the test card shown below.</p>
+        <p class="demo-banner"><b>Demo checkout.</b> No payment is taken and your card details are never sent or stored. Your name, email and order are passed to the shop so it can be prepared. Please use only the test card shown below.</p>
         <ul class="pay-summary" id="pay-summary"></ul>
         <div class="order-total flat"><span>Total</span><b id="pay-total"></b></div>
         <fieldset>
@@ -278,7 +278,6 @@
   <script src="assets/vendor/gsap.min.js"></script>
   <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="assets/vendor/lenis.min.js"></script>
-  <script src="script.js"></script>
-  <script src="collection.js"></script>
+  <script src="boot.js" data-page="collection.js"></script>
 </body>
 </html>

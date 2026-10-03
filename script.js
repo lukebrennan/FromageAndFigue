@@ -21,7 +21,7 @@ const SHOP = {
 };
 
 /* Edit this list to change the counter. img is a file in assets/products/. */
-const PRODUCTS = [
+const PRODUCTS_FALLBACK = [
   { id: "brie", name: "Brie de Meaux", type: "soft", note: "Supple and creamy, with notes of mushroom and cream. Best at room temperature.", pair: "A crisp white, warm baguette", price: "£9 / 100g", img: "brie" },
   { id: "reblochon", name: "Reblochon", type: "soft", note: "Washed rind, supple and nutty, with a gentle fruit.", pair: "New potatoes, a crisp white", price: "£9 / 100g", img: "reblochon" },
   { id: "comte", name: "Comté 24 months", type: "hard", note: "Nutty and caramel sweet, with fine crystals and a long finish.", pair: "Walnut bread, a glass of white", price: "£8 / 100g", img: "comte" },
@@ -36,7 +36,7 @@ const PRODUCTS = [
   { id: "pantry", name: "Preserves and crackers", type: "pantry", note: "Small-batch preserves, crackers and nuts, chosen to sit alongside the cheese.", pair: "Any cheese in the collection", price: "From £5", img: "pantry" },
 ];
 /* Boards, gift boxes and vouchers. They share the order list but are not part of the collection grid. */
-const GIFTS = [
+const GIFTS_FALLBACK = [
   { id: "board-petite", name: "The Petite Board", type: "board", note: "Three cheeses, bread and a preserve on an oak board.", pair: "A crisp white", price: "£45 / board", img: "gift-petite" },
   { id: "board-classic", name: "The Classic Board", type: "board", note: "Five cheeses, bread, nuts and a preserve, composed by Benoit.", pair: "A light red or white", price: "£85 / board", img: "gift-classic" },
   { id: "board-grand", name: "The Grand Board", type: "board", note: "Seven cheeses with bread, fruit, nuts and preserves, for a crowd.", pair: "Sparkling and still", price: "£150 / board", img: "gift-grand" },
@@ -47,7 +47,12 @@ const GIFTS = [
   { id: "voucher-50", name: "Gift voucher, £50", type: "voucher", note: "A voucher for the shop, in a black envelope.", pair: "Any cheese", price: "£50 / voucher", img: "gift-v50" },
   { id: "voucher-100", name: "Gift voucher, £100", type: "voucher", note: "A voucher for the shop, in a black envelope.", pair: "Any cheese", price: "£100 / voucher", img: "gift-v100" },
 ];
-const TYPES = [["all", "All"], ["soft", "Soft"], ["hard", "Hard"], ["blue", "Blue"], ["pantry", "Pantry"]];
+const TYPES_FALLBACK = [["all", "All"], ["soft", "Soft"], ["hard", "Hard"], ["blue", "Blue"], ["pantry", "Pantry"]];
+/* The live catalogue comes from Supabase (see boot.js). The lists above are the fallback. */
+const CAT = window.FF_CATALOG || null;
+if (CAT && CAT.shop) Object.assign(SHOP, CAT.shop);
+const PRODUCTS = CAT ? CAT.products : PRODUCTS_FALLBACK, GIFTS = CAT ? CAT.gifts : GIFTS_FALLBACK, TYPES = CAT ? CAT.types : TYPES_FALLBACK;
+const onLoad = fn => (document.readyState === "complete" ? fn() : addEventListener("load", fn, { once: true }));
 
 /* ------------------------------------------------------------------ */
 const $ = (s, r = document) => r.querySelector(s);
@@ -59,7 +64,7 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
 const HOME = !!document.getElementById("product");   // the home page has the product dialog
 const byId = Object.fromEntries([...PRODUCTS, ...GIFTS].map(p => [p.id, p]));
-const imgSrc = p => `assets/products/${p.img}.webp`;
+const imgSrc = p => (/^https?:/.test(p.img) ? p.img : `assets/products/${p.img}.webp`);
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 /* ---------- loader ---------- */
@@ -311,7 +316,18 @@ $("[data-close-order]").addEventListener("click", closeOrder);
 scrim.addEventListener("click", closeOrder);
 addEventListener("keydown", e => { if (e.key === "Escape" && drawer.classList.contains("open")) closeOrder(); });
 
-/* ---------- demo checkout (nothing is sent or stored) ---------- */
+/* ---------- demo checkout (no payment taken, card details never sent) ---------- */
+/* The order itself (items, name, email, time) is saved to Supabase so the shop can see it. */
+function recordOrder(o) {
+  if (!window.FF_SB) return;
+  try {
+    fetch(`${FF_SB.url}/rest/v1/orders`, {
+      method: "POST", keepalive: true,
+      headers: { apikey: FF_SB.key, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify(o),
+    }).catch(() => {});
+  } catch (e) {}
+}
 let view = "list";
 const payForm = $("#pay-form"), payError = $("#pay-error"), payBtn = $("#pay-btn");
 const titles = { list: "Your order list", pay: "Checkout (demo)", done: "Order confirmed" };
@@ -364,6 +380,14 @@ payForm.addEventListener("submit", e => {
     payBtn.classList.remove("busy");
     if (num === "4000000000000002") { $(".label", payBtn).textContent = `Pay ${gbp.format(grandTotal())}`; return fail("Your card was declined. This is the demo decline card, try 4242 4242 4242 4242.", $("#card-number")); }
     const ref = "FF-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const slot = payForm.elements["demo-when"].value, slotDate = slot ? new Date(slot) : null;
+    recordOrder({
+      ref, customer_name: name.value.trim().slice(0, 120), email: email.value.trim().slice(0, 200), fulfilment: method === "delivery" ? "delivery" : "collection",
+      slot_at: slotDate && !isNaN(slotDate) ? slotDate.toISOString() : null,
+      address: method === "delivery" ? payForm.elements["demo-address"].value.trim().slice(0, 500) : "",
+      items: Object.keys(order).map(id => ({ id, name: byId[id].name, price: byId[id].price, unit_price: unitPrice(byId[id]), qty: order[id] })),
+      subtotal: +orderTotal().toFixed(2), delivery_fee: +shipping().toFixed(2), total: +grandTotal().toFixed(2),
+    });
     const when = fmtWhen(payForm.elements["demo-when"].value);
     $("#done-ref").textContent = ref; $("#done-summary").innerHTML = lineItems() + (when ? `<li><span>${whenWord()} time</span><span>${when}</span></li>` : "") + (method === "delivery" ? `<li><span>Deliver to</span><span>${payForm.elements["demo-address"].value.trim().replace(/\s*\n\s*/g, ", ")}</span></li>` : ""); $("#done-total").textContent = gbp.format(grandTotal());
     $("#done-name").textContent = name.value.trim() ? `, ${name.value.trim().split(" ")[0]}` : "";
@@ -495,7 +519,7 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
     } });
   }
 
-  addEventListener("load", () => ScrollTrigger.refresh());
+  onLoad(() => ScrollTrigger.refresh());
 }
 
 /* ---------- opening-news form (demo: nothing is sent or stored) ---------- */
@@ -605,7 +629,7 @@ addEventListener("pageshow", ev => { if (ev.persisted) html.classList.remove("le
     if (Math.abs(scrollY - y) > 2) { if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y); }
   };
   const ro = new ResizeObserver(align); ro.observe(document.body);
-  addEventListener("load", () => setTimeout(align, 60));
+  onLoad(() => setTimeout(align, 60));
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(align, 60));
   setTimeout(() => { alive = false; ro.disconnect(); }, 4500);
   align();
