@@ -27,7 +27,10 @@ const PRODUCTS = [
   { id: "goat", name: "Fresh goat cheese", type: "soft", note: "Bright and lemony, with a delicate, soft texture.", pair: "Warm bread, olive oil", price: "£7 / 100g", img: "goat" },
   { id: "manchego", name: "Manchego", type: "hard", note: "Buttery sheep's milk cheese from La Mancha, with a gentle nuttiness.", pair: "Quince, almonds, dry sherry", price: "£7 / 100g", img: "manchego" },
   { id: "gorgonzola", name: "Gorgonzola Dolce", type: "blue", note: "Mild, spoonable and rich.", pair: "Pears, toasted bread", price: "£8 / 100g", img: "gorgonzola" },
+  { id: "camembert", name: "Camembert de Normandie", type: "soft", note: "Rich and earthy, with a melting centre. Excellent baked.", pair: "Warm baguette, cider", price: "£8 / piece", img: "camembert" },
   { id: "bread", name: "Walnut bread", type: "pantry", note: "Baked daily, an excellent partner for blue cheese.", pair: "Blue cheese, honey", price: "£6 / loaf", img: "bread" },
+  { id: "figs", name: "Fresh figs", type: "pantry", note: "Seasonal, and picked ripe.", pair: "Any cheese in the collection", price: "£6 / box", img: "figs" },
+  { id: "jam", name: "Fig jam", type: "pantry", note: "Small batch, slowly cooked.", pair: "Comté, brie, goat cheese", price: "£9 / jar", img: "jam" },
   { id: "pantry", name: "Preserves and crackers", type: "pantry", note: "Small-batch preserves, crackers and nuts, chosen to sit alongside the cheese.", pair: "Any cheese in the collection", price: "From £5", img: "pantry" },
 ];
 const TYPES = [["all", "All"], ["soft", "Soft"], ["hard", "Hard"], ["blue", "Blue"], ["pantry", "Pantry"]];
