@@ -8,8 +8,12 @@ create table if not exists public.categories (
   name text not null,
   section text not null default 'collection' check (section in ('collection', 'gifts')),
   sort int not null default 0,
-  active boolean not null default true
+  active boolean not null default true,
+  title text not null default '',      -- gifts page: section heading, *word* shows in italics
+  intro text not null default ''       -- gifts page: short paragraph under the heading
 );
+alter table public.categories add column if not exists title text not null default '';
+alter table public.categories add column if not exists intro text not null default '';
 
 create table if not exists public.products (
   id text primary key,                 -- short slug, for example "brie"

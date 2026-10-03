@@ -15,8 +15,10 @@ window.FF_SB = { url: "https://gshowmtmibiqaytnyqkr.supabase.co", key: "sb_publi
   const shape = d => {
     const cats = d.categories || [], rows = d.products || [], section = id => (cats.find(c => c.id === id) || {}).section;
     const item = r => ({ id: r.id, name: r.name, type: r.category, note: r.note, pair: r.pair, price: price(r), img: r.img });
-    const out = { products: [], gifts: [], details: {}, info: {}, types: [["all", "All"], ...cats.filter(c => c.section === "collection").map(c => [c.id, c.name])], shop: null };
+    const out = { products: [], gifts: [], details: {}, info: {}, types: [["all", "All"], ...cats.filter(c => c.section === "collection").map(c => [c.id, c.name])], shop: null,
+      sections: cats.filter(c => c.section === "gifts").map(c => ({ id: c.id, name: c.name, title: c.title || "", intro: c.intro || "" })) };
     rows.forEach(r => {
+      if (!section(r.category)) return;   // its category is hidden
       (section(r.category) === "gifts" ? out.gifts : out.products).push(item(r));
       out.details[r.id] = { origin: r.origin, milk: r.milk, age: r.age, texture: r.texture, intensity: r.intensity, notes: r.notes || [], story: r.story, drink: r.drink, with: r.serve_with, serve: r.serve, keep: r.keep, images: r.images || [] };
       out.info[r.id] = { serves: r.serves, includes: r.includes || [], flag: r.flag };

@@ -48,7 +48,7 @@ $("#tabs").addEventListener("click", e => { const b = e.target.closest("[data-ta
 function show(tab) {
   S.tab = tab; closeDrawer();
   $$("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
-  ({ orders: viewOrders, products: viewProducts, categories: viewCategories, settings: viewSettings })[tab]().catch(fail);
+  ({ orders: viewOrders, products: viewProducts, categories: viewCategories, settings: viewSettings, help: viewHelp })[tab]().catch(fail);
 }
 async function loadCats() { S.cats = await q(sb.from("categories").select("*").order("sort")); }
 async function loadProds() { S.prods = await q(sb.from("products").select("*").order("sort")); }
@@ -69,7 +69,9 @@ function drawOrders() {
   const chips = ["open", ...STATUSES, "all"].map(k => `<button class="chip${f === k ? " on" : ""}" data-f="${k}">${k} ${n(k)}</button>`).join("");
   $("#view").innerHTML = `
     <div class="page-head"><h1>Orders</h1><div class="tools"><button class="btn sm" id="o-refresh">Refresh</button></div></div>
+    ${lede("Orders placed through the website checkout appear here, newest first. Click an order to open it. For now these are test orders and no money is taken.")}
     <div class="chips">${chips}</div>
+    <p class="legend"><b>New</b> just came in &middot; <b>Preparing</b> you are putting it together &middot; <b>Ready</b> waiting for collection or on its way &middot; <b>Completed</b> handed over &middot; <b>Cancelled</b> will not go ahead</p>
     ${list.length ? `<table class="tbl"><thead><tr><th>Order</th><th>Placed</th><th>Customer</th><th class="hide-s">Type</th><th class="hide-s">For</th><th class="num">Total</th><th>Status</th></tr></thead><tbody>
     ${list.map(o => `<tr class="row" data-id="${o.id}"><td>${esc(o.ref)}</td><td>${when(o.created_at)}</td><td>${esc(o.customer_name)}</td><td class="hide-s">${esc(o.fulfilment)}</td><td class="hide-s">${when(o.slot_at) || "Not set"}</td><td class="num">${gbp.format(o.total)}</td><td><span class="tag ${o.status}">${o.status}</span></td></tr>${S.openOrder === o.id ? orderDetail(o) : ""}`).join("")}
     </tbody></table>` : `<p class="empty">No orders here yet. Test orders placed through the site checkout will appear in this list.</p>`}`;
@@ -80,8 +82,8 @@ function orderDetail(o) {
     <div><ul>${items}<li><span>Delivery</span><span>${o.delivery_fee > 0 ? gbp.format(o.delivery_fee) : "Free"}</span></li><li><b>Total</b><b>${gbp.format(o.total)}</b></li></ul></div>
     <div><dl><dt>Customer</dt><dd>${esc(o.customer_name)}</dd><dt>Email</dt><dd><a href="mailto:${esc(o.email)}">${esc(o.email)}</a></dd>
       <dt>${esc(o.fulfilment)}</dt><dd>${when(o.slot_at) || "No time chosen"}</dd>${o.address ? `<dt>Address</dt><dd>${esc(o.address)}</dd>` : ""}<dt>Payment</dt><dd>${esc(o.payment)} (no money taken)</dd></dl>
-      <label style="margin-top:1rem">Internal note<textarea data-note rows="2">${esc(o.internal_note)}</textarea></label>
-      <div class="actions"><select data-status>${STATUSES.map(s => `<option${s === o.status ? " selected" : ""}>${s}</option>`).join("")}</select><button class="btn sm dark" data-save-order="${o.id}">Save</button></div></div>
+      <label style="margin-top:1rem">Your private note<span class="hint">Only you can see this. For example "Allergic to nuts" or "Customer rang to change time".</span><textarea data-note rows="2">${esc(o.internal_note)}</textarea></label>
+      <div class="actions"><span class="hint" style="width:100%">Change the status as the order moves along, then press Save.</span><select data-status>${STATUSES.map(s => `<option${s === o.status ? " selected" : ""}>${s}</option>`).join("")}</select><button class="btn sm dark" data-save-order="${o.id}">Save</button></div></div>
   </div></td></tr>`;
 }
 $("#view").addEventListener("click", async e => {
@@ -112,6 +114,7 @@ function drawProducts() {
       <input type="search" id="p-q" placeholder="Search products" value="${esc(S.pq)}">
       <select id="p-cat"><option value="all">All categories</option>${S.cats.map(c => `<option value="${c.id}"${S.pcat === c.id ? " selected" : ""}>${esc(c.name)}</option>`).join("")}</select>
       <button class="btn dark" id="p-add">Add product</button></div></div>
+    ${lede("Everything the shop sells. Click a product to change its name, price, photos or description. Use \"Add product\" to add a new one. Changes appear on the website within a few minutes.")}
     ${list.length ? `<table class="tbl"><thead><tr><th></th><th>Name</th><th class="hide-s">Category</th><th>Price</th><th>Shown</th></tr></thead><tbody>
     ${list.map(p => `<tr class="row" data-id="${esc(p.id)}"><td><img class="thumb" src="${esc(imgOf(p))}" alt="" loading="lazy"></td><td><b>${esc(p.name)}</b><br><small style="color:var(--muted)">${esc(p.id)}</small></td><td class="hide-s">${esc(cname(p.category))}</td><td>${esc(priceText(p))}</td><td>${p.active ? "Yes" : '<span class="tag off">Hidden</span>'}</td></tr>`).join("")}
     </tbody></table>` : `<p class="empty">No products match.</p>`}`;
@@ -120,41 +123,48 @@ function drawProducts() {
   $("#p-add").addEventListener("click", () => editProduct(null));
   $$("tr.row", $("#view")).forEach(r => r.addEventListener("click", () => editProduct(r.dataset.id)));
 }
-const fld = (label, name, val, extra = "") => `<label>${label}<input name="${name}" value="${esc(val)}" ${extra}></label>`;
-const area = (label, name, val, rows = 3, hint = "") => `<label>${label}${hint ? `<span class="hint">${hint}</span>` : ""}<textarea name="${name}" rows="${rows}">${esc(val)}</textarea></label>`;
+const fld = (label, name, val, extra = "", hint = "") => `<label>${label}${hint ? `<span class="hint">${hint}</span>` : ""}<input name="${name}" value="${esc(val)}" ${extra}></label>`;
+const area = (label, name, val, rows = 3, hint = "", ph = "") => `<label>${label}${hint ? `<span class="hint">${hint}</span>` : ""}<textarea name="${name}" rows="${rows}" placeholder="${esc(ph)}">${esc(val)}</textarea></label>`;
+const lede = t => `<p class="lede">${t}</p>`;
 function editProduct(id) {
   const isNew = !id, p = isNew ? { id: "", name: "", category: (S.cats.find(c => c.section === "collection") || S.cats[0] || {}).id || "", note: "", pair: "", price: "", unit: "100g", price_from: false, img: "", images: [], origin: "", milk: "", age: "", texture: "", intensity: 3, notes: [], story: "", drink: "", serve_with: "", serve: "", keep: "", serves: "", includes: [], flag: "", sort: (S.prods.reduce((m, x) => Math.max(m, x.sort), 0) + 1), active: true } : S.prods.find(x => x.id === id);
   const body = `<form id="pform" class="drawer-body" autocomplete="off">
-    <p class="sec">Basics</p>
-    ${fld("Name", "name", p.name, "required")}
-    <div class="grid2"><label>Category<select name="category">${S.cats.map(c => `<option value="${c.id}"${p.category === c.id ? " selected" : ""}>${esc(c.name)}${c.section === "gifts" ? " (gifts)" : ""}</option>`).join("")}</select></label>
-    ${fld("Web address ID", "id", p.id, `${isNew ? "" : "readonly"} pattern="[a-z0-9\\-]+" placeholder="made from the name"`)}</div>
-    <div class="grid3">${fld("Price (£)", "price", p.price, 'type="number" step="0.01" min="0" required')}${fld("Per (unit)", "unit", p.unit, 'placeholder="100g, loaf, board"')}
-    <label class="check" style="align-self:end;padding-bottom:.7rem"><input type="checkbox" name="price_from"${p.price_from ? " checked" : ""}> Show as "From"</label></div>
-    ${area("Short description", "note", p.note, 2, "Shown on the card.")}
-    ${fld("Pairs with", "pair", p.pair)}
-    <p class="sec">Photographs</p>
+    <div class="pv" id="pv"><img id="pv-img" alt=""><div><small>How it looks on the site</small><b id="pv-name"></b><span id="pv-price"></span><p id="pv-note"></p></div></div>
+    <p class="sec">1. The basics <span class="hint">Everything here appears on the product card.</span></p>
+    ${fld("Product name", "name", p.name, 'required placeholder="Brie de Meaux"', "What customers see. Use the name you would say across the counter.")}
+    <label>Which category is it in?<span class="hint">This decides where it appears: the cheese filters on The collection page, or a section on Boards &amp; gifts. You can manage categories on the Categories tab.</span>
+      <select name="category">${S.cats.map(c => `<option value="${c.id}"${p.category === c.id ? " selected" : ""}>${esc(c.name)} (${c.section === "gifts" ? "Boards & gifts page" : "The collection page"})</option>`).join("")}</select></label>
+    <div class="grid3">${fld("Price in pounds", "price", p.price, 'type="number" step="0.01" min="0" required placeholder="9.50"', "Just the number, for example 9 or 9.50.")}${fld("Sold by", "unit", p.unit, 'placeholder="100g"', "What the price is for: 100g, loaf, jar, box. Leave empty for a single item.")}
+    <label class="check" style="align-self:center"><input type="checkbox" name="price_from"${p.price_from ? " checked" : ""}> <span>Show as "From £…"<span class="hint">Tick when the price changes depending on what you choose.</span></span></label></div>
+    ${area("Short description", "note", p.note, 2, "One or two sentences. Shown on the product card.", "Supple and creamy, with notes of mushroom and cream. Best at room temperature.")}
+    ${fld("Goes well with", "pair", p.pair, 'placeholder="A crisp white, warm baguette"', "A small serving suggestion shown in the pop-up.")}
+    <p class="sec">2. Photographs <span class="hint">A main photo is required.</span></p>
     <div class="photo"><img class="main" id="main-img" src="${esc(p.img ? imgOf(p) : "")}" alt="">
       <div style="display:grid;gap:.6rem;flex:1;min-width:220px"><input type="hidden" name="img" value="${esc(p.img)}">
-      <label class="btn sm" style="text-align:center;cursor:pointer">Upload main photo<input type="file" accept="image/*" id="up-main" hidden></label>
-      <span class="hint">Portrait photos (4 by 5) work best. Photos are resized and saved as WebP.</span></div></div>
-    <div><span class="hint" style="display:block;margin-bottom:.4rem">Extra photos (shown in the product pop-up)</span><div class="gal" id="gal"></div>
-    <label class="btn sm" style="display:inline-block;margin-top:.6rem;cursor:pointer">Add photos<input type="file" accept="image/*" multiple id="up-gal" hidden></label></div>
-    <p class="sec">Details (pop-up)</p>
-    <div class="grid2">${fld("Origin", "origin", p.origin)}${fld("Milk", "milk", p.milk)}${fld("Age", "age", p.age)}${fld("Texture", "texture", p.texture)}</div>
-    <label>Intensity (1 mild, 5 bold)<input name="intensity" type="number" min="1" max="5" value="${p.intensity}"></label>
-    ${fld("Tasting notes", "notes", (p.notes || []).join(", "), 'placeholder="Mushroom, Fresh cream, Hazelnut"')}
-    ${area("Story", "story", p.story, 4)}
-    <div class="grid2">${fld("Drink with", "drink", p.drink)}${fld("Serve with", "serve_with", p.serve_with)}</div>
-    ${area("How to serve", "serve", p.serve, 2)}${area("Keeping", "keep", p.keep, 2)}
-    <p class="sec">Boards and boxes only</p>
-    <div class="grid2">${fld("Serves", "serves", p.serves, 'placeholder="Serves 4 to 8"')}${fld("Badge", "flag", p.flag, 'placeholder="Most popular"')}</div>
-    ${area("What is included", "includes", (p.includes || []).join("\n"), 4, "One item per line.")}
-    <p class="sec">Website</p>
-    <div class="grid2">${fld("Order on page", "sort", p.sort, 'type="number"')}<label class="check" style="align-self:end;padding-bottom:.7rem"><input type="checkbox" name="active"${p.active ? " checked" : ""}> Show on the website</label></div>
+      <label class="btn sm" style="text-align:center;cursor:pointer">${isNew ? "Choose main photo" : "Change main photo"}<input type="file" accept="image/*" id="up-main" hidden></label>
+      <span class="hint" style="text-transform:none;letter-spacing:0">The main photo is the one on the product card. Tall (portrait) photos look best. Any photo from your phone or camera is fine, it is shrunk automatically.</span></div></div>
+    <div><span class="hint" style="display:block;margin-bottom:.4rem;text-transform:none;letter-spacing:0">More photos, shown as small pictures in the product pop-up (optional)</span><div class="gal" id="gal"></div>
+    <label class="btn sm" style="display:inline-block;margin-top:.6rem;cursor:pointer">Add more photos<input type="file" accept="image/*" multiple id="up-gal" hidden></label></div>
+    <p class="sec">3. Cheese details <span class="hint">Shown in the pop-up when a customer opens the product. Leave blank for bread, boards, boxes and vouchers.</span></p>
+    <div class="grid2">${fld("Where it is from", "origin", p.origin, 'placeholder="Savoie"')}${fld("Type of milk", "milk", p.milk, 'placeholder="Raw cow\'s milk"')}${fld("How long it is aged", "age", p.age, 'placeholder="5 to 8 weeks"')}${fld("Texture", "texture", p.texture, 'placeholder="Soft, washed rind"')}</div>
+    <label>How strong is it? (1 to 5)<span class="hint">1 is mild and gentle, 5 is bold and punchy. Shown as a small scale.</span><input name="intensity" type="number" min="1" max="5" value="${p.intensity}"></label>
+    ${fld("Tasting notes", "notes", (p.notes || []).join(", "), 'placeholder="Mushroom, Fresh cream, Hazelnut"', "A few words separated by commas.")}
+    ${area("The story", "story", p.story, 4, "A short paragraph about the cheese: where it is made, what makes it special.")}
+    <div class="grid2">${fld("Drink with", "drink", p.drink, 'placeholder="Champagne, or a crisp Chablis"')}${fld("Serve with", "serve_with", p.serve_with, 'placeholder="Warm baguette, pears, walnuts"')}</div>
+    ${area("How to serve it", "serve", p.serve, 2, "", "Take it out of the fridge an hour before serving.")}${area("How to keep it", "keep", p.keep, 2, "", "Seven to ten days in its paper, in the coolest part of the fridge.")}
+    <p class="sec">4. Boards, boxes and hampers only <span class="hint">Leave blank for everything else.</span></p>
+    <div class="grid2">${fld("Who it is for", "serves", p.serves, 'placeholder="Serves 4 to 8"', "Replaces the short description on the card.")}${fld("Badge", "flag", p.flag, 'placeholder="Most popular"', "A small gold label on the corner of the card.")}</div>
+    ${area("What is included", "includes", (p.includes || []).join("\n"), 4, "Type one item on each line.", "Five cheeses\nBread, crackers and nuts\nA preserve and honey")}
+    <p class="sec">5. On the website</p>
+    <div class="grid2">${fld("Position in the list", "sort", p.sort, 'type="number"', "A lower number shows first. 1 is the very first.")}
+    <label class="check" style="align-self:center"><input type="checkbox" name="active"${p.active ? " checked" : ""}> <span>Show on the website<span class="hint">Untick to hide it without deleting, for example when it is out of season.</span></span></label></div>
+    ${isNew ? fld("Web address ID", "id", p.id, 'pattern="[a-z0-9\\-]+" placeholder="made from the name"', "Used behind the scenes and in links such as collection#brie. It is filled in for you from the name, and cannot be changed after saving.") : `<input type="hidden" name="id" value="${esc(p.id)}">`}
   </form>`;
   openDrawer(isNew ? "Add product" : "Edit product", body, `${isNew ? "" : '<button class="btn danger sm" id="p-del" type="button">Delete</button>'}<span class="sp"></span><button class="btn" id="p-cancel" type="button">Cancel</button><button class="btn dark" id="p-save" type="button">Save</button>`);
   const form = $("#pform"); let gallery = [...(p.images || [])];
+  const pv = () => { const n = form.price.value === "" ? 0 : +form.price.value, t = Number.isInteger(n) ? n : n.toFixed(2); const pr = form.price_from.checked ? `From £${t}` : form.unit.value.trim() ? `£${t} / ${form.unit.value.trim()}` : `£${t}`;
+    $("#pv-name").textContent = form.name.value || "Product name"; $("#pv-price").textContent = pr; $("#pv-note").textContent = form.note.value || form.serves.value; const im = $("#pv-img"); im.src = $("#main-img").getAttribute("src") || ""; im.style.visibility = im.src && !im.src.endsWith("/") ? "visible" : "hidden"; };
+  form.addEventListener("input", pv); pv();
   const drawGal = () => { $("#gal").innerHTML = gallery.map((g, i) => `<figure><img src="${esc(galOf(g))}" alt=""><button type="button" data-rm="${i}" aria-label="Remove photo">&times;</button></figure>`).join("") || '<span class="hint">None yet.</span>'; };
   drawGal();
   $("#gal").addEventListener("click", e => { const b = e.target.closest("[data-rm]"); if (b) { gallery.splice(+b.dataset.rm, 1); drawGal(); } });
@@ -165,7 +175,7 @@ function editProduct(id) {
     await q(sb.storage.from("product-images").upload(path, blob, { contentType: "image/webp", cacheControl: "31536000" }));
     return sb.storage.from("product-images").getPublicUrl(path).data.publicUrl;
   };
-  $("#up-main").addEventListener("change", async e => { const f = e.target.files[0]; if (!f) return; try { toast("Uploading"); const u = await upload(f); form.img.value = u; $("#main-img").src = u; toast("Photo added"); } catch (err) { fail(err); } e.target.value = ""; });
+  $("#up-main").addEventListener("change", async e => { const f = e.target.files[0]; if (!f) return; try { toast("Uploading"); const u = await upload(f); form.img.value = u; $("#main-img").src = u; pv(); toast("Photo added"); } catch (err) { fail(err); } e.target.value = ""; });
   $("#up-gal").addEventListener("change", async e => { try { toast("Uploading"); for (const f of e.target.files) gallery.push(await upload(f)); drawGal(); toast("Photos added"); } catch (err) { fail(err); } e.target.value = ""; });
   $("#p-cancel").addEventListener("click", closeDrawer);
   const del = $("#p-del"); if (del) del.addEventListener("click", async () => {
@@ -200,24 +210,32 @@ async function toWebp(file) {
 async function viewCategories() { await Promise.all([loadCats(), loadProds()]); drawCategories(); }
 function drawCategories() {
   const used = id => S.prods.filter(p => p.category === id).length;
+  const card = c => `<div class="card cat" data-id="${esc(c.id)}">
+    <div class="cat-top"><h2>${esc(c.name)}</h2><span class="hint">${used(c.id)} product${used(c.id) === 1 ? "" : "s"} &middot; ${c.section === "gifts" ? "Boards &amp; gifts page" : "The collection page"}</span></div>
+    <div class="grid2">
+      ${fld("Category name", "name", c.name, 'data-k="name"', c.section === "gifts" ? "Shown as the label in the quick links at the top of the page." : "Shown as a filter button, for example Soft, Hard or Blue.")}
+      <label>Which page is it on?<span class="hint">The collection is the cheese and pantry catalogue. Boards &amp; gifts is the gifts page.</span><select data-k="section"><option value="collection"${c.section === "collection" ? " selected" : ""}>The collection</option><option value="gifts"${c.section === "gifts" ? " selected" : ""}>Boards and gifts</option></select></label>
+      ${c.section === "gifts" ? `${fld("Section heading", "title", c.title, 'data-k="title" placeholder="For the *table.*"', "The big heading on the page. Put a word between *stars* to make it gold and italic.")}${area("Section introduction", "intro", c.intro, 2, "A sentence or two under the heading.", "Served on a wooden board, with bread and a preserve.").replace("<textarea ", "<textarea data-k=\"intro\" ")}` : ""}
+      ${fld("Position", "sort", c.sort, 'type="number" data-k="sort"', "A lower number shows first.")}
+      <label class="check" style="align-self:center"><input type="checkbox" data-k="active"${c.active ? " checked" : ""}> <span>Show on the website<span class="hint">Untick to hide this category and all of its products.</span></span></label>
+    </div>
+    <div class="save-row"><button class="btn sm dark" data-save>Save changes</button> <button class="btn sm danger" data-del>Delete category</button></div></div>`;
   $("#view").innerHTML = `
     <div class="page-head"><h1>Categories</h1></div>
-    <div class="card"><table class="tbl" id="cat-table"><thead><tr><th>Name</th><th>Appears in</th><th>Order</th><th>Shown</th><th class="num">Products</th><th></th></tr></thead><tbody>
-    ${S.cats.map(c => `<tr data-id="${esc(c.id)}"><td><input data-k="name" value="${esc(c.name)}"></td>
-      <td><select data-k="section"><option value="collection"${c.section === "collection" ? " selected" : ""}>The collection</option><option value="gifts"${c.section === "gifts" ? " selected" : ""}>Boards and gifts</option></select></td>
-      <td style="width:5rem"><input data-k="sort" type="number" value="${c.sort}"></td><td><input data-k="active" type="checkbox"${c.active ? " checked" : ""}></td><td class="num">${used(c.id)}</td>
-      <td style="white-space:nowrap"><button class="btn sm dark" data-save>Save</button> <button class="btn sm danger" data-del>Delete</button></td></tr>`).join("")}
-    </tbody></table>
-    <p class="hint" style="margin-top:1rem">The three sections on the Boards and gifts page (boards, boxes and vouchers) are fixed, so a new gifts category will not appear there yet. New collection categories appear in the collection filters straight away.</p></div>
-    <div class="card"><h2>Add a category</h2><form id="cat-new" class="grid3" autocomplete="off">
-      ${fld("Name", "name", "", "required")}<label>Appears in<select name="section"><option value="collection">The collection</option><option value="gifts">Boards and gifts</option></select></label><div style="align-self:end"><button class="btn dark" type="submit">Add category</button></div></form></div>`;
+    ${lede("Categories are the groups your products sit in, such as Soft cheeses or Gift boxes. Each category appears on one of the two shop pages. Every product belongs to exactly one category.")}
+    ${S.cats.map(card).join("")}
+    <div class="card"><h2>Add a category</h2><p class="hint" style="margin:-.4rem 0 1rem">Example: a collection category called "Goat" for goat cheeses, or a gifts category called "Hampers". After adding it, create products in it from the Products tab.</p>
+    <form id="cat-new" class="grid3" autocomplete="off">
+      ${fld("Name", "name", "", 'required placeholder="Goat"')}<label>Which page is it on?<select name="section"><option value="collection">The collection</option><option value="gifts">Boards and gifts</option></select></label><div style="align-self:end"><button class="btn dark" type="submit">Add category</button></div></form></div>`;
 }
 $("#view").addEventListener("click", async e => {
   if (S.tab !== "categories") return;
-  const row = e.target.closest("tr[data-id]"); if (!row) return; const id = row.dataset.id;
+  const row = e.target.closest(".cat[data-id]"); if (!row) return; const id = row.dataset.id;
   if (e.target.closest("[data-save]")) {
-    const g = k => $(`[data-k=${k}]`, row);
-    try { await q(sb.from("categories").update({ name: g("name").value.trim(), section: g("section").value, sort: parseInt(g("sort").value, 10) || 0, active: g("active").checked }).eq("id", id)); clearCache(); toast("Saved"); await viewCategories(); } catch (err) { fail(err); }
+    const g = k => $(`[data-k=${k}]`, row), val = k => (g(k) ? g(k).value.trim() : undefined);
+    const upd = { name: val("name"), section: g("section").value, sort: parseInt(g("sort").value, 10) || 0, active: g("active").checked };
+    if (g("title")) { upd.title = val("title"); upd.intro = val("intro"); }
+    try { await q(sb.from("categories").update(upd).eq("id", id)); clearCache(); toast("Saved"); await viewCategories(); } catch (err) { fail(err); }
   } else if (e.target.closest("[data-del]")) {
     if (S.prods.some(p => p.category === id)) return fail({ message: "This category still has products. Move or delete them first." });
     if (!confirm("Delete this category?")) return;
@@ -236,12 +254,13 @@ async function viewSettings() {
   const rows = await q(sb.from("settings").select("*").eq("key", "shop")), s = { ...DEFAULT_SHOP, ...((rows[0] && rows[0].value) || {}) };
   const hours = DAYS.map((d, i) => { const h = s.hours[i]; return `<span class="d">${d}</span><input type="number" min="0" max="24" data-h="${i}-0" value="${h ? h[0] : 10}"${h ? "" : " disabled"}><input type="number" min="0" max="24" data-h="${i}-1" value="${h ? h[1] : 18}"${h ? "" : " disabled"}><label class="check"><input type="checkbox" data-closed="${i}"${h ? "" : " checked"}> Closed</label>`; }).join("");
   $("#view").innerHTML = `<div class="page-head"><h1>Shop settings</h1></div>
+  ${lede("The shop details that appear all over the website: the opening message, phone number, email, address and opening hours. Change them here and press Save at the bottom.")}
   <form id="shop-form" autocomplete="off">
     <div class="card"><h2>Opening</h2>
-      <label class="check" style="margin-bottom:1rem"><input type="checkbox" name="openingSoon"${s.openingSoon ? " checked" : ""}> Show "Opening soon" across the site (untick when you open)</label>
-      <div class="grid2">${fld("Opening note", "openingNote", s.openingNote)}${fld("Opening date (countdown)", "openingDate", s.openingDate, 'type="date"')}</div></div>
-    <div class="card"><h2>Contact</h2><div class="grid2">${fld("Email", "email", s.email, 'type="email"')}${fld("Phone", "phone", s.phone)}${fld("WhatsApp number", "whatsapp", s.whatsapp, 'placeholder="447700900123, digits only, blank to hide"')}<span></span>${fld("Address line 1", "a1", s.address[0] || "")}${fld("Address line 2", "a2", s.address[1] || "")}</div></div>
-    <div class="card"><h2>Opening hours</h2><p class="hint" style="margin:-.6rem 0 1rem">Shown once the shop is open. 24 hour clock, for example 10 and 18.</p><div class="hours">${hours}</div></div>
+      <label class="check" style="margin-bottom:1rem"><input type="checkbox" name="openingSoon"${s.openingSoon ? " checked" : ""}> <span>The shop has not opened yet<span class="hint">While ticked, the site says "Opening soon" and shows the countdown. Untick this on opening day to show real opening hours instead.</span></span></label>
+      <div class="grid2">${fld("Opening message", "openingNote", s.openingNote, 'placeholder="Spring 2027, Liverpool"', "A short line shown near the top of the site.")}${fld("Opening date", "openingDate", s.openingDate, 'type="date"', "Used for the countdown line on the home page.")}</div></div>
+    <div class="card"><h2>Contact</h2><div class="grid2">${fld("Email address", "email", s.email, 'type="email"', "Where customers write to you.")}${fld("Phone number", "phone", s.phone, 'placeholder="0151 496 0142"', "Shown on the site. Customers can tap it to call.")}${fld("WhatsApp number", "whatsapp", s.whatsapp, 'placeholder="447700900123"', "Numbers only, starting with the country code (44 for the UK, no leading 0 and no +). Leave empty to hide the WhatsApp button.")}<span></span>${fld("Address, first line", "a1", s.address[0] || "", 'placeholder="14 Gambier Lane"')}${fld("Address, second line", "a2", s.address[1] || "", 'placeholder="Liverpool L1 4DX"', "Include the postcode. It is also used for the map.")}</div></div>
+    <div class="card"><h2>Opening hours</h2><p class="hint" style="margin:-.6rem 0 1rem">Use the 24 hour clock: 9 is 9am, 17 is 5pm. Tick Closed for days the shop is shut. These show on the site once the shop has opened.</p><div class="hours"><span></span><b class="hint">Opens at</b><b class="hint">Closes at</b><span></span>${hours}</div></div>
     <div class="save-bar"><button class="btn dark" type="submit">Save settings</button><span class="hint">Changes appear on the site within a few minutes.</span></div>
   </form>`;
   $$("[data-closed]").forEach(c => c.addEventListener("change", () => { $$(`[data-h^="${c.dataset.closed}-"]`).forEach(i => (i.disabled = c.checked)); }));
@@ -253,6 +272,21 @@ async function viewSettings() {
       hours: DAYS.map((_, i) => ($(`[data-closed="${i}"]`).checked ? null : [Math.min(24, +$(`[data-h="${i}-0"]`).value || 0), Math.min(24, +$(`[data-h="${i}-1"]`).value || 0)])) };
     try { await q(sb.from("settings").upsert({ key: "shop", value })); clearCache(); toast("Settings saved"); } catch (err) { fail(err); }
   });
+}
+
+/* ---------- help ---------- */
+async function viewHelp() {
+  $("#view").innerHTML = `<div class="page-head"><h1>How this works</h1></div>
+  ${lede("A short guide to running the shop website. Nothing here can break the site, and you can always change something back.")}
+  <div class="help">
+    <div class="card"><h2>Add a new product</h2><ol><li>Open <b>Products</b> and press <b>Add product</b>.</li><li>Fill in the name, choose a category and enter the price.</li><li>Choose a main photo. Anything from your phone works.</li><li>Press <b>Save</b>. It appears on the website within a few minutes.</li></ol></div>
+    <div class="card"><h2>Change a price or description</h2><ol><li>Open <b>Products</b> and click the product.</li><li>Change what you need and press <b>Save</b>.</li></ol></div>
+    <div class="card"><h2>Take something off the website for a while</h2><p>Open the product and untick <b>Show on the website</b>. It stays saved, so you can bring it back later. Use <b>Delete</b> only if you never want it again.</p></div>
+    <div class="card"><h2>Deal with an order</h2><ol><li>Open <b>Orders</b>. New orders have a gold <b>New</b> tag, and the Orders tab shows how many are waiting.</li><li>Click an order to see what was bought, who by, and when they want it.</li><li>Move it along with the status: <b>Preparing</b>, then <b>Ready</b>, then <b>Completed</b>. Press <b>Save</b> each time.</li></ol><p>Customers are not emailed automatically yet, so contact them yourself using the email shown.</p></div>
+    <div class="card"><h2>Add a category</h2><p>Open <b>Categories</b> and add one, for example "Goat" on The collection page. Then add products to it. Collection categories become filter buttons automatically. Gifts categories get their own section on the Boards &amp; gifts page, with the heading and introduction you write.</p></div>
+    <div class="card"><h2>Open the shop</h2><p>When you open, go to <b>Shop settings</b> and untick <b>The shop has not opened yet</b>. Check your opening hours are right, then press <b>Save</b>.</p></div>
+    <div class="card"><h2>Good to know</h2><ul><li>Changes appear on the website within about 5 minutes. If you edit on this computer, you will see them straight away.</li><li>Photos are shrunk automatically, so there is no need to resize them first.</li><li>The checkout on the site is a demo. No money is taken, and test orders appear in the list like real ones.</li><li>Sign out when you are done, especially on a shared computer.</li></ul></div>
+  </div>`;
 }
 
 /* ---------- drawer ---------- */

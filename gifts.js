@@ -10,6 +10,29 @@ const INFO_FALLBACK = {
   "box-hamper": { serves: "A generous gift", includes: ["Six cheeses", "Bread, crackers and nuts", "Preserves and honey", "Ribbon and handwritten card"] },
 };
 const INFO = CAT ? CAT.info : INFO_FALLBACK;
+/* Sections: the page has fixed blocks for boards, boxes and vouchers. Headings and intros come from the
+   categories (editable in the admin). Any other gifts category gets its own section before "Something special". */
+const SECTIONS = CAT ? CAT.sections : null;
+const BUILT = { board: "#boards", box: "#boxes", voucher: "#vouchers" };
+const hx = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])).replace(/\*(.+?)\*/g, "<em>$1</em>");
+if (SECTIONS) {
+  Object.entries(BUILT).forEach(([id, sel]) => {
+    const sec = $(sel), c = SECTIONS.find(x => x.id === id);
+    if (!sec) return;
+    if (!c) { sec.remove(); $$(`.jump a[href="${sel}"]`).forEach(a => a.parentElement.remove()); return; }
+    if (c.title) $("h2", sec).innerHTML = hx(c.title);
+    if (c.intro) $(".section-intro", sec).textContent = c.intro;
+    $$(`.jump a[href="${sel}"]`).forEach(a => (a.textContent = c.name));
+  });
+  const custom = $("#custom"), jump = $(".jump a[href='#custom']");
+  SECTIONS.filter(c => !BUILT[c.id]).forEach((c, n) => {
+    const sec = document.createElement("section");
+    sec.id = c.id; sec.className = "g-section" + (n % 2 ? "" : " sand");
+    sec.innerHTML = `<div class="wrap"><div class="g-head" data-reveal><p class="eyebrow dark"><span>${hx(c.name)}</span></p><h2>${hx(c.title || c.name)}</h2>${c.intro ? `<p class="section-intro">${hx(c.intro)}</p>` : ""}</div><div class="g-list" data-kind="${hx(c.id)}"></div></div>`;
+    custom.before(sec); $$("[data-reveal]", sec).forEach(el => io.observe(el));
+    if (jump) { const li = document.createElement("li"); li.innerHTML = `<a href="#${hx(c.id)}">${hx(c.name)}</a>`; jump.parentElement.before(li); }
+  });
+}
 const g = $$(".g-list");
 const itemHTML = p => {
   const i = INFO[p.id] || {};

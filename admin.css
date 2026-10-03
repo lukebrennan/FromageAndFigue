@@ -118,3 +118,30 @@ input[type=checkbox] { width: auto; accent-color: var(--ink); }
   .hours { grid-template-columns: 4.5rem 1fr 1fr; }
   .hours .check { grid-column: 1 / -1; }
 }
+
+/* friendlier forms */
+.lede { max-width: 46rem; margin: -.6rem 0 1.6rem; color: var(--muted); font-size: 1rem; }
+label .hint { display: block; text-transform: none; letter-spacing: 0; font-size: .8rem; font-weight: 400; color: var(--muted); line-height: 1.4; }
+label.check { align-items: flex-start; }
+label.check input { margin-top: .2rem; }
+label.check .hint { margin-top: .15rem; }
+.sec .hint { display: block; margin-top: .25rem; }
+.legend { font-size: .8rem; color: var(--muted); margin: 0 0 1.2rem; max-width: 60rem; }
+.legend b { color: var(--ink); font-weight: 500; }
+.pv { display: flex; gap: 1rem; align-items: center; padding: .9rem; background: var(--ivory); border: 1px solid var(--line); }
+.pv img { width: 72px; height: 90px; object-fit: cover; background: var(--sand); flex: none; }
+.pv small { display: block; font-size: .64rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: .2rem; }
+.pv b { display: block; font-family: var(--serif); font-weight: 400; font-size: 1.5rem; line-height: 1.1; }
+.pv span { font-size: .85rem; color: #8a6d33; }
+.pv p { margin: .3rem 0 0; font-size: .82rem; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cat-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .4rem 1rem; margin-bottom: 1rem; }
+.cat-top h2 { margin: 0; }
+.save-row { display: flex; gap: .6rem; margin-top: 1.2rem; }
+.help { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.help .card { margin: 0; }
+.help ol, .help ul { margin: 0; padding-left: 1.2rem; }
+.help li { margin: .3rem 0; }
+.help p { margin: 0 0 .6rem; }
+@media (max-width: 800px) { .help { grid-template-columns: 1fr; } }
+label:not(.check) { display: flex; flex-direction: column; gap: .35rem; }
+label:not(.check) > input, label:not(.check) > select, label:not(.check) > textarea { margin-top: auto; }

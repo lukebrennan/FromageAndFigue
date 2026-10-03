@@ -1,13 +1,13 @@
 -- Fromage & Figue: starting products. Run AFTER schema.sql. Safe to run again (it resets these rows).
-insert into public.categories (id,name,section,sort) values
-('soft','Soft','collection',0),
-('hard','Hard','collection',1),
-('blue','Blue','collection',2),
-('pantry','Pantry','collection',3),
-('board','Cheese boards','gifts',4),
-('box','Gift boxes and hampers','gifts',5),
-('voucher','Gift vouchers','gifts',6)
-on conflict (id) do update set name=excluded.name, section=excluded.section, sort=excluded.sort;
+insert into public.categories (id,name,section,sort,title,intro) values
+('soft','Soft','collection',0,'',''),
+('hard','Hard','collection',1,'',''),
+('blue','Blue','collection',2,'',''),
+('pantry','Pantry','collection',3,'',''),
+('board','Cheese boards','gifts',4,'For the *table.*','Served on a wooden board, with bread, nuts and a preserve. Each is composed from what is at its best this week.'),
+('box','Gift boxes and hampers','gifts',5,'For *giving.*','Wrapped in paper, tied with ribbon and finished with a handwritten card. Ready to collect, or sent to your door.'),
+('voucher','Gift vouchers','gifts',6,'Let them *choose.*','A voucher to spend in the shop, in a black envelope tied with ribbon. Choose an amount and we will have it ready.')
+on conflict (id) do update set name=excluded.name, section=excluded.section, sort=excluded.sort, title=excluded.title, intro=excluded.intro;
 
 insert into public.products (id,name,category,note,pair,price,unit,price_from,img,images,origin,milk,age,texture,intensity,notes,story,drink,serve_with,serve,keep,serves,includes,flag,sort) values
 ('brie','Brie de Meaux','soft','Supple and creamy, with notes of mushroom and cream. Best at room temperature.','A crisp white, warm baguette',9,'100g',false,'brie',array['counter','board']::text[],'Ile-de-France','Cow''s milk','5 to 8 weeks','Soft, bloomy rind',2,array['Mushroom','Fresh cream','Hazelnut']::text[],'The king of cheeses, made on the plains east of Paris for centuries. A thin, velvety white rind gives way to a pale, supple paste that turns glossy and rich as it ripens.','Champagne, or a crisp Chablis','Warm baguette, pears, walnuts','Take it out of the fridge an hour before serving. Cut wedges from the centre so every slice has rind and paste.','Seven to ten days in its paper, in the coolest part of the fridge.','','{}'::text[],'',0),
