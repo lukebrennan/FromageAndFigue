@@ -256,6 +256,7 @@ function renderOrder(bump) {
       <button class="remove" type="button" data-remove aria-label="Remove ${p.name}">Remove</button>
     </li>`;
   }).join("");
+  if (ids.length && typeof tabbar !== "undefined" && tabbar) tabbar.classList.remove("away");
   $(".order-actions").toggleAttribute("data-empty", ids.length === 0);
   $("#order-total").hidden = ids.length === 0;
   $("#sub-amount").textContent = gbp.format(orderTotal());
@@ -487,8 +488,8 @@ function onScroll() {
   bar.style.transform = `scaleX(${doc > 0 ? y / doc : 0})`;
   header.classList.toggle("scrolled", y > 40);
   if (hero) header.classList.toggle("on-hero", y < hero.offsetHeight - header.offsetHeight);
-  if (y > lastY + 6 && y > 240) tabbar.classList.add("away");
-  else if (y < lastY - 6 || y < 240) tabbar.classList.remove("away");
+  if (y > lastY + 6 && y > 240 && !total()) tabbar.classList.add("away");   // stays put once something is in the order list
+  else if (y < lastY - 6 || y < 240 || total()) tabbar.classList.remove("away");
   lastY = y;
   if (!reduce) {
     pars.forEach(img => {
