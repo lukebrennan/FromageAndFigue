@@ -3,38 +3,41 @@
 ------------------------------------------------------------------ */
 const SHOP = {
   name: "Fromage & Figue",
-  address: ["123 Placeholder Street", "Your City"],
+  city: "Liverpool",
+  address: ["Address to be announced", "Liverpool, United Kingdom"],
+  mapQuery: "Fromage & Figue, Liverpool, UK",
   email: "hello@example.com",
   phone: "(000) 000 0000",
   phoneLink: "+0000000000",
-  whatsapp: "",            // digits only with country code, for example 15551234567. Leave empty to hide.
+  whatsapp: "",            // digits only with country code, for example 447700900123. Leave empty to hide.
   openingSoon: true,      // true shows "Opening soon" everywhere instead of live hours. Set false at launch.
-  openingNote: "date to be announced",
+  openingNote: "Liverpool, date to be announced",
   owner: "Benoit Severin-Delos",
-  timeZone: "",            // for example "Europe/London". Leave empty to use the visitor's clock.
+  timeZone: "Europe/London",
   // Opening hours by weekday: [open hour, close hour] in 24h time, or null when closed. Sunday first.
   hours: [null, null, [10, 18], [10, 18], [10, 18], [10, 18], [9, 17]],
 };
 
 /* Edit this list to change the counter. img is a file in assets/products/. */
 const PRODUCTS = [
-  { id: "brie", name: "Brie de Meaux", type: "soft", note: "Supple and creamy, with notes of mushroom and cream. Best at room temperature.", pair: "Fresh figs, a crisp white", price: "£9 / 100g", img: "brie" },
+  { id: "brie", name: "Brie de Meaux", type: "soft", note: "Supple and creamy, with notes of mushroom and cream. Best at room temperature.", pair: "A crisp white, warm baguette", price: "£9 / 100g", img: "brie" },
   { id: "reblochon", name: "Reblochon", type: "soft", note: "Washed rind, supple and nutty, with a gentle fruit.", pair: "New potatoes, a crisp white", price: "£9 / 100g", img: "reblochon" },
-  { id: "comte", name: "Comté 24 months", type: "hard", note: "Nutty and caramel sweet, with fine crystals and a long finish.", pair: "Walnut bread, fig jam", price: "£8 / 100g", img: "comte" },
+  { id: "comte", name: "Comté 24 months", type: "hard", note: "Nutty and caramel sweet, with fine crystals and a long finish.", pair: "Walnut bread, a glass of white", price: "£8 / 100g", img: "comte" },
   { id: "roquefort", name: "Roquefort", type: "blue", note: "Bold and salty over a creamy blue. Superb with honey.", pair: "Honey, walnuts, a sweet wine", price: "£10 / 100g", img: "roquefort" },
   { id: "goat", name: "Fresh goat cheese", type: "soft", note: "Bright and lemony, with a delicate, soft texture.", pair: "Warm bread, olive oil", price: "£7 / 100g", img: "goat" },
   { id: "manchego", name: "Manchego", type: "hard", note: "Buttery sheep's milk cheese from La Mancha, with a gentle nuttiness.", pair: "Quince, almonds, dry sherry", price: "£7 / 100g", img: "manchego" },
   { id: "gorgonzola", name: "Gorgonzola Dolce", type: "blue", note: "Mild, spoonable and rich.", pair: "Pears, toasted bread", price: "£8 / 100g", img: "gorgonzola" },
-  { id: "figs", name: "Fresh figs", type: "pairing", note: "Seasonal, and picked ripe.", pair: "Any cheese on the counter", price: "£6 / box", img: "figs" },
-  { id: "jam", name: "Fig jam", type: "pairing", note: "Small batch, slowly cooked.", pair: "Comté, brie, goat cheese", price: "£9 / jar", img: "jam" },
-  { id: "bread", name: "Walnut bread", type: "pairing", note: "Baked daily, an excellent partner for blue cheese.", pair: "Blue cheese, honey", price: "£6 / loaf", img: "bread" },
+  { id: "bread", name: "Walnut bread", type: "pantry", note: "Baked daily, an excellent partner for blue cheese.", pair: "Blue cheese, honey", price: "£6 / loaf", img: "bread" },
+  { id: "pantry", name: "Preserves and crackers", type: "pantry", note: "Small-batch preserves, crackers and nuts, chosen to sit alongside the cheese.", pair: "Any cheese in the collection", price: "From £5", img: "pantry" },
 ];
-const TYPES = [["all", "All"], ["soft", "Soft"], ["hard", "Hard"], ["blue", "Blue"], ["pairing", "Pairings"]];
+const TYPES = [["all", "All"], ["soft", "Soft"], ["hard", "Hard"], ["blue", "Blue"], ["pantry", "Pantry"]];
 
 /* ------------------------------------------------------------------ */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const html = document.documentElement;
+let lenis = null;
+function lockScroll(on) { document.body.classList.toggle("locked", on); if (lenis) { if (on) lenis.stop(); else lenis.start(); } }
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
 const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
@@ -97,7 +100,7 @@ function renderDetails() {
   const em = $("#email-link"); em.href = `mailto:${SHOP.email}`; em.textContent = SHOP.email;
   const ph = $("#phone-link"); ph.href = `tel:${SHOP.phoneLink}`; ph.textContent = SHOP.phone;
   $("#call").href = `tel:${SHOP.phoneLink}`;
-  $("#directions").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.name + ", " + SHOP.address.join(", "))}`;
+  $("#directions").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapQuery)}`;
   $$("[data-shop-email]").forEach(a => (a.href = `mailto:${SHOP.email}?subject=${encodeURIComponent("Boards and gift boxes")}`));
   $("#year").textContent = new Date().getFullYear();
 }
@@ -165,22 +168,23 @@ function openProduct(id, trigger) {
       <p class="note">${p.note}</p>
       <dl>
         <div><dt>Pairs with</dt><dd>${p.pair}</dd></div>
-        <div><dt>Serve</dt><dd>${p.type === "pairing" ? "Alongside the cheese" : "At room temperature"}</dd></div>
-        <div><dt>Collect</dt><dd>In store, cut to order</dd></div>
+        <div><dt>Serve</dt><dd>${p.type === "pantry" ? "Alongside the cheese" : "At room temperature"}</dd></div>
+        <div><dt>Collection</dt><dd>Free in store, cut to order</dd></div>
+        <div><dt>Delivery</dt><dd>£4.99, free over £60</dd></div>
       </dl>
       <div class="p-actions">
         <span class="p-price">${p.price}</span>
         <button class="btn btn-dark" type="button" data-add-close="${p.id}">Add to order list</button>
       </div>
     </div>`;
-  dlg.showModal(); document.body.classList.add("locked");
+  dlg.showModal(); lockScroll(true);
 }
 dlg.addEventListener("click", e => {
   if (e.target === dlg || e.target.closest("[data-close]")) dlg.close();
   const a = e.target.closest("[data-add-close]");
   if (a) { addToOrder(a.dataset.addClose); dlg.close(); }
 });
-dlg.addEventListener("close", () => { document.body.classList.remove("locked"); if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); });
+dlg.addEventListener("close", () => { lockScroll(false); if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); });
 
 /* ---------- order list ---------- */
 let order = {};
@@ -189,9 +193,22 @@ order = Object.fromEntries(Object.entries(order).filter(([id, q]) => byId[id] &&
 const save = () => { try { localStorage.setItem("ff-order", JSON.stringify(order)); } catch (e) {} };
 const total = () => Object.values(order).reduce((a, b) => a + b, 0);
 const drawer = $("#order"), scrim = $("#scrim");
+const fmtWhen = v => {
+  if (!v) return "";
+  const d = new Date(v);
+  return isNaN(d) ? v : new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d).replace(",", "");
+};
+const localNow = () => { const d = new Date(Date.now() + 60 * 60 * 1000); d.setMinutes(Math.ceil(d.getMinutes() / 15) * 15, 0, 0); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
 const gbp = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
 const unitPrice = p => parseFloat((p.price.match(/[\d.]+/) || [0])[0]);
 const orderTotal = () => Object.entries(order).reduce((s, [id, q]) => s + unitPrice(byId[id]) * q, 0);
+const DELIVERY_FEE = 4.99, FREE_DELIVERY_FROM = 60;
+let method = "collect";
+const shipping = () => (method === "delivery" && orderTotal() > 0 && orderTotal() < FREE_DELIVERY_FROM ? DELIVERY_FEE : 0);
+const grandTotal = () => orderTotal() + shipping();
+const shipText = () => (shipping() ? gbp.format(shipping()) : "Free");
+const shipLabel = () => (method === "delivery" ? "Delivery" : "Collection in store");
+const whenWord = () => (method === "delivery" ? "Delivery" : "Collection");
 let toastT;
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200); }
 function addToOrder(id) {
@@ -213,15 +230,23 @@ function renderOrder(bump) {
   }).join("");
   $(".order-actions").toggleAttribute("data-empty", ids.length === 0);
   $("#order-total").hidden = ids.length === 0;
-  $("#total-amount").textContent = gbp.format(orderTotal());
+  $("#sub-amount").textContent = gbp.format(orderTotal());
+  $("#ship-label").textContent = shipLabel(); $("#ship-amount").textContent = shipText();
+  $("#total-amount").textContent = gbp.format(grandTotal());
+  const hint = $("#ship-hint"), left = FREE_DELIVERY_FROM - orderTotal();
+  hint.hidden = !(method === "delivery" && ids.length && left > 0);
+  if (!hint.hidden) hint.textContent = `Add ${gbp.format(left)} more for free delivery.`;
+  $("#addr-wrap").hidden = method !== "delivery";
+  $("#when-label").textContent = `${whenWord()} date and time`;
   updateLinks();
 }
 function message() {
   const f = new FormData($("#order-form"));
   const lines = Object.keys(order).map(id => `- ${order[id]} x ${byId[id].name} (${byId[id].price})`);
-  let m = `Hello ${SHOP.name},\n\nI would like to put together an order:\n\n${lines.join("\n")}\n\nEstimated total: ${gbp.format(orderTotal())}\n`;
+  let m = `Hello ${SHOP.name},\n\nI would like to put together an order:\n\n${lines.join("\n")}\n\nSubtotal: ${gbp.format(orderTotal())}\n${shipLabel()}: ${shipText()}\nEstimated total: ${gbp.format(grandTotal())}\n`;
   if (f.get("name")) m += `\nName: ${f.get("name")}`;
-  if (f.get("when")) m += `\nCollecting: ${f.get("when")}`;
+  if (method === "delivery" && f.get("address")) m += `\nDelivery address: ${String(f.get("address")).replace(/\s*\n\s*/g, ", ")}`;
+  if (f.get("when")) m += `\n${whenWord()}: ${fmtWhen(f.get("when"))}`;
   return m + "\n\nThank you!";
 }
 function updateLinks() {
@@ -231,6 +256,7 @@ function updateLinks() {
   wa.hidden = !SHOP.whatsapp;
   if (SHOP.whatsapp) wa.href = `https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(m)}`;
 }
+$$("input[name=method]").forEach(r => r.addEventListener("change", () => { method = r.value; renderOrder(); }));
 $("#order-form").addEventListener("input", updateLinks);
 $("#order-form").addEventListener("submit", e => e.preventDefault());
 $("#order-items").addEventListener("click", e => {
@@ -243,16 +269,18 @@ $("#order-items").addEventListener("click", e => {
   save(); renderOrder();
 });
 $("#clear-order").addEventListener("click", () => { order = {}; save(); renderOrder(); });
+function setWhenMin() { $$("#when-list, #when-pay").forEach(i => (i.min = localNow())); }
 function openOrder() {
+  setWhenMin();
   $("#toast").classList.remove("show");
   if (view === "done") showView("list");
   scrim.hidden = false; requestAnimationFrame(() => scrim.classList.add("show"));
-  drawer.inert = false; drawer.setAttribute("aria-hidden", "false"); drawer.classList.add("open"); document.body.classList.add("locked");
+  drawer.inert = false; drawer.setAttribute("aria-hidden", "false"); drawer.classList.add("open"); lockScroll(true);
   setTimeout(() => $(".icon-btn", drawer).focus({ preventScroll: true }), 50);
 }
 function closeOrder() {
   scrim.classList.remove("show"); setTimeout(() => (scrim.hidden = true), 500);
-  drawer.classList.remove("open"); drawer.inert = true; drawer.setAttribute("aria-hidden", "true"); document.body.classList.remove("locked");
+  drawer.classList.remove("open"); drawer.inert = true; drawer.setAttribute("aria-hidden", "true"); lockScroll(false);
 }
 $$("[data-open-order]").forEach(b => b.addEventListener("click", openOrder));
 $("[data-close-order]").addEventListener("click", closeOrder);
@@ -269,14 +297,17 @@ function showView(v) {
   $("#order-title").textContent = titles[v]; $("#pay-back").hidden = v !== "pay";
   $(".order-body", v === "list" ? $("#view-list") : v === "pay" ? payForm : $("#view-done")).scrollTop = 0;
 }
-const lineItems = () => Object.keys(order).map(id => `<li><span>${order[id]} x ${byId[id].name}</span><span>${gbp.format(unitPrice(byId[id]) * order[id])}</span></li>`).join("");
+const lineItems = () => Object.keys(order).map(id => `<li><span>${order[id]} x ${byId[id].name}</span><span>${gbp.format(unitPrice(byId[id]) * order[id])}</span></li>`).join("") + `<li><span>${shipLabel()}</span><span>${shipText()}</span></li>`;
 $("#go-checkout").addEventListener("click", () => {
   if (!total()) return;
   $("#pay-summary").innerHTML = lineItems();
-  const t = gbp.format(orderTotal());
+  const t = gbp.format(grandTotal());
   $("#pay-total").textContent = t; $(".label", payBtn).textContent = `Pay ${t}`;
   payError.hidden = true; payForm.reset(); showView("pay");
   const nm = $("input[name=name]", $("#order-form")).value; if (nm) payForm.elements["demo-name"].value = nm;
+  payForm.elements["demo-when"].value = $("#when-list").value;
+  payForm.elements["demo-address"].value = $("#order-form").elements.address.value;
+  $("#pay-addr-wrap").hidden = method !== "delivery"; $("#pay-when-label").textContent = `${whenWord()} date and time`;
   payForm.elements["demo-name"].focus({ preventScroll: true });
 });
 $("#pay-back").addEventListener("click", () => showView("list"));
@@ -298,6 +329,7 @@ payForm.addEventListener("submit", e => {
   const name = payForm.elements["demo-name"], email = payForm.elements["demo-email"], num = digits($("#card-number").value), exp = digits($("#card-exp").value), cvc = $("#card-cvc");
   if (!name.value.trim()) return fail("Please enter your name.", name);
   if (!/^\S+@\S+\.\S+$/.test(email.value)) return fail("Please enter a valid email address.", email);
+  if (method === "delivery" && !payForm.elements["demo-address"].value.trim()) return fail("Please enter a delivery address.", payForm.elements["demo-address"]);
   if (num !== "4242424242424242" && num !== "4000000000000002") return fail("This is a demo. Please use the test card 4242 4242 4242 4242.", $("#card-number"));
   const mm = +exp.slice(0, 2), yy = 2000 + +exp.slice(2, 4), now = new Date();
   if (exp.length < 4 || mm < 1 || mm > 12 || yy < now.getFullYear() || (yy === now.getFullYear() && mm < now.getMonth() + 1)) return fail("Please enter a future expiry date, for example 12 / 34.", $("#card-exp"));
@@ -306,9 +338,10 @@ payForm.addEventListener("submit", e => {
   payBtn.classList.add("busy"); $(".label", payBtn).textContent = "Processing";
   setTimeout(() => {
     payBtn.classList.remove("busy");
-    if (num === "4000000000000002") { $(".label", payBtn).textContent = `Pay ${gbp.format(orderTotal())}`; return fail("Your card was declined. This is the demo decline card, try 4242 4242 4242 4242.", $("#card-number")); }
+    if (num === "4000000000000002") { $(".label", payBtn).textContent = `Pay ${gbp.format(grandTotal())}`; return fail("Your card was declined. This is the demo decline card, try 4242 4242 4242 4242.", $("#card-number")); }
     const ref = "FF-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    $("#done-ref").textContent = ref; $("#done-summary").innerHTML = lineItems(); $("#done-total").textContent = gbp.format(orderTotal());
+    const when = fmtWhen(payForm.elements["demo-when"].value);
+    $("#done-ref").textContent = ref; $("#done-summary").innerHTML = lineItems() + (when ? `<li><span>${whenWord()} time</span><span>${when}</span></li>` : "") + (method === "delivery" ? `<li><span>Deliver to</span><span>${payForm.elements["demo-address"].value.trim().replace(/\s*\n\s*/g, ", ")}</span></li>` : ""); $("#done-total").textContent = gbp.format(grandTotal());
     $("#done-name").textContent = name.value.trim() ? `, ${name.value.trim().split(" ")[0]}` : "";
     order = {}; save(); renderOrder(); payForm.reset(); showView("done");
   }, reduce ? 300 : 1800);
@@ -374,7 +407,79 @@ if (finePointer && !reduce) {
   });
 }
 
+/* ---------- headline words fade in one by one ---------- */
+function splitWords(root, counter) {
+  [...root.childNodes].forEach(n => {
+    if (n.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.append(" "); return; }
+        const s = document.createElement("span"); s.className = "word"; s.setAttribute("aria-hidden", "true");
+        s.style.setProperty("--wd", counter.i++); s.textContent = part; frag.append(s);
+      });
+      n.replaceWith(frag);
+    } else if (n.nodeType === 1 && n.tagName !== "BR") splitWords(n, counter);
+  });
+}
+$$(".section h2").forEach(h => { h.setAttribute("aria-label", h.textContent.replace(/\s+/g, " ").trim()); splitWords(h, { i: 0 }); });
+
 /* ---------- go ---------- */
-renderDetails(); renderHours(); setInterval(renderHours, 60000);
+setWhenMin(); renderDetails(); renderHours(); setInterval(renderHours, 60000);
 renderFilters(); renderGrid(true); renderOrder();
 onScroll();
+
+/* ---------- scroll effects: GSAP + ScrollTrigger + Lenis (all self-hosted in assets/vendor) ---------- */
+if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
+  gsap.registerPlugin(ScrollTrigger);
+  html.classList.add("gsap");
+
+  // inertia scrolling, kept in step with ScrollTrigger
+  lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+  lenis.on("scroll", ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  // in-page links glide instead of jumping
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]'); if (!a) return;
+    const id = a.getAttribute("href"); if (id.length < 2) return;
+    const target = $(id); if (!target) return;
+    e.preventDefault();
+    lenis.scrollTo(id === "#top" ? 0 : target, { offset: id === "#top" ? 0 : -(header.offsetHeight - 1), duration: 1.5, easing: x => 1 - Math.pow(1 - x, 4) });
+  });
+
+  const mm = gsap.matchMedia();
+
+  // pinned horizontal gallery (large screens only; phones keep the swipeable row)
+  mm.add("(min-width: 1000px)", () => {
+    const sec = $("#ideas"), track = $(".ideas-grid", sec), wrap = $(".wrap", sec), bar = $(".ideas-progress i", sec);
+    sec.classList.add("is-pinned");
+    const dist = () => Math.max(0, track.scrollWidth - wrap.clientWidth);
+    gsap.to(track, {
+      x: () => -dist(), ease: "none",
+      scrollTrigger: { trigger: sec, start: "top top", end: () => "+=" + (dist() + innerHeight * 0.35), pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+        onUpdate: self => { bar.style.transform = `scaleX(${self.progress})`; } }
+    });
+    return () => sec.classList.remove("is-pinned");
+  });
+
+  // wide photos open up from inset frames as they arrive
+  $$(".band").forEach(b => gsap.fromTo(b,
+    { clipPath: "inset(9% 6% 9% 6% round 14px)" },
+    { clipPath: "inset(0% 0% 0% 0% round 0px)", ease: "none", scrollTrigger: { trigger: b, start: "top 92%", end: "top 24%", scrub: true } }));
+
+  // the ticker speeds up with your scroll, and reverses when you scroll back up
+  const ticker = $(".marquee-track");
+  if (ticker) {
+    const loop = gsap.to(ticker, { xPercent: -50, ease: "none", duration: 38, repeat: -1 });
+    ScrollTrigger.create({ start: 0, end: "max", onUpdate: self => {
+      const dir = self.direction || 1;
+      gsap.timeline()
+        .to(loop, { timeScale: dir * (1 + Math.min(Math.abs(self.getVelocity()) / 220, 7)), duration: 0.2, overwrite: true })
+        .to(loop, { timeScale: dir, duration: 1.2 });
+    } });
+  }
+
+  addEventListener("load", () => ScrollTrigger.refresh());
+}
