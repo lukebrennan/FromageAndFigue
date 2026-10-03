@@ -107,6 +107,11 @@
         <div class="filters" role="group" aria-label="Filter the collection" id="filters" data-reveal></div>
         <ul class="grid" id="grid" aria-live="polite"></ul>
         <p class="empty" id="empty" hidden>Nothing matches that. Try another word, or ask us in store.</p>
+        <ol class="steps" data-reveal>
+          <li><span class="n">01</span><h3>Choose</h3><p>Browse the collection and add what you like to your list.</p></li>
+          <li><span class="n">02</span><h3>Reserve</h3><p>Pick a day and time for collection, or have it delivered.</p></li>
+          <li><span class="n">03</span><h3>Enjoy</h3><p>Collection in store is free. Delivery is &pound;4.99, and free over &pound;60.</p></li>
+        </ol>
       </div>
     </section>
 
@@ -242,7 +247,32 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <img class="footer-logo" src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380" loading="lazy">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <img class="footer-logo" src="assets/logo.png" alt="Fromage &amp; Figue" width="1901" height="380" loading="lazy">
+          <p>An artisan fromagerie and delicatessen, opening in Liverpool in Spring 2027.</p>
+        </div>
+        <div class="foot-col">
+          <h3>Visit</h3>
+          <p data-shop-address>14 Gambier Lane<br>Liverpool L1 4DX</p>
+          <p class="soft">Opening Spring 2027</p>
+        </div>
+        <div class="foot-col">
+          <h3>Contact</h3>
+          <p><a data-shop-email-text href="mailto:hello@fromageandfigue.co.uk">hello@fromageandfigue.co.uk</a></p>
+          <p><a data-shop-phone-text href="tel:+441514960142">0151 496 0142</a></p>
+        </div>
+        <form class="foot-news" id="news-form" novalidate>
+          <h3>Be first through the door</h3>
+          <p>Opening news, nothing else.</p>
+          <div class="news-field">
+            <label class="sr-only" for="news-email">Email address</label>
+            <input id="news-email" type="email" placeholder="Your email address" autocomplete="email">
+            <button type="submit">Notify me</button>
+          </div>
+          <p class="news-msg" id="news-msg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
       <nav class="footer-nav" aria-label="Footer">
         <a href="#cheese">The collection</a>
         <a href="#gifts">Boards &amp; gifts</a>

@@ -99,6 +99,9 @@ function renderHours() {
 
 /* ---------- shop details into the page ---------- */
 function renderDetails() {
+  $$("[data-shop-address]").forEach(e => (e.innerHTML = SHOP.address.join("<br>")));
+  $$("[data-shop-email-text]").forEach(e => { e.href = `mailto:${SHOP.email}`; e.textContent = SHOP.email; });
+  $$("[data-shop-phone-text]").forEach(e => { e.href = `tel:${SHOP.phoneLink}`; e.textContent = SHOP.phone; });
   $("#address").innerHTML = SHOP.address.join("<br>");
   const em = $("#email-link"); em.href = `mailto:${SHOP.email}`; em.textContent = SHOP.email;
   const ph = $("#phone-link"); ph.href = `tel:${SHOP.phoneLink}`; ph.textContent = SHOP.phone;
@@ -125,6 +128,7 @@ function renderGrid(initial = false) {
   const items = visible();
   const cols = getComputedStyle(grid).gridTemplateColumns.split(" ").length || 1;
   const draw = () => {
+    grid.classList.toggle("featured", filter === "all" && !query.trim());
     grid.innerHTML = items.map((p, i) => `
       <li class="card${initial ? " pre" : ""}" style="--c:${i % cols};view-transition-name:card-${p.id}">
         <button class="quick-add" type="button" data-add="${p.id}" aria-label="Add ${p.name} to your order list">+</button>
@@ -489,3 +493,15 @@ if (window.gsap && window.ScrollTrigger && window.Lenis && !reduce) {
 
   addEventListener("load", () => ScrollTrigger.refresh());
 }
+
+/* ---------- opening-news form (demo: nothing is sent or stored) ---------- */
+(() => {
+  const f = $("#news-form"), msg = $("#news-msg"); if (!f) return;
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    const v = $("#news-email").value.trim();
+    msg.classList.remove("ok");
+    if (!/^\S+@\S+\.\S+$/.test(v)) { msg.textContent = "Please enter a valid email address."; return; }
+    msg.textContent = "Thank you. We will write when the doors open. (Demo: nothing was saved.)"; msg.classList.add("ok"); f.reset();
+  });
+})();
