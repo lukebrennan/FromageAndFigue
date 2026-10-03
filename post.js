@@ -48,16 +48,13 @@ const card = p => `<a class="bcard" href="/blog/${encodeURIComponent(p.slug)}/" 
   } catch (e) {}
   if (!p) return notFound();
   setMeta(p);
-  root.innerHTML = `<header class="post-hero"><div class="wrap narrow">
-      <a class="back" href="blog">&lsaquo; All stories</a>
-      <p class="bmeta">${[p.category, fmtDate(p.published_at), `${p.read_minutes || 1} min read`].filter(Boolean).map(esc).join(" &middot; ")}</p>
-      <h1>${esc(p.title)}</h1>
-      ${p.excerpt ? `<p class="standfirst">${esc(p.excerpt)}</p>` : ""}
-      <p class="byline">By ${esc(p.author)}</p>
-    </div></header>
-    ${p.featured_image ? `<figure class="post-image"><img src="${esc(p.featured_image)}" alt="${esc(p.featured_alt || p.title)}"></figure>` : ""}
+  const metaLine = [p.category, fmtDate(p.published_at), `${p.read_minutes || 1} min read`].filter(Boolean).map(esc).join(" &middot; ");
+  root.innerHTML = `${p.featured_image ? `<header class="post-cover"><div class="cover-media"><img src="${esc(p.featured_image)}" alt="${esc(p.featured_alt || p.title)}"></div><div class="cover-text wrap">
+      <a class="back" href="/blog/">&lsaquo; All stories</a><p class="bmeta">${metaLine}</p><h1>${esc(p.title)}</h1>
+      ${p.excerpt ? `<p class="standfirst">${esc(p.excerpt)}</p>` : ""}<p class="byline">By ${esc(p.author)}</p></div></header>`
+    : `<header class="post-hero"><div class="wrap narrow"><a class="back" href="/blog/">&lsaquo; All stories</a><p class="bmeta">${metaLine}</p><h1>${esc(p.title)}</h1>
+      ${p.excerpt ? `<p class="standfirst">${esc(p.excerpt)}</p>` : ""}<p class="byline">By ${esc(p.author)}</p></div></header>`}
     <div class="wrap narrow"><div class="prose">${clean(p.content)}</div></div>`;
-  $$("#post .back, #post h1, #post .bmeta, #post .standfirst, #post .byline, #post .post-image").forEach((el, i) => { el.style.setProperty("--i", i); el.classList.add("rise"); });
   try {
     const r = await fetch(`${FF_SB.url}/rest/v1/posts?select=slug,title,excerpt,featured_image,featured_alt,category,published_at&status=eq.published&published_at=lte.${new Date().toISOString()}&slug=neq.${encodeURIComponent(p.slug)}&order=published_at.desc&limit=3`, { headers: { apikey: FF_SB.key } });
     const others = r.ok ? await r.json() : [];

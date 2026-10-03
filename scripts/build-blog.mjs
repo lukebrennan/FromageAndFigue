@@ -79,14 +79,19 @@ function page(template, p, others) {
   const title = `${p.seo_title || p.title} | Fromage & Figue`, desc = p.seo_description || p.excerpt || "", url = `${SITE}/blog/${p.slug}/`;
   const meta = [p.category, day(p.published_at), `${p.read_minutes || 1} min read`].filter(Boolean).map(esc).join(" &middot; ");
   const article = `<article id="post">
-    <header class="post-hero"><div class="wrap narrow">
+    ${p.featured_image ? `<header class="post-cover"><div class="cover-media"><img src="${esc(p.featured_image)}" alt="${esc(p.featured_alt || p.title)}"></div><div class="cover-text wrap">
+      <a class="back" href="/blog/">&lsaquo; All stories</a>
+      <p class="bmeta">${meta}</p>
+      <h1>${esc(p.title)}</h1>
+      ${p.excerpt ? `<p class="standfirst">${esc(p.excerpt)}</p>` : ""}
+      <p class="byline">By ${esc(p.author)}</p>
+    </div></header>` : `<header class="post-hero"><div class="wrap narrow">
       <a class="back rise" href="/blog/" style="--i:0">&lsaquo; All stories</a>
       <p class="bmeta rise" style="--i:1">${meta}</p>
       <h1 class="rise" style="--i:2">${esc(p.title)}</h1>
       ${p.excerpt ? `<p class="standfirst rise" style="--i:3">${esc(p.excerpt)}</p>` : ""}
       <p class="byline rise" style="--i:4">By ${esc(p.author)}</p>
-    </div></header>
-    ${p.featured_image ? `<figure class="post-image rise" style="--i:5"><img src="${esc(p.featured_image)}" alt="${esc(p.featured_alt || p.title)}"></figure>` : ""}
+    </div></header>`}
     <div class="wrap narrow"><div class="prose">${cleanBody(p.content)}</div></div>
   </article>
   ${others.length ? `<section class="g-section sand" id="more-wrap"><div class="wrap"><div class="g-head" data-reveal><p class="eyebrow dark"><span>Keep reading</span></p><h2>More <em>stories.</em></h2></div><div class="blog-grid" id="more-grid">${others.map(card).join("")}</div></div></section>` : ""}`;
