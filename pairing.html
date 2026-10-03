@@ -32,10 +32,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261003g">
-  <link rel="stylesheet" href="collection.css?v=20261003g">
-  <link rel="stylesheet" href="gifts.css?v=20261003g">
-  <link rel="stylesheet" href="pairing.css?v=20261003g">
+  <link rel="stylesheet" href="styles.css?v=20261003i">
+  <link rel="stylesheet" href="collection.css?v=20261003i">
+  <link rel="stylesheet" href="gifts.css?v=20261003i">
+  <link rel="stylesheet" href="pairing.css?v=20261003i">
   <script>document.documentElement.classList.replace('no-js','js');if(/\.html$/.test(location.pathname)){try{history.replaceState(null,'',location.pathname.replace(/(index)?\.html$/,'')+location.search+location.hash)}catch(e){}}try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
 </head>
 <body>
@@ -79,14 +79,23 @@
           </ul>
         </div></div>
       </div>
-      <a href="pairing" class="current">Pairing</a>
-      <a href="./#about">About</a>
+      <div class="has-menu">
+        <a class="menu-link current" href="./#about">About</a>
+        <button class="menu-caret" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="menu-about" aria-label="About menu"><i class="caret" aria-hidden="true"></i></button>
+        <div class="dd" id="menu-about"><div class="dd-box">
+          <a class="dd-head" href="./#about"><span>Our story</span><i aria-hidden="true">&rarr;</i></a>
+          <ul>
+            <li><a href="pairing">Pairing guide</a></li>
+            <li><a href="blog">Blog</a></li>
+          </ul>
+        </div></div>
+      </div>
       <a href="./#visit">Visit</a>
     </nav>
     <div class="header-right">
       <a class="status" href="./#visit"><i class="dot"></i><span id="status-text">Opening hours</span></a>
-      <button class="order-btn" type="button" data-open-order aria-label="Open your order list">
-        Order list <b class="count" data-count>0</b>
+      <button class="order-btn" type="button" data-open-order aria-label="Open your basket">
+        Basket <b class="count" data-count>0</b>
       </button>
       <button class="menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><span></span><span></span></button>
     </div>
@@ -98,10 +107,10 @@
       <div class="mn-sub"><a href="collection?type=soft">Soft</a><a href="collection?type=hard">Hard</a><a href="collection?type=blue">Blue</a><a href="collection?type=pantry">Bread and pantry</a></div>
       <a class="mn-main" href="gifts">Boards &amp; gifts</a>
       <div class="mn-sub"><a href="gifts#boards">Boards</a><a href="gifts#boxes">Boxes</a><a href="gifts#vouchers">Vouchers</a></div>
-      <a class="mn-main" href="pairing">Pairing</a>
       <a class="mn-main" href="./#about">About</a>
+      <div class="mn-sub"><a href="pairing">Pairing guide</a><a href="blog">Blog</a></div>
       <a class="mn-main" href="./#visit">Visit</a>
-      <button class="mn-order" type="button" data-open-order>Order list <b class="count" data-count>0</b></button>
+      <button class="mn-order" type="button" data-open-order>Basket <b class="count" data-count>0</b></button>
     </nav>
     <p class="mn-foot">14 Gambier Lane, Liverpool &middot; Opening Spring 2027</p>
   </div>
@@ -120,7 +129,7 @@
 
     <section id="explore" class="g-section">
       <div class="wrap">
-        <div class="g-head" data-reveal><p class="eyebrow dark"><span>01 · By cheese</span></p><h2>Choose a <em>cheese.</em></h2><p class="section-intro">Pick any cheese from the counter to see the wines, dishes and little extras that suit it best. Every name links to more, and the cheese goes straight to your order list.</p></div>
+        <div class="g-head" data-reveal><p class="eyebrow dark"><span>01 · By cheese</span></p><h2>Choose a <em>cheese.</em></h2><p class="section-intro">Pick any cheese from the counter to see the wines, dishes and little extras that suit it best. Every name links to more, and the cheese goes straight to your basket.</p></div>
         <div class="pe-tabs" id="pe-tabs" role="tablist" aria-label="Choose a cheese" data-reveal></div>
         <div class="pe-stage" id="pe-stage" aria-live="polite"></div>
       </div>
@@ -206,6 +215,7 @@
         <a href="collection">Main Collection</a>
         <a href="gifts">Boards &amp; gifts</a>
         <a href="pairing">Pairing</a>
+        <a href="blog">Blog</a>
         <a href="./#about">About</a>
         <a href="./#faq">Questions</a>
         <a href="./#visit">Visit</a>
@@ -220,15 +230,15 @@
     <a href="gifts">Gifts</a>
     <a href="./#about">About</a>
     <a href="./#visit">Visit</a>
-    <button type="button" data-open-order>Order <b class="count" data-count>0</b></button>
+    <button type="button" data-open-order>Basket <b class="count" data-count>0</b></button>
   </nav>
 
   <div class="scrim" id="scrim" hidden></div>
-  <aside id="order" aria-label="Your order list" aria-hidden="true" inert data-lenis-prevent>
+  <aside id="order" aria-label="Your basket" aria-hidden="true" inert data-lenis-prevent>
     <header>
-      <button type="button" class="icon-btn back-btn" id="pay-back" aria-label="Back to your list" hidden>&larr;</button>
-      <h2 id="order-title">Your order list</h2>
-      <button type="button" class="icon-btn" data-close-order aria-label="Close order list">&times;</button>
+      <button type="button" class="icon-btn back-btn" id="pay-back" aria-label="Back to your basket" hidden>&larr;</button>
+      <h2 id="order-title">Your basket</h2>
+      <button type="button" class="icon-btn" data-close-order aria-label="Close basket">&times;</button>
     </header>
 
     <div class="view" id="view-list">
@@ -263,7 +273,7 @@
         <label id="note-wrap" hidden>Your note<textarea name="note" id="order-note" rows="3" maxlength="500" placeholder="Allergies, a gift message, or anything we should know"></textarea></label>
         <div class="order-actions">
           <button type="button" class="btn btn-gold" id="go-checkout">Checkout (demo)</button>
-          <button type="button" class="link-btn" id="clear-order">Clear list</button>
+          <button type="button" class="link-btn" id="clear-order">Clear basket</button>
         </div>
         <p class="fine">We will confirm availability and final prices by email. Checkout here is a demonstration, so no real payment is taken.</p>
       </form>
@@ -322,6 +332,6 @@
   <script src="assets/vendor/gsap.min.js"></script>
   <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="assets/vendor/lenis.min.js"></script>
-  <script src="boot.js?v=20261003g" data-page="pairing.js"></script>
+  <script src="boot.js?v=20261003i" data-page="pairing.js"></script>
 </body>
 </html>

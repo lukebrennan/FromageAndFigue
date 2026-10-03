@@ -33,7 +33,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/shopfront.webp" imagesrcset="assets/shopfront-800.webp 800w, assets/shopfront.webp 1536w" imagesizes="100vw" fetchpriority="high">
-  <link rel="stylesheet" href="styles.css?v=20261003g">
+  <link rel="stylesheet" href="styles.css?v=20261003i">
   <script>document.documentElement.classList.replace('no-js','js');if(/\.html$/.test(location.pathname)){try{history.replaceState(null,'',location.pathname.replace(/(index)?\.html$/,'')+location.search+location.hash)}catch(e){}}try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
 </head>
 <body>
@@ -77,14 +77,23 @@
           </ul>
         </div></div>
       </div>
-      <a href="pairing">Pairing</a>
-      <a href="#about" data-spy="about">About</a>
+      <div class="has-menu">
+        <a class="menu-link" href="#about" data-spy="about">About</a>
+        <button class="menu-caret" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="menu-about" aria-label="About menu"><i class="caret" aria-hidden="true"></i></button>
+        <div class="dd" id="menu-about"><div class="dd-box">
+          <a class="dd-head" href="#about"><span>Our story</span><i aria-hidden="true">&rarr;</i></a>
+          <ul>
+            <li><a href="pairing">Pairing guide</a></li>
+            <li><a href="blog">Blog</a></li>
+          </ul>
+        </div></div>
+      </div>
       <a href="#visit" data-spy="visit">Visit</a>
     </nav>
     <div class="header-right">
       <a class="status" href="#visit"><i class="dot"></i><span id="status-text">Opening hours</span></a>
-      <button class="order-btn" type="button" data-open-order aria-label="Open your order list">
-        Order list <b class="count" data-count>0</b>
+      <button class="order-btn" type="button" data-open-order aria-label="Open your basket">
+        Basket <b class="count" data-count>0</b>
       </button>
       <button class="menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><span></span><span></span></button>
     </div>
@@ -96,10 +105,10 @@
       <div class="mn-sub"><a href="collection?type=soft">Soft</a><a href="collection?type=hard">Hard</a><a href="collection?type=blue">Blue</a><a href="collection?type=pantry">Bread and pantry</a></div>
       <a class="mn-main" href="gifts">Boards &amp; gifts</a>
       <div class="mn-sub"><a href="gifts#boards">Boards</a><a href="gifts#boxes">Boxes</a><a href="gifts#vouchers">Vouchers</a></div>
-      <a class="mn-main" href="pairing">Pairing</a>
       <a class="mn-main" href="#about">About</a>
+      <div class="mn-sub"><a href="pairing">Pairing guide</a><a href="blog">Blog</a></div>
       <a class="mn-main" href="#visit">Visit</a>
-      <button class="mn-order" type="button" data-open-order>Order list <b class="count" data-count>0</b></button>
+      <button class="mn-order" type="button" data-open-order>Basket <b class="count" data-count>0</b></button>
     </nav>
     <p class="mn-foot">14 Gambier Lane, Liverpool &middot; Opening Spring 2027</p>
   </div>
@@ -143,7 +152,7 @@
           <div>
             <p class="eyebrow dark"><span>01 · Main Collection</span></p>
             <h2>The <em>collection</em></h2>
-            <p class="section-intro">A considered selection of cheeses from France and beyond, chosen with the seasons. Browse the collection, and build a list to reserve for collection when we open.</p>
+            <p class="section-intro">A considered selection of cheeses from France and beyond, chosen with the seasons. Browse the collection, and fill a basket to reserve for collection when we open.</p>
             <ul class="perks"><li>Free collection from store</li><li>Delivery &pound;4.99</li><li>Free delivery over &pound;60</li></ul>
           </div>
           <label class="search">
@@ -156,7 +165,7 @@
         <p class="empty" id="empty" hidden>Nothing matches that. Try another word, or ask us in store.</p>
         <p class="more-link" data-reveal><a href="collection">View the full collection <span aria-hidden="true">&rarr;</span></a></p>
         <ol class="steps" data-reveal>
-          <li><span class="n">01</span><h3>Choose</h3><p>Browse the collection and add what you like to your list.</p></li>
+          <li><span class="n">01</span><h3>Choose</h3><p>Browse the collection and add what you like to your basket.</p></li>
           <li><span class="n">02</span><h3>Reserve</h3><p>Pick a day and time for collection, or have it delivered.</p></li>
           <li><span class="n">03</span><h3>Enjoy</h3><p>Collection in store is free. Delivery is &pound;4.99, and free over &pound;60.</p></li>
         </ol>
@@ -294,7 +303,7 @@
           <p class="section-intro">Cannot find your answer? Write to <a data-shop-email-text href="mailto:hello@fromageandfigue.co.uk">hello@fromageandfigue.co.uk</a> and we will reply.</p>
         </div>
         <div class="faq-list" data-reveal style="--d:.12s">
-          <details name="faq" open><summary>How does ordering work?</summary><div class="ans"><p>Add what you like to your order list, choose collection or delivery and a time, and send it to us. We confirm availability and final prices before anything is prepared.</p></div></details>
+          <details name="faq" open><summary>How does ordering work?</summary><div class="ans"><p>Add what you like to your basket, choose collection or delivery and a time, and send it to us. We confirm availability and final prices before anything is prepared.</p></div></details>
           <details name="faq"><summary>Do you deliver?</summary><div class="ans"><p>Yes, across Liverpool and the surrounding area. Delivery is &pound;4.99, and free on orders over &pound;60. Collection in store is always free.</p></div></details>
           <details name="faq"><summary>How is the cheese packed?</summary><div class="ans"><p>Cut to order and wrapped in paper. For delivery, it travels with chilled insulation so it arrives in good condition.</p></div></details>
           <details name="faq"><summary>How long will it keep?</summary><div class="ans"><p>Most cheeses keep well for a week or two in the fridge, in the paper we wrap them in. We will tell you how to look after each one and when it is at its best.</p></div></details>
@@ -370,6 +379,7 @@
         <a href="collection">Main Collection</a>
         <a href="gifts">Boards &amp; gifts</a>
         <a href="pairing">Pairing</a>
+        <a href="blog">Blog</a>
         <a href="#about">About</a>
         <a href="#faq">Questions</a>
         <a href="#visit">Visit</a>
@@ -384,17 +394,17 @@
     <a href="gifts">Gifts</a>
     <a href="#about" data-spy="about">About</a>
     <a href="#visit" data-spy="visit">Visit</a>
-    <button type="button" data-open-order>Order <b class="count" data-count>0</b></button>
+    <button type="button" data-open-order>Basket <b class="count" data-count>0</b></button>
   </nav>
 
   <dialog id="product" aria-labelledby="p-name" data-lenis-prevent></dialog>
 
   <div class="scrim" id="scrim" hidden></div>
-  <aside id="order" aria-label="Your order list" aria-hidden="true" inert data-lenis-prevent>
+  <aside id="order" aria-label="Your basket" aria-hidden="true" inert data-lenis-prevent>
     <header>
-      <button type="button" class="icon-btn back-btn" id="pay-back" aria-label="Back to your list" hidden>&larr;</button>
-      <h2 id="order-title">Your order list</h2>
-      <button type="button" class="icon-btn" data-close-order aria-label="Close order list">&times;</button>
+      <button type="button" class="icon-btn back-btn" id="pay-back" aria-label="Back to your basket" hidden>&larr;</button>
+      <h2 id="order-title">Your basket</h2>
+      <button type="button" class="icon-btn" data-close-order aria-label="Close basket">&times;</button>
     </header>
 
     <div class="view" id="view-list">
@@ -429,7 +439,7 @@
         <label id="note-wrap" hidden>Your note<textarea name="note" id="order-note" rows="3" maxlength="500" placeholder="Allergies, a gift message, or anything we should know"></textarea></label>
         <div class="order-actions">
           <button type="button" class="btn btn-gold" id="go-checkout">Checkout (demo)</button>
-          <button type="button" class="link-btn" id="clear-order">Clear list</button>
+          <button type="button" class="link-btn" id="clear-order">Clear basket</button>
         </div>
         <p class="fine">We will confirm availability and final prices by email. Checkout here is a demonstration, so no real payment is taken.</p>
       </form>
@@ -489,6 +499,6 @@
   <script src="assets/vendor/gsap.min.js"></script>
   <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="assets/vendor/lenis.min.js"></script>
-  <script src="boot.js?v=20261003g"></script>
+  <script src="boot.js?v=20261003i"></script>
 </body>
 </html>

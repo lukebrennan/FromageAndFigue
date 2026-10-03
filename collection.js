@@ -144,7 +144,7 @@ function drawFilters() {
 
 function cardHTML(p, i, c, initial) {
   return `<li class="card${initial ? " pre" : ""}" data-id="${p.id}" style="--c:${i % c};view-transition-name:card-${p.id}">
-    <button class="quick-add" type="button" data-add="${p.id}" aria-label="Add ${p.name} to your order list">+</button>
+    <button class="quick-add" type="button" data-add="${p.id}" aria-label="Add ${p.name} to your basket">+</button>
     <button class="card-btn" type="button" data-open="${p.id}" aria-expanded="false" aria-controls="detail-${p.id}" aria-label="${p.name}, view details">
       <div class="thumb"><img loading="lazy" src="${imgSrc(p)}" alt="${p.name}" width="800" height="800"></div>
       <div class="card-body">
@@ -208,7 +208,7 @@ function detailHTML(p, items) {
         <div class="d-buy">
           <div class="qty" aria-label="Quantity"><button type="button" data-q="-1" aria-label="Fewer">&minus;</button><b id="d-qty">1</b><button type="button" data-q="1" aria-label="More">+</button></div>
           <span class="d-unit">x ${unit}</span>
-          <button class="btn btn-gold" type="button" data-add-detail="${p.id}">Add to order list</button>
+          <button class="btn btn-gold" type="button" data-add-detail="${p.id}">Add to basket</button>
         </div>
         <p class="d-ship">Free collection from store. Delivery &pound;4.99, free over &pound;60.</p>
         ${related.length ? `<div class="d-block d-related"><h3>Also in ${p.type === "pantry" ? "the pantry" : p.type}</h3><p>${related.map(r => `<button type="button" data-open="${r.id}">${r.name}</button>`).join("")}</p></div>` : ""}
@@ -283,8 +283,8 @@ document.addEventListener("click", e => {
   if (addD) {
     const n = parseInt($("#d-qty").textContent, 10) || 1, id = addD.dataset.addDetail;
     order[id] = (order[id] || 0) + n; save(); renderOrder(true);
-    toast(`${n} x ${byId[id].name} added to your list`);
-    const t = addD.textContent; addD.textContent = "Added to your list"; addD.classList.add("added"); setTimeout(() => { addD.textContent = t; addD.classList.remove("added"); }, 1800);
+    toast(`${n} x ${byId[id].name} added to your basket`);
+    const t = addD.textContent; addD.textContent = "Added to your basket"; addD.classList.add("added"); setTimeout(() => { addD.textContent = t; addD.classList.remove("added"); }, 1800);
     return;
   }
   const qb = e.target.closest("[data-q]");

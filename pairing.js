@@ -147,7 +147,7 @@ function drawStage(animate) {
     <div class="pe-info">
       <h3 class="pe-name">${esc(p.name)}</h3>
       <p class="pe-note">${esc(p.note)}</p>
-      <div class="pe-buy"><span class="pe-price">${esc(p.price)}</span><button class="btn btn-dark" type="button" data-add="${esc(p.id)}">Add to order list</button></div>
+      <div class="pe-buy"><span class="pe-price">${esc(p.price)}</span><button class="btn btn-dark" type="button" data-add="${esc(p.id)}">Add to basket</button></div>
       <div class="pe-cols">
         <div class="pe-col"><h4>In the glass</h4><ul>${d.wines.map(w => `<li>${ext(w.u, w.n)}<span>${esc(w.t)}</span></li>`).join("")}</ul></div>
         <div class="pe-col"><h4>On the plate</h4><ul>${d.dishes.map(x => `<li>${ext(x.u, x.n)}<span>${esc(x.t)}</span></li>`).join("")}</ul></div>
@@ -169,7 +169,7 @@ document.addEventListener("click", e => {
   const g = e.target.closest(".glass-grid [data-pick]"); if (g) return pick(g.dataset.pick, true);
   const a = e.target.closest("#pe-stage [data-add]"); if (a) {
     addToOrder(a.dataset.add);
-    const t = a.textContent; a.textContent = "Added to your list"; a.classList.add("added"); setTimeout(() => { a.textContent = t; a.classList.remove("added"); }, 1800);
+    const t = a.textContent; a.textContent = "Added to your basket"; a.classList.add("added"); setTimeout(() => { a.textContent = t; a.classList.remove("added"); }, 1800);
   }
 });
 

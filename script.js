@@ -153,7 +153,7 @@ function renderGrid(initial = false) {
   const draw = () => {
     grid.innerHTML = items.map((p, i) => `
       <li class="card${initial ? " pre" : ""}" style="--c:${i % cols};view-transition-name:card-${p.id}">
-        <button class="quick-add" type="button" data-add="${p.id}" aria-label="Add ${p.name} to your order list">+</button>
+        <button class="quick-add" type="button" data-add="${p.id}" aria-label="Add ${p.name} to your basket">+</button>
         <button class="card-btn" type="button" data-open="${p.id}" aria-label="View ${p.name}">
           <div class="thumb"><img loading="lazy" src="${imgSrc(p)}" alt="${p.name}" width="800" height="1000"></div>
           <div class="card-body">
@@ -203,7 +203,7 @@ function openProduct(id, trigger) {
       </dl>
       <div class="p-actions">
         <span class="p-price">${p.price}</span>
-        <button class="btn btn-dark" type="button" data-add-close="${p.id}">Add to order list</button>
+        <button class="btn btn-dark" type="button" data-add-close="${p.id}">Add to basket</button>
       </div>
     </div>`;
   dlg.showModal(); lockScroll(true);
@@ -241,7 +241,7 @@ let toastT;
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200); }
 function addToOrder(id) {
   order[id] = (order[id] || 0) + 1; save(); renderOrder(true);
-  toast(`${byId[id].name} added to your list`);
+  toast(`${byId[id].name} added to your basket`);
 }
 function renderOrder(bump) {
   const ids = Object.keys(order), n = total();
@@ -398,7 +398,7 @@ function recordOrder(o) {
 }
 let view = "list";
 const payForm = $("#pay-form"), payError = $("#pay-error"), payBtn = $("#pay-btn");
-const titles = { list: "Your order list", pay: "Checkout (demo)", done: "Order confirmed" };
+const titles = { list: "Your basket", pay: "Checkout (demo)", done: "Order confirmed" };
 function showView(v) {
   view = v;
   $("#view-list").hidden = v !== "list"; payForm.hidden = v !== "pay"; $("#view-done").hidden = v !== "done";

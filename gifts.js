@@ -43,11 +43,11 @@ const itemHTML = p => {
       <h3>${p.name}</h3>
       <p class="g-serves">${i.serves || p.note}</p>
       <ul>${(i.includes || []).map(x => `<li>${x}</li>`).join("")}</ul>
-      <div class="g-buy"><span class="g-price">${p.price.split("/")[0].trim()}</span><button class="btn btn-gold" type="button" data-add="${p.id}">Add to order list</button></div>
+      <div class="g-buy"><span class="g-price">${p.price.split("/")[0].trim()}</span><button class="btn btn-gold" type="button" data-add="${p.id}">Add to basket</button></div>
     </div>
   </article>`;
 };
-const voucherHTML = p => `<div class="g-voucher" data-reveal><span class="g-price">${p.price.split("/")[0].trim()}</span><button class="btn btn-dark" type="button" data-add="${p.id}">Add to order list</button></div>`;
+const voucherHTML = p => `<div class="g-voucher" data-reveal><span class="g-price">${p.price.split("/")[0].trim()}</span><button class="btn btn-dark" type="button" data-add="${p.id}">Add to basket</button></div>`;
 g.forEach(box => {
   const kind = box.dataset.kind, items = GIFTS.filter(p => p.type === kind);
   box.innerHTML = items.map((p, n) => (kind === "voucher" ? voucherHTML(p) : itemHTML(p))).join("");
