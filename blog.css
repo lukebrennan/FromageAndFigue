@@ -1,0 +1,69 @@
+/* ================= Blog ================= */
+.blog-section { padding-top: clamp(2rem, 4vw, 3.2rem); }
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: clamp(1.8rem, 3vw, 2.6rem); }
+.chips[hidden] { display: none; }
+.chips .chip { padding: .55rem 1.1rem; border: 1px solid var(--line); background: none; border-radius: 0; font: inherit; font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); cursor: pointer; transition: background .25s, color .25s, border-color .25s; }
+.chips .chip:hover { border-color: var(--gold); }
+.chips .chip.on { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+
+.bfeature { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(1.6rem, 4vw, 4rem); align-items: center; text-decoration: none; color: inherit; margin-bottom: clamp(2.5rem, 5vw, 4.5rem); }
+.bfeature figure, .bcard figure { margin: 0; overflow: hidden; background: var(--sand); position: relative; }
+.bfeature figure { aspect-ratio: 16 / 10; }
+.bfeature img, .bcard img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s var(--ease); }
+.bfeature:hover img, .bcard:hover img { transform: scale(1.04); }
+.no-img { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--serif); font-style: italic; font-size: 3rem; color: var(--gold); background: var(--sand); }
+.bmeta { margin: 0 0 .9rem; font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: #8a6d33; }
+.bfeature h2 { font-size: clamp(2.2rem, 4.4vw, 3.8rem); line-height: 1.04; }
+.bex { margin: 1rem 0 0; color: var(--muted); font-size: 1.05rem; line-height: 1.6; }
+.bmore { display: inline-block; margin-top: 1.4rem; font-size: .74rem; letter-spacing: .2em; text-transform: uppercase; padding-bottom: 4px; border-bottom: 1px solid var(--ink); transition: color .3s, border-color .3s, letter-spacing .5s var(--ease); }
+.bfeature:hover .bmore, .bcard:hover .bmore { color: #8a6d33; border-color: var(--gold); letter-spacing: .26em; }
+.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.6rem, 3vw, 2.6rem) clamp(1.2rem, 2.4vw, 2.2rem); }
+.bcard { display: flex; flex-direction: column; text-decoration: none; color: inherit; }
+.bcard figure { aspect-ratio: 4 / 3; }
+.bcard-body { padding-top: 1.2rem; display: flex; flex-direction: column; flex: 1; }
+.bcard h3 { font-size: 1.85rem; line-height: 1.1; transition: color .3s; }
+.bcard:hover h3 { color: #8a6d33; }
+.bcard .bex { font-size: .98rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.bcard .bmore { align-self: flex-start; margin-top: auto; padding-top: 0; }
+.bcard .bex + .bmore { margin-top: 1.2rem; }
+.blog-more { margin-top: clamp(2.2rem, 4vw, 3.4rem); text-align: center; }
+.blog-more[hidden], .blog-body[hidden], #blog-empty[hidden] { display: none; }
+
+/* single post */
+.narrow { max-width: 46rem; }
+.post-hero { padding: calc(var(--header-h) + clamp(2rem, 5vw, 4rem)) 0 clamp(1.6rem, 3vw, 2.4rem); }
+.post-hero .back { display: inline-block; margin-bottom: 1.8rem; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 3px; }
+.post-hero .back:hover { color: #8a6d33; border-color: var(--gold); }
+.post-hero h1 { font-size: clamp(2.8rem, 6.4vw, 5.2rem); line-height: 1; letter-spacing: -.02em; }
+.post-hero h1 em { color: var(--gold); }
+.standfirst { margin: 1.4rem 0 0; font-family: var(--serif); font-size: clamp(1.4rem, 2.6vw, 1.9rem); line-height: 1.35; color: var(--muted); }
+.byline { margin: 1.4rem 0 0; font-size: .74rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.post-image { margin: 0 auto clamp(2.2rem, 5vw, 4rem); max-width: 1180px; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
+.post-image img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: var(--sand); }
+.rise { opacity: 0; transform: translateY(14px); animation: riseIn .9s var(--ease) calc(var(--i, 0) * 90ms + .1s) forwards; }
+@keyframes riseIn { to { opacity: 1; transform: none; } }
+.prose { padding-bottom: clamp(3.5rem, 7vw, 6rem); font-size: 1.1rem; line-height: 1.8; color: #2a2825; }
+.prose > * + * { margin-top: 1.4em; }
+.prose h2 { font-size: clamp(2rem, 4vw, 2.7rem); line-height: 1.1; margin-top: 2.2em; }
+.prose h3 { font-size: clamp(1.6rem, 3vw, 2.1rem); line-height: 1.15; margin-top: 1.9em; }
+.prose p { margin-bottom: 0; }
+.prose a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 4px; text-decoration-thickness: 1px; transition: color .3s; }
+.prose a:hover { color: #8a6d33; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose li + li { margin-top: .4em; }
+.prose blockquote { margin-left: 0; margin-right: 0; padding: .4em 0 .4em 1.4em; border-left: 2px solid var(--gold); font-family: var(--serif); font-style: italic; font-size: 1.5em; line-height: 1.4; }
+.prose img, .prose video, .prose iframe { max-width: 100%; display: block; height: auto; margin-left: auto; margin-right: auto; }
+.prose iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; }
+.prose figure { margin-left: 0; margin-right: 0; }
+.prose figcaption { margin-top: .6em; font-size: .85rem; color: var(--muted); text-align: center; }
+.prose hr { border: 0; border-top: 1px solid var(--line); margin: 2.4em 0; }
+.prose pre, .prose code { font-size: .9em; background: var(--sand); padding: .15em .4em; }
+.prose pre { padding: 1em; overflow-x: auto; }
+.prose table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.prose th, .prose td { border-bottom: 1px solid var(--line); padding: .6em .8em; text-align: left; }
+.prose .ql-align-center { text-align: center; } .prose .ql-align-right { text-align: right; } .prose .ql-align-justify { text-align: justify; }
+.prose .ql-size-small { font-size: .85em; } .prose .ql-size-large { font-size: 1.3em; } .prose .ql-size-huge { font-size: 1.7em; }
+
+@media (max-width: 1000px) { .blog-grid { grid-template-columns: 1fr 1fr; } .bfeature { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .blog-grid { grid-template-columns: 1fr; } .bcard figure { aspect-ratio: 16 / 10; } .prose { font-size: 1.05rem; } }
+@media (prefers-reduced-motion: reduce) { .rise { animation: none; opacity: 1; transform: none; } .bfeature:hover img, .bcard:hover img { transform: none; } }

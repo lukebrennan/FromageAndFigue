@@ -32,9 +32,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261003i">
-  <link rel="stylesheet" href="collection.css?v=20261003i">
-  <link rel="stylesheet" href="gifts.css?v=20261003i">
+  <link rel="stylesheet" href="styles.css?v=20261003j">
+  <link rel="stylesheet" href="collection.css?v=20261003j">
+  <link rel="stylesheet" href="gifts.css?v=20261003j">
+  <link rel="stylesheet" href="blog.css?v=20261003j">
   <script>document.documentElement.classList.replace('no-js','js');if(/\.html$/.test(location.pathname)){try{history.replaceState(null,'',location.pathname.replace(/(index)?\.html$/,'')+location.search+location.hash)}catch(e){}}try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
 </head>
 <body>
@@ -122,12 +123,20 @@
         <div class="cat-intro hero-in" style="--i:4"><p>Stories, recipes and notes from behind the counter, written by Benoit.</p></div>
       </div>
     </header>
-    <section class="g-section">
-      <div class="wrap soon-box" data-reveal>
-        <p class="eyebrow dark"><span>Coming soon</span></p>
-        <h2>The first stories are <em>on their way.</em></h2>
-        <p class="section-intro">We are writing about the cheeses we love, the people who make them and the dishes we cook at home. Sign up below and we will tell you when the first one is out.</p>
-        <div class="soon-cta"><a class="btn btn-dark" href="#news-email" data-focus-news>Get the news</a><a class="btn btn-ghost-dark" href="pairing">Read the pairing guide</a></div>
+    <section class="g-section blog-section">
+      <div class="wrap">
+        <div class="blog-body">
+          <div class="chips" id="blog-filters" role="group" aria-label="Filter stories" hidden></div>
+          <div id="blog-feature"></div>
+          <div class="blog-grid" id="blog-grid"></div>
+          <div class="blog-more" id="blog-more" hidden><button class="btn btn-line" type="button">Load more stories</button></div>
+        </div>
+        <div class="soon-box" id="blog-empty" data-reveal hidden>
+          <p class="eyebrow dark"><span>Coming soon</span></p>
+          <h2>The first stories are <em>on their way.</em></h2>
+          <p class="section-intro">We are writing about the cheeses we love, the people who make them and the dishes we cook at home. Sign up below and we will tell you when the first one is out.</p>
+          <div class="soon-cta"><a class="btn btn-dark" href="#news-email">Get the news</a><a class="btn btn-ghost-dark" href="pairing">Read the pairing guide</a></div>
+        </div>
       </div>
     </section>
   </main>
@@ -282,6 +291,6 @@
   <script src="assets/vendor/gsap.min.js"></script>
   <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="assets/vendor/lenis.min.js"></script>
-  <script src="boot.js?v=20261003i" data-page="blog.js"></script>
+  <script src="boot.js?v=20261003j" data-page="blog.js"></script>
 </body>
 </html>

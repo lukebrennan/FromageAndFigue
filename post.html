@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Main Collection | Fromage &amp; Figue, Liverpool</title>
-  <meta name="description" content="Browse the full Fromage &amp; Figue collection of soft, hard and blue cheeses, bread and pantry goods. Free collection in Liverpool, or delivered.">
+  <title>Story | Fromage &amp; Figue, Liverpool</title>
+  <meta name="description" content="Stories, recipes and notes from the counter at Fromage &amp; Figue, written by Benoit. The first posts are coming soon.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#141312">
-  <link rel="canonical" href="https://fromageandfigue.co.uk/collection">
+  <link rel="canonical" href="https://fromageandfigue.co.uk/post">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Fromage &amp; Figue">
   <meta property="og:locale" content="en_GB">
-  <meta property="og:url" content="https://fromageandfigue.co.uk/collection">
-  <meta property="og:title" content="Main Collection | Fromage &amp; Figue">
-  <meta property="og:description" content="Every cheese on the counter, and the pantry that goes with it. Opening soon in Liverpool.">
+  <meta property="og:url" content="https://fromageandfigue.co.uk/post">
+  <meta property="og:title" content="Story | Fromage &amp; Figue">
+  <meta property="og:description" content="Stories, recipes and notes from the counter, written by Benoit. Opening soon in Liverpool.">
   <meta property="og:image" content="https://fromageandfigue.co.uk/assets/social.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Fromage &amp; Figue, artisan fromagerie in Liverpool, opening soon">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Main Collection | Fromage &amp; Figue">
-  <meta name="twitter:description" content="Every cheese on the counter, and the pantry that goes with it. Opening soon in Liverpool.">
+  <meta name="twitter:title" content="Story | Fromage &amp; Figue">
+  <meta name="twitter:description" content="Stories, recipes and notes from the counter, written by Benoit. Opening soon in Liverpool.">
   <meta name="twitter:image" content="https://fromageandfigue.co.uk/assets/social.jpg">
   <meta name="twitter:image:alt" content="Fromage &amp; Figue, artisan fromagerie in Liverpool, opening soon">
   <link rel="icon" href="favicon.ico" sizes="48x48">
@@ -34,6 +34,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20261003j">
   <link rel="stylesheet" href="collection.css?v=20261003j">
+  <link rel="stylesheet" href="gifts.css?v=20261003j">
+  <link rel="stylesheet" href="blog.css?v=20261003j">
   <script>document.documentElement.classList.replace('no-js','js');if(/\.html$/.test(location.pathname)){try{history.replaceState(null,'',location.pathname.replace(/(index)?\.html$/,'')+location.search+location.hash)}catch(e){}}try{if(sessionStorage.getItem('ff-nav')){document.documentElement.classList.add('from-nav');sessionStorage.removeItem('ff-nav')}}catch(e){}</script>
 </head>
 <body>
@@ -50,7 +52,7 @@
     </a>
     <nav class="nav" aria-label="Main">
       <div class="has-menu">
-        <a class="menu-link current" href="collection">Main Collection</a>
+        <a class="menu-link" href="collection">Main Collection</a>
         <button class="menu-caret" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="menu-collection" aria-label="Main Collection menu"><i class="caret" aria-hidden="true"></i></button>
         <div class="dd" id="menu-collection"><div class="dd-box">
           <a class="dd-head" href="collection"><span>Shop the whole collection</span><i aria-hidden="true">&rarr;</i></a>
@@ -78,7 +80,7 @@
         </div></div>
       </div>
       <div class="has-menu">
-        <a class="menu-link" href="./#about">About</a>
+        <a class="menu-link current" href="./#about">About</a>
         <button class="menu-caret" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="menu-about" aria-label="About menu"><i class="caret" aria-hidden="true"></i></button>
         <div class="dd" id="menu-about"><div class="dd-box">
           <a class="dd-head" href="./#about"><span>Our story</span><i aria-hidden="true">&rarr;</i></a>
@@ -113,46 +115,12 @@
     <p class="mn-foot">14 Gambier Lane, Liverpool &middot; Opening Spring 2027</p>
   </div>
 
-  <main id="top" class="cat">
-    <header class="cat-hero">
+  <main id="top" class="cat post-page">
+    <article id="post" aria-live="polite"></article>
+    <section class="g-section sand" id="more-wrap" hidden>
       <div class="wrap">
-        <p class="eyebrow dark hero-in" style="--i:0"><span>Main Collection</span></p>
-        <h1 class="cat-title" aria-label="Main Collection"><span class="hero-in" style="--i:1">Main</span> <em class="hero-in" style="--i:2">Collection</em></h1>
-        <div class="cat-intro hero-in" style="--i:3">
-          <p>Every cheese on the counter, and the pantry that goes with it. Choose any one to read more, see it up close and add it to your basket.</p>
-          <ul class="perks"><li>Free collection from store</li><li>Delivery &pound;4.99</li><li>Free delivery over &pound;60</li></ul>
-        </div>
-      </div>
-    </header>
-
-    <div class="cat-bar" id="cat-bar">
-      <div class="wrap cat-bar-in">
-        <div class="filters" role="group" aria-label="Filter the collection" id="filters"></div>
-        <div class="cat-tools">
-          <label class="search"><span class="sr-only">Search the collection</span><input id="search" type="search" placeholder="Search" autocomplete="off"></label>
-          <label class="sort"><span class="sr-only">Sort by</span>
-            <select id="sort" aria-label="Sort by">
-              <option value="featured">Featured</option>
-              <option value="name">Name, A to Z</option>
-              <option value="low">Price, low to high</option>
-              <option value="high">Price, high to low</option>
-            </select>
-          </label>
-          <p class="cat-count" id="count" aria-live="polite"></p>
-        </div>
-      </div>
-    </div>
-
-    <section class="cat-body">
-      <div class="wrap">
-        <ul class="grid cat-grid" id="grid"></ul>
-        <p class="empty" id="empty" hidden>Nothing matches that. Try another word, or ask us in store.</p>
-
-        <ol class="steps" data-reveal>
-          <li><span class="n">01</span><h3>Choose</h3><p>Add what you like to your basket from any card or from the details.</p></li>
-          <li><span class="n">02</span><h3>Reserve</h3><p>Pick a day and time for collection, or have it delivered.</p></li>
-          <li><span class="n">03</span><h3>Enjoy</h3><p>Collection in store is free. Delivery is &pound;4.99, and free over &pound;60.</p></li>
-        </ol>
+        <div class="g-head" data-reveal><p class="eyebrow dark"><span>Keep reading</span></p><h2>More <em>stories.</em></h2></div>
+        <div class="blog-grid" id="more-grid"></div>
       </div>
     </section>
   </main>
@@ -201,7 +169,7 @@
   </footer>
 
   <nav class="tabbar away" aria-label="Quick navigation">
-    <a href="collection" class="active">Cheese</a>
+    <a href="collection">Cheese</a>
     <a href="gifts">Gifts</a>
     <a href="./#about">About</a>
     <a href="./#visit">Visit</a>
@@ -307,6 +275,6 @@
   <script src="assets/vendor/gsap.min.js"></script>
   <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="assets/vendor/lenis.min.js"></script>
-  <script src="boot.js?v=20261003j" data-page="collection.js"></script>
+  <script src="boot.js?v=20261003j" data-page="post.js"></script>
 </body>
 </html>

@@ -1,3 +1,4 @@
 GSAP 3.15.0 and ScrollTrigger, GreenSock. Free to use under the GSAP Standard License: https://gsap.com/standard-license
 Lenis 1.3.26, darkroomengineering. MIT License: https://github.com/darkroomengineering/lenis
 Supabase JS 2.117.2, Supabase. MIT License: https://github.com/supabase/supabase-js
+Quill 2.0.3, Slab. BSD 3-Clause License: https://github.com/slab/quill
