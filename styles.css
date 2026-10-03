@@ -19,7 +19,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { scroll-behavior: smooth; scroll-padding-top: var(--header-h); -webkit-text-size-adjust: 100%; }
+html { scroll-padding-top: var(--header-h); -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--ivory); color: var(--ink);
   font: 300 17px/1.65 var(--sans); -webkit-font-smoothing: antialiased;
