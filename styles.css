@@ -229,7 +229,7 @@ html.ready .hero-line > span, html.ready .hero-cta { opacity: 1; transform: none
 .band img { inset: -12% 0 auto 0; height: 124%; }
 
 /* visit */
-.visit { background: var(--ivory); }
+.visit { background: var(--ivory); padding-bottom: 0; }
 .visit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
 .open-line { display: flex; align-items: center; gap: .7rem; margin: 1.6rem 0 2rem; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
 .visit .dot { background: var(--stone); }
@@ -259,6 +259,7 @@ html.ready .hero-line > span, html.ready .hero-cta { opacity: 1; transform: none
 
 /* mobile tab bar */
 .tabbar { display: none; }
+button, a { -webkit-tap-highlight-color: transparent; }
 
 /* product dialog */
 dialog#product { border: 0; padding: 0; background: var(--ivory); color: var(--ink); width: min(960px, calc(100vw - 2rem)); max-height: calc(100svh - 2rem); border-radius: 6px; overflow: hidden; opacity: 0; transform: translateY(24px) scale(.98); transition: opacity .45s var(--ease), transform .45s var(--ease), display .45s allow-discrete, overlay .45s allow-discrete; }
@@ -310,7 +311,7 @@ dialog#product::backdrop { background: rgba(20, 19, 18, .6); backdrop-filter: bl
 .link-btn { background: none; border: 0; font: inherit; font-size: .78rem; color: var(--muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; justify-self: center; }
 .fine { margin: 0; font-size: .78rem; color: var(--muted); text-align: center; }
 
-.toast { position: fixed; left: 50%; bottom: 2rem; z-index: 90; transform: translate(-50%, 30px); background: var(--ink); color: var(--ivory); padding: .85rem 1.5rem; border-radius: 999px; font-size: .85rem; letter-spacing: .04em; opacity: 0; pointer-events: none; transition: opacity .4s, transform .5s var(--ease); max-width: calc(100vw - 2rem); }
+.toast { position: fixed; left: 50%; bottom: 2rem; z-index: 65; transform: translate(-50%, 30px); background: var(--ink); color: var(--ivory); padding: .85rem 1.5rem; border-radius: 999px; font-size: .85rem; letter-spacing: .04em; opacity: 0; pointer-events: none; transition: opacity .4s, transform .5s var(--ease); max-width: calc(100vw - 2rem); }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* responsive */
@@ -343,11 +344,50 @@ dialog#product::backdrop { background: rgba(20, 19, 18, .6); backdrop-filter: bl
   .scroll-cue { display: none; }
 }
 @media (max-width: 560px) {
-  .grid { grid-template-columns: 1fr; }
   .details { grid-template-columns: 1fr; }
   .section-head { align-items: stretch; }
   .search input { width: 100%; }
   .hero-inner { padding-bottom: 7.5rem; }
+}
+
+/* phone refinements */
+@media (max-width: 800px) {
+  .section { padding: clamp(3.5rem, 14vw, 5rem) 0; }
+  .visit { padding-bottom: 0; }
+  .tabbar { transition: transform .55s var(--ease); }
+  .tabbar.away { transform: translateY(170%); }
+  /* hero: keep the whole shop sign in view */
+  .hero-media { inset: 0 0 auto 0; height: 60svh; }
+  .hero-media img { inset: 0 auto auto 0; height: 100%; scale: 1; animation: none; object-position: 56% 30%; }
+  .hero-shade { background: linear-gradient(180deg, rgba(20, 19, 18, .5) 0%, rgba(20, 19, 18, .05) 24%, rgba(20, 19, 18, .1) 38%, rgba(20, 19, 18, .88) 56%, var(--ink) 66%); }
+  .hero-inner { padding-bottom: 6.5rem; }
+  /* swipeable rows */
+  .ideas-grid, .gift-row {
+    display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    margin-left: calc(-1 * clamp(1.25rem, 4vw, 2.5rem)); margin-right: calc(-1 * clamp(1.25rem, 4vw, 2.5rem));
+    padding: 0 clamp(1.25rem, 4vw, 2.5rem) .5rem; scroll-padding-left: clamp(1.25rem, 4vw, 2.5rem);
+  }
+  .ideas-grid::-webkit-scrollbar, .gift-row::-webkit-scrollbar { display: none; }
+  .idea, .gift-row figure { flex: 0 0 82%; scroll-snap-align: start; }
+  .idea.offset { margin-top: 0; }
+  .ideas-grid [data-reveal], .gift-row [data-reveal] { opacity: 1; transform: none; }
+  .idea .img-frame, .gift-row .img-frame { clip-path: none; }
+}
+@media (max-width: 560px) {
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 1.4rem .8rem; }
+  .card p { display: none; }
+  .card-body { padding-top: .7rem; }
+  .card-top { display: contents; }
+  .card .tag { order: 1; }
+  .card h3 { order: 2; }
+  .card .price { order: 3; }
+  .card h3 { font-size: 1.3rem; margin: .15rem 0 0; }
+  .price { font-size: .78rem; }
+  .quick-add { width: 36px; height: 36px; top: .5rem; right: .5rem; font-size: 1.2rem; }
+  .thumb::after { display: none; }
+  .filters { flex-wrap: nowrap; overflow-x: auto; margin-right: -1.25rem; padding-right: 1.25rem; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter { flex: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -226,6 +226,7 @@ $("#order-items").addEventListener("click", e => {
 });
 $("#clear-order").addEventListener("click", () => { order = {}; save(); renderOrder(); });
 function openOrder() {
+  $("#toast").classList.remove("show");
   scrim.hidden = false; requestAnimationFrame(() => scrim.classList.add("show"));
   drawer.inert = false; drawer.setAttribute("aria-hidden", "false"); drawer.classList.add("open"); document.body.classList.add("locked");
   setTimeout(() => $(".icon-btn", drawer).focus({ preventScroll: true }), 50);
@@ -241,7 +242,9 @@ addEventListener("keydown", e => { if (e.key === "Escape" && drawer.classList.co
 
 /* ---------- scroll: progress, header, reveals, parallax, statement, spy ---------- */
 const header = $(".site-header"), bar = $(".progress"), hero = $(".hero");
-let ticking = false;
+let ticking = false, lastY = 0;
+const tabbar = $(".tabbar");
+const small = matchMedia("(max-width: 800px)");
 const words = (() => {
   const el = $("#statement"); const parts = el.textContent.trim().split(/\s+/);
   el.setAttribute("aria-label", el.textContent.trim());
@@ -256,8 +259,12 @@ function onScroll() {
   const heroH = hero.offsetHeight;
   header.classList.toggle("scrolled", y > 40);
   header.classList.toggle("on-hero", y < heroH - header.offsetHeight);
+  if (y > lastY + 6 && y > 240) tabbar.classList.add("away");
+  else if (y < lastY - 6 || y < 240) tabbar.classList.remove("away");
+  lastY = y;
   if (!reduce) {
     pars.forEach(img => {
+      if (small.matches && img.closest(".hero")) return;
       const wrap = img.parentElement, r = wrap.getBoundingClientRect();
       if (r.bottom < -100 || r.top > vh + 100) return;
       const s = parseFloat(img.dataset.parallax);
