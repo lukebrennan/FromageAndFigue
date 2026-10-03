@@ -173,3 +173,7 @@ create trigger orders_email_insert after insert on public.orders
 drop trigger if exists orders_email_update on public.orders;
 create trigger orders_email_update after update of status on public.orders
   for each row when (old.status is distinct from new.status) execute function public.notify_order_email();
+
+-- ---------- lets the send-email function read orders and products (see update-service-access.sql) ----------
+grant usage on schema public to service_role;
+grant select, insert, update, delete on all tables in schema public to service_role;
