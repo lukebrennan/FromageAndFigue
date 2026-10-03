@@ -811,3 +811,10 @@ body { font-size: 18px; line-height: 1.7; }
 .band::after { background: linear-gradient(180deg, rgba(20,19,18,0) 25%, rgba(20,19,18,.55) 62%, rgba(20,19,18,.88) 100%); }
 .band figcaption span { color: #f1e2b8; text-shadow: 0 1px 8px rgba(0,0,0,.6); font-weight: 500; }
 .band figcaption p { text-shadow: 0 1px 14px rgba(0,0,0,.45); }
+
+/* header: once scrolled it is always a solid light bar with dark text */
+.site-header.scrolled, .site-header.scrolled.on-hero { background: rgba(247, 243, 236, .97); color: var(--ink); box-shadow: 0 1px 0 var(--line); }
+.site-header.scrolled .logo img, .site-header.scrolled.on-hero .logo img { filter: none; }
+.site-header.scrolled .nav a { opacity: .9; }
+.site-header.scrolled .order-btn { color: var(--ink); }
+.site-header.scrolled .status { opacity: 1; }
