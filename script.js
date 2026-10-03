@@ -342,7 +342,8 @@ const pickers = $$("[data-picker]").map(root => {
       <p class="cal-hours">Open ${hoursSummary()}</p>`;
   }
   const show = () => { (step === "time" && selDay ? drawTimes : draw)(); };
-  const reveal = () => { const r = panel.getBoundingClientRect(); if (r.top < 60 || r.bottom > innerHeight - 90) field.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" }); };
+  const reveal = () => field.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });   // glide the picker to the top so the calendar or times are fully in view
+  const animate = () => { panel.classList.remove("step"); void panel.offsetWidth; panel.classList.add("step"); };
   function refresh() {
     if (slot && !slotValid()) slot = "";
     text.textContent = slot ? fmtWhen(slot) : "Choose a day and time";
@@ -350,15 +351,15 @@ const pickers = $$("[data-picker]").map(root => {
     selDay = slot ? slot.split("T")[0] : "";
   }
   function open(on) {
-    if (on) { refresh(); view = (selDay || firstOpen()).slice(0, 7) + "-01"; step = selDay ? "time" : "day"; show(); setTimeout(reveal, 60); }
+    if (on) { refresh(); view = (selDay || firstOpen()).slice(0, 7) + "-01"; step = selDay ? "time" : "day"; show(); requestAnimationFrame(() => requestAnimationFrame(reveal)); }
     panel.hidden = !on; field.setAttribute("aria-expanded", on);
   }
   field.addEventListener("click", () => open(panel.hidden));
   panel.addEventListener("click", e => {
     const nav = e.target.closest("[data-nav]"), day = e.target.closest("[data-day]"), t = e.target.closest("[data-min]"), back = e.target.closest("[data-back]");
     if (nav) { const [y, m] = parseDay(view), d = new Date(Date.UTC(y, m - 1 + +nav.dataset.nav, 1)); view = `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-01`; draw(); }
-    else if (back) { step = "day"; view = selDay.slice(0, 7) + "-01"; draw(); }
-    else if (day && !day.disabled) { selDay = day.dataset.day; step = "time"; drawTimes(); reveal(); }
+    else if (back) { step = "day"; view = selDay.slice(0, 7) + "-01"; draw(); animate(); }
+    else if (day && !day.disabled) { selDay = day.dataset.day; step = "time"; drawTimes(); animate(); requestAnimationFrame(reveal); }
     else if (t) { slot = `${selDay}T${fmtClock(+t.dataset.min)}`; err.hidden = true; pickers.forEach(p => p.refresh()); open(false); }
   });
   return { refresh, close: () => open(false), error: m => { err.textContent = m; err.hidden = false; field.focus(); } };
