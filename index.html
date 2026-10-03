@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fromage &amp; Figue</title>
+  <meta name="description" content="A small cheese shop and deli. Carefully chosen cheese, figs, and everything that goes with them.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Fraunces:opsz,wght@9..144,300;9..144,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#top">Fromage <span>&amp;</span> Figue</a>
+    <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="#cheese">Cheese</a>
+      <a href="#about">About</a>
+      <a href="#visit">Visit</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow">Cheese shop &amp; deli</p>
+      <h1>Good cheese,<br>simply done.</h1>
+      <p class="lead">A small, carefully chosen selection of cheese, figs, and the things that go with them.</p>
+      <a class="button" href="#cheese">Browse the counter</a>
+    </section>
+
+    <section id="cheese" class="section">
+      <h2>From the counter</h2>
+      <p class="section-intro">Our selection changes with the seasons. Ask us what is ripe today.</p>
+      <div class="filters" role="group" aria-label="Filter cheese">
+        <button class="filter active" data-filter="all">All</button>
+        <button class="filter" data-filter="soft">Soft</button>
+        <button class="filter" data-filter="hard">Hard</button>
+        <button class="filter" data-filter="blue">Blue</button>
+        <button class="filter" data-filter="pairing">Pairings</button>
+      </div>
+      <ul class="grid" id="grid"></ul>
+    </section>
+
+    <section id="about" class="section about">
+      <h2>About</h2>
+      <p>Fromage &amp; Figue is built on a simple idea: a great piece of cheese needs very little. A fresh fig, some good bread, a little patience.</p>
+      <p>We work with small producers and age, sell, and talk about cheese we are proud of.</p>
+    </section>
+
+    <section id="visit" class="section visit">
+      <h2>Visit</h2>
+      <div class="visit-grid">
+        <div>
+          <h3>Address</h3>
+          <p>123 Placeholder Street<br>Your City</p>
+        </div>
+        <div>
+          <h3>Hours</h3>
+          <p>Tue to Fri 10 to 18<br>Sat 9 to 17<br>Sun and Mon closed</p>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <p><a href="mailto:hello@example.com">hello@example.com</a><br>(000) 000 0000</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Fromage &amp; Figue</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
