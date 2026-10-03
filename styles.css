@@ -74,9 +74,14 @@ a { color: inherit; }
 .card p { margin: 0; color: var(--muted); font-size: .95rem; }
 .card .price { margin-top: auto; font-size: .9rem; }
 
-.about { max-width: 46rem; }
+.about-grid { display: grid; gap: 3rem; grid-template-columns: 1fr 1fr; align-items: center; }
 .about p { color: var(--muted); font-size: 1.1rem; }
 .about h2 { margin-bottom: 1.5rem; }
+.about figure { margin: 0; }
+.about figure img { display: block; width: 100%; height: auto; border-radius: 4px; aspect-ratio: 3 / 2; object-fit: cover; }
+.about .counter { margin-top: 4rem; }
+.about .counter img { aspect-ratio: 16 / 9; }
+@media (max-width: 800px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } .about .counter { margin-top: 2.5rem; } }
 
 .visit h2 { margin-bottom: 2.5rem; }
 .visit-grid { display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
