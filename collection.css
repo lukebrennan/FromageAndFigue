@@ -88,10 +88,7 @@ body.modal-open { overflow: hidden; }
 @media (max-width: 1000px) {
   .cat-intro { grid-template-columns: 1fr; }
   .cat-intro .perks { justify-content: flex-start; }
-  .detail { padding: 0; }
-  .d-wrap { max-height: 100%; height: 100%; }
   .d-inner { grid-template-columns: 1fr; padding: 3.2rem clamp(1.25rem, 4vw, 2.5rem) 2rem; }
-  .d-close { background: rgba(237,228,214,.9); position: fixed; top: .6rem; right: .6rem; margin: 0; }
   .d-gallery { position: static; }
   .d-info { max-width: none; padding-right: 0; }
 }
@@ -122,4 +119,28 @@ body.modal-open { overflow: hidden; }
   .cat-grid .card .tag { order: 0; }
   .cat-grid .card h3 { order: 0; margin-top: .3rem; }
   .cat-grid .card .price { order: 0; }
+}
+
+/* ---------- product overlay on phones: a bottom sheet ---------- */
+@media (max-width: 800px) {
+  .detail { padding: 0; align-items: flex-end; }
+  .d-wrap { height: auto; max-height: 92vh; max-height: 92dvh; width: 100%; transform: translateY(100%); opacity: 1; transition: transform .6s var(--ease); box-shadow: 0 -20px 60px rgba(0, 0, 0, .35); }
+  .detail.open .d-wrap { transform: none; }
+  .d-inner { display: block; padding: 0; }
+  .d-close { position: sticky; top: .7rem; z-index: 6; display: grid; place-items: center; width: 40px; height: 40px; margin: .7rem .7rem -50px auto; background: rgba(247, 243, 236, .94); font-size: 1.6rem; box-shadow: 0 0 0 1px rgba(20, 19, 18, .12); }
+  .d-close:hover { transform: none; }
+  .d-gallery { position: static; }
+  .d-main { aspect-ratio: 4 / 3; }
+  .d-thumbs { grid-template-columns: repeat(3, 64px); gap: .5rem; margin: .6rem 1.25rem 0; }
+  .d-info { padding: 1.5rem 1.25rem 0; max-width: none; }
+  .d-info h2 { font-size: clamp(2.2rem, 10vw, 3rem); }
+  .d-price { font-size: 1.45rem; margin-top: .5rem; }
+  .d-story { font-size: 1.02rem; margin-top: 1rem; }
+  .d-specs { margin-top: 1.4rem; }
+  .d-buy { position: sticky; bottom: 0; z-index: 5; margin: 1.6rem -1.25rem 0; padding: .8rem 1.25rem calc(.8rem + env(safe-area-inset-bottom)); background: var(--sand); border-top: 1px solid var(--ink); flex-wrap: nowrap; gap: .7rem; box-shadow: 0 -10px 24px -14px rgba(20, 19, 18, .25); }
+  .d-buy .qty button { width: 38px; height: 38px; }
+  .d-unit { display: none; }
+  .d-buy .btn { flex: 1; width: auto; margin: 0; padding-inline: .8rem; }
+  .d-ship { padding-bottom: .4rem; }
+  .d-nav { margin-bottom: 0; padding-bottom: 1.6rem; }
 }
