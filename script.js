@@ -610,3 +610,18 @@ addEventListener("pageshow", ev => { if (ev.persisted) html.classList.remove("le
   setTimeout(() => { alive = false; ro.disconnect(); }, 4500);
   align();
 })();
+
+/* ---------- mobile menu ---------- */
+(() => {
+  const btn = $("#menu-btn"), panel = $("#mnav"); if (!btn || !panel) return;
+  const set = on => {
+    document.body.classList.toggle("mnav-open", on); header.classList.toggle("mnav-on", on);
+    btn.setAttribute("aria-expanded", on); btn.setAttribute("aria-label", on ? "Close menu" : "Open menu");
+    panel.setAttribute("aria-hidden", !on); panel.inert = !on;
+    document.body.style.overflow = on ? "hidden" : ""; if (lenis) { if (on) lenis.stop(); else if (!document.body.classList.contains("locked")) lenis.start(); }
+  };
+  btn.addEventListener("click", () => set(!document.body.classList.contains("mnav-open")));
+  panel.addEventListener("click", e => { if (e.target.closest("a, .mn-order")) set(false); });
+  addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("mnav-open")) set(false); });
+  matchMedia("(min-width: 801px)").addEventListener("change", e => { if (e.matches) set(false); });
+})();

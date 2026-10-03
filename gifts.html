@@ -86,8 +86,22 @@
       <button class="order-btn" type="button" data-open-order aria-label="Open your order list">
         Order list <b class="count" data-count>0</b>
       </button>
+      <button class="menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><span></span><span></span></button>
     </div>
   </header>
+
+  <div class="mnav" id="mnav" aria-hidden="true" inert>
+    <nav aria-label="Menu">
+      <a class="mn-main" href="./collection">The collection</a>
+      <div class="mn-sub"><a href="collection?type=soft">Soft</a><a href="collection?type=hard">Hard</a><a href="collection?type=blue">Blue</a><a href="collection?type=pantry">Bread and pantry</a></div>
+      <a class="mn-main" href="gifts">Boards &amp; gifts</a>
+      <div class="mn-sub"><a href="gifts#boards">Boards</a><a href="gifts#boxes">Boxes</a><a href="gifts#vouchers">Vouchers</a></div>
+      <a class="mn-main" href="./#about">About</a>
+      <a class="mn-main" href="./#visit">Visit</a>
+      <button class="mn-order" type="button" data-open-order>Order list <b class="count" data-count>0</b></button>
+    </nav>
+    <p class="mn-foot">14 Gambier Lane, Liverpool &middot; Opening Spring 2027</p>
+  </div>
 
   <main id="top" class="cat gifts-page">
     <header class="cat-hero">
