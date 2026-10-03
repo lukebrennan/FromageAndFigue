@@ -595,3 +595,82 @@ dialog#product { border-radius: 0; }
   .perks { display: grid; gap: .45rem; }
   .perks li + li::before { content: none; }
 }
+
+
+/* ================= handcrafted layout rhythm ================= */
+
+/* text fades gently in place instead of rising */
+[data-reveal] { transform: none; }
+.section-head[data-reveal], .gifts-head[data-reveal], .visit-info[data-reveal], .about-text[data-reveal] { transform: none; }
+
+/* each group of images arrives differently: wipes in from a different side */
+[data-fx] .img-frame { opacity: 1; filter: none; transform: none; transition: clip-path 1.5s var(--ease-io) var(--d, 0s); }
+[data-fx].in .img-frame { opacity: 1; filter: none; transform: none; clip-path: inset(0); }
+[data-fx="wipe-l"] .img-frame { clip-path: inset(0 100% 0 0); }
+[data-fx="wipe-u"] .img-frame { clip-path: inset(100% 0 0 0); }
+[data-fx="wipe-d"] .img-frame { clip-path: inset(0 0 100% 0); }
+[data-fx] .img-frame > img { scale: 1.22; transition: scale 2.2s var(--ease) var(--d, 0s); }
+[data-fx].in .img-frame > img { scale: 1; }
+
+/* collection cards: image curtain per card instead of a fade-up */
+.card.pre { opacity: 1; transform: none; }
+.card.pre .thumb { clip-path: inset(0 0 100% 0); transition: clip-path 1.2s var(--ease-io) calc(var(--c, 0) * 110ms); }
+.card.pre .thumb img { scale: 1.2; transition: scale 1.8s var(--ease) calc(var(--c, 0) * 110ms), transform 1.1s var(--ease); }
+.card.pre .card-body { opacity: 0; transition: opacity 1s var(--ease) calc(var(--c, 0) * 110ms + .35s); }
+.card.pre.in { transition: none; }
+.card.pre.in .thumb { clip-path: inset(0); }
+.card.pre.in .thumb img { scale: 1; }
+.card.pre.in .card-body { opacity: 1; }
+.card:hover .thumb img { scale: 1.06; }
+
+/* full-bleed quote */
+.quote { position: relative; background: var(--ink); color: var(--ivory); padding: clamp(6rem, 17vw, 13rem) 0; overflow: hidden; text-align: center; }
+.quote .mark { position: absolute; left: 50%; top: clamp(1rem, 4vw, 3rem); transform: translateX(-50%); font-family: var(--serif); font-size: clamp(12rem, 30vw, 24rem); line-height: 1; color: var(--gold); opacity: .22; pointer-events: none; }
+.quote blockquote { position: relative; margin: 0 auto; max-width: 17em; font-family: var(--serif); font-weight: 300; font-style: italic; font-size: clamp(2.2rem, 6.4vw, 5.6rem); line-height: 1.08; letter-spacing: -.015em; }
+.quote .w { color: rgba(247, 243, 236, .2); transition: color .5s var(--ease); }
+.quote .w.on { color: var(--ivory); }
+.quote .by { position: relative; display: inline-flex; align-items: center; gap: 1rem; margin: clamp(2rem, 5vw, 3.4rem) 0 0; font-size: .74rem; letter-spacing: .24em; text-transform: uppercase; color: var(--gold-soft); }
+.quote .by span { width: 2.4rem; height: 1px; background: currentColor; opacity: .7; }
+
+/* gifts: text stays put on the left while the images scroll past on the right */
+.gifts-layout { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(2.5rem, 7vw, 7rem); align-items: start; }
+.gifts-layout .gifts-head { position: sticky; top: calc(var(--header-h) + 2.5rem); max-width: none; }
+.gifts-layout .gift-grid { display: flex; flex-direction: column; gap: 0; margin-top: 0; }
+.gifts-layout .gift-card { width: 100%; }
+.gifts-layout .gift-card.offset { width: 74%; align-self: flex-end; margin-top: clamp(-4.5rem, -6vw, -2rem); position: relative; z-index: 1; }
+.gifts-layout .gift-card.offset .img-frame { box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .7); }
+.gifts-layout .gift-card .img-frame { aspect-ratio: 5 / 4; }
+.gift-row { margin-top: clamp(4rem, 9vw, 8rem); }
+
+/* about: photograph runs off the left edge, text sits lower on a narrow column */
+.about .statement { margin-left: clamp(0px, 10vw, 9rem); }
+.about-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 0; align-items: start; margin: clamp(3.5rem, 8vw, 7rem) 0 0; max-width: none; }
+.about-grid > figure { margin: 0; }
+.about-grid .img-frame { aspect-ratio: 5 / 4; }
+.about-text { padding: clamp(2.5rem, 9vw, 8rem) clamp(1.5rem, 6vw, 6rem) 0 clamp(2rem, 6vw, 6rem); max-width: 34rem; }
+.about-text p { margin: 0 0 1.3rem; color: var(--muted); font-size: 1.12rem; }
+.about-text p:first-child { color: var(--ink); font-family: var(--serif); font-size: clamp(1.5rem, 2.4vw, 2.1rem); line-height: 1.25; }
+
+@media (max-width: 900px) {
+  .gifts-layout { grid-template-columns: 1fr; }
+  .gifts-layout .gifts-head { position: static; }
+  .gifts-layout .gift-grid { margin-top: 2.5rem; }
+  .gifts-layout .gift-card.offset { width: 82%; margin-top: -2rem; }
+  .about-grid { grid-template-columns: 1fr; }
+  .about-text { padding: 2rem clamp(1.25rem, 4vw, 2.5rem) 0; max-width: none; }
+  .about .statement { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-fx] .img-frame, .card.pre .thumb { clip-path: none !important; }
+  [data-fx] .img-frame > img, .card.pre .thumb img { scale: 1 !important; }
+  .card.pre .card-body { opacity: 1 !important; }
+  .quote .w { color: var(--ivory); }
+}
+html:not(.js) [data-fx] .img-frame, html:not(.js) .card.pre .thumb { clip-path: none; }
+html:not(.js) [data-fx] .img-frame > img { scale: 1; }
+.gifts-layout .gift-card:first-child figcaption { padding-bottom: 3.8rem; }
+.gifts-layout .gift-card.offset { margin-top: -2.6rem; }
+.about-text p:first-child { font-size: clamp(1.3rem, 1.9vw, 1.7rem); }
+.about-text { max-width: 36rem; }
+@media (max-width: 560px) { .gift-card figcaption { flex-direction: column; gap: .15rem; } }

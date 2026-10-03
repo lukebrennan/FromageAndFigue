@@ -11,7 +11,7 @@ const SHOP = {
   phoneLink: "+441514960142",
   whatsapp: "447700900142",            // digits only with country code, for example 447700900123. Leave empty to hide.
   openingSoon: true,      // true shows "Opening soon" everywhere instead of live hours. Set false at launch.
-  openingNote: "Autumn 2026, Liverpool",
+  openingNote: "Spring 2027, Liverpool",
   owner: "Benoit Severin-Delos",
   timeZone: "Europe/London",
   // Opening hours by weekday: [open hour, close hour] in 24h time, or null when closed. Sunday first.
@@ -356,12 +356,12 @@ const header = $(".site-header"), bar = $(".progress"), hero = $(".hero");
 let ticking = false, lastY = 0;
 const tabbar = $(".tabbar");
 const small = matchMedia("(max-width: 800px)");
-const words = (() => {
-  const el = $("#statement"); const parts = el.textContent.trim().split(/\s+/);
+const scrubs = [$("#statement"), $(".quote .scrub")].filter(Boolean).map(el => {
+  const parts = el.textContent.trim().split(/\s+/);
   el.setAttribute("aria-label", el.textContent.trim());
   el.innerHTML = parts.map(w => `<span class="w" aria-hidden="true">${w}</span>`).join(" ");
-  return $$(".w", el);
-})();
+  return { el, words: $$(".w", el) };
+});
 const supportsScrollAnim = CSS.supports("animation-timeline: view()");
 const pars = supportsScrollAnim || !finePointer ? [] : $$("[data-parallax]");
 
@@ -384,10 +384,13 @@ function onScroll() {
       img.style.transform = `translate3d(0, ${off.toFixed(1)}px, 0)`;
     });
   }
-  const st = $("#statement").getBoundingClientRect();
-  const prog = Math.min(1, Math.max(0, (vh * 0.8 - st.top) / (st.height + vh * 0.25)));
-  const on = Math.round(prog * words.length);
-  words.forEach((w, i) => w.classList.toggle("on", i < on));
+  scrubs.forEach(({ el, words }) => {
+    const r = el.getBoundingClientRect();
+    if (r.bottom < -50 || r.top > vh + 50) return;
+    const prog = Math.min(1, Math.max(0, (vh * 0.8 - r.top) / (r.height + vh * 0.25)));
+    const on = Math.round(prog * words.length);
+    words.forEach((w, i) => w.classList.toggle("on", i < on));
+  });
   ticking = false;
 }
 addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
