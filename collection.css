@@ -7,7 +7,7 @@
 .cat-title em { color: var(--gold); }
 .cat-intro { display: grid; grid-template-columns: minmax(0, 36rem) 1fr; gap: 1.5rem clamp(2rem, 6vw, 6rem); align-items: end; margin-top: clamp(1rem, 2vw, 1.6rem); }
 .cat-intro > p { margin: 0; font-size: 1.12rem; color: var(--muted); }
-.cat-intro .perks { margin: 0; justify-content: flex-end; }
+.cat-intro .perks { margin: 0; padding-top: .9rem; justify-content: flex-end; }
 .hero-in { display: inline-block; opacity: 0; transform: translateY(.5em); transition: opacity 1s var(--ease), transform 1.1s var(--ease); transition-delay: calc(var(--i, 0) * 110ms + .1s); }
 .eyebrow.hero-in { display: block; }
 .cat-intro.hero-in { transform: translateY(14px); }
