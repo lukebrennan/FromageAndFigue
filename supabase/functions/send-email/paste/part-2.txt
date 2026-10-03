@@ -1,0 +1,56 @@
+const T = {
+  confirmation(o: any, shop: any) {
+    const d = delivery(o);
+    const details = row("Order", esc(o.ref)) + row(d ? "Delivery" : "Collection", esc(whenText(o))) + (d ? row("Delivering to", esc(o.address).replace(/\n/g, "<br>")) : row("Collect from", shopAddr(shop))) + (o.customer_note ? row("Your note", esc(o.customer_note).replace(/\n/g, "<br>")) : "");
+    return {
+      subject: `Your Fromage & Figue order ${o.ref} is confirmed`,
+      html: layout({
+        shop, demo: o.payment === "demo", preheader: `Thank you, ${firstName(o.customer_name)}. We have your order and will start preparing it.`,
+        eyebrow: "Order confirmed", title: `Thank you, *${firstName(o.customer_name)}.*`,
+        excerpt: d ? "Your order is with us and we are putting it together with care. It will be delivered to you within one to three days, and we will write again the moment it is on its way."
+          : "Your order is with us and we are putting it together with care. Everything will be wrapped and waiting for you at the time below.",
+        body: panel(`<table role="presentation" cellpadding="0" cellspacing="0">${details}</table>`) + `<div style="height:26px;line-height:26px;font-size:0">&nbsp;</div>` + items(o),
+      }),
+    };
+  },
+  alert(o: any, shop: any) {
+    const d = delivery(o);
+    const details = row("Customer", esc(o.customer_name)) + row("Email", `<a href="mailto:${esc(o.email)}" style="color:#141312">${esc(o.email)}</a>`) + row(d ? "Delivery" : "Collection", esc(whenText(o))) + (d ? row("Address", esc(o.address).replace(/\n/g, "<br>")) : "") + (o.customer_note ? row("Note", `<b>${esc(o.customer_note).replace(/\n/g, "<br>")}</b>`) : "");
+    return {
+      subject: `New order ${o.ref}: ${gbp(o.total)} (${d ? "Delivery" : "Collection"})`,
+      html: layout({
+        shop, preheader: `${o.customer_name} placed a ${d ? "delivery" : "collection"} order for ${gbp(o.total)}.`,
+        eyebrow: "New order", title: `Order *${esc(o.ref)}*`,
+        excerpt: `${esc(o.customer_name)} has placed a ${d ? "delivery" : "collection"} order for <b>${gbp(o.total)}</b>.${o.customer_note ? " They left a note, shown below." : ""}`,
+        body: panel(`<table role="presentation" cellpadding="0" cellspacing="0">${details}</table>`) + `<div style="height:26px;line-height:26px;font-size:0">&nbsp;</div>` + items(o) +
+          `<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:28px"><tr><td style="background:#141312"><a href="${SITE}/admin" style="display:inline-block;padding:15px 28px;font:500 12px ${SANS};letter-spacing:.2em;text-transform:uppercase;color:#f7f3ec;text-decoration:none">Open in the admin</a></td></tr></table>`,
+      }),
+    };
+  },
+  ready(o: any, shop: any) {
+    const d = delivery(o);
+    return {
+      subject: d ? `Your order ${o.ref} is on its way` : `Your order ${o.ref} is ready to collect`,
+      html: layout({
+        shop, demo: o.payment === "demo", preheader: d ? "Your order has left us and will reach you within one to three days." : "Everything is wrapped and waiting for you.",
+        eyebrow: d ? "On its way" : "Ready to collect", title: d ? "Your order is on *its way.*" : "Your order is *ready.*",
+        excerpt: d ? `Good news, ${esc(firstName(o.customer_name))}. Your order has left us and should reach you within one to three days. We hope you enjoy every bite.`
+          : `Good news, ${esc(firstName(o.customer_name))}. Everything is wrapped and waiting for you. Come by whenever you are ready, and bring this email if you like.`,
+        body: panel(`<table role="presentation" cellpadding="0" cellspacing="0">${row("Order", esc(o.ref))}${d ? row("Delivering to", esc(o.address).replace(/\n/g, "<br>")) : row("Collect from", shopAddr(shop)) + (o.slot_at ? row("Your time", esc(when(o.slot_at))) : "")}</table>`),
+      }),
+    };
+  },
+  cancelled(o: any, shop: any) {
+    const reason = String(o.cancel_reason || "").trim();
+    return {
+      subject: `Your order ${o.ref} has been cancelled`,
+      html: layout({
+        shop, demo: o.payment === "demo", preheader: reason ? `Reason: ${reason}` : "We are sorry, your order has been cancelled.",
+        eyebrow: "Order cancelled", title: "Your order has been *cancelled.*",
+        excerpt: `We are sorry, ${esc(firstName(o.customer_name))}. Order ${esc(o.ref)} will not be going ahead.${o.payment === "demo" ? "" : " Any payment taken will be refunded to your original method."} If this is a surprise, or you would like to order again, please just reply to this email and we will help.`,
+        body: panel(`<table role="presentation" cellpadding="0" cellspacing="0">${row("Order", esc(o.ref))}${reason ? row("Reason", esc(reason).replace(/\n/g, "<br>")) : ""}</table>`) + `<div style="height:26px;line-height:26px;font-size:0">&nbsp;</div>` + items(o),
+      }),
+    };
+  },
+};
+// ---- templates end ----
