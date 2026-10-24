@@ -957,3 +957,10 @@ html.leaving body { opacity: 0; transition: opacity .28s ease; }
 .soon-cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.8rem; }
 .btn-ghost-dark { border: 1px solid var(--ink); color: var(--ink); background: transparent; }
 .btn-ghost-dark:hover { background: var(--ink); color: var(--ivory); }
+
+/* home hero: the brand name, then a quiet tagline */
+.hero h1 { font-size: clamp(2.8rem, min(8.4vw, 14svh), 7.6rem); line-height: 1; letter-spacing: -.02em; font-weight: 400; }
+.hero-tag { margin: 1.3rem 0 0; font-size: clamp(.72rem, .9vw, .86rem); letter-spacing: .34em; text-transform: uppercase; color: var(--gold-soft); text-shadow: 0 1px 12px rgba(0, 0, 0, .5); }
+.hero-tag span::before { content: ""; display: inline-block; width: 2.6rem; height: 1px; background: currentColor; vertical-align: middle; margin-right: 1rem; opacity: .8; }
+.hero .lead { margin-top: 1.4rem; }
+@media (max-width: 560px) { .hero-tag { letter-spacing: .2em; font-size: .68rem; } .hero-tag span::before { width: 1.6rem; margin-right: .7rem; } }
