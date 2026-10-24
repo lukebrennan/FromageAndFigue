@@ -1,5 +1,5 @@
 /* ================= Boards & gifts page ================= */
-.cat-title .amp { font-family: var(--serif); font-style: italic; color: var(--gold); }
+.cat-title .amp { font-family: var(--serif); font-style: normal; }
 .jump { list-style: none; margin: clamp(1.2rem, 2.4vw, 1.8rem) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem 2rem; }
 .jump a { display: inline-block; font-size: .74rem; letter-spacing: .18em; text-transform: uppercase; text-decoration: none; padding: .6rem 0; border-bottom: 1px solid var(--ink); transition: color .3s, border-color .3s; }
 .jump a:hover { color: #8a6d33; border-color: var(--gold); }
@@ -35,7 +35,7 @@
 
 .g-photo { margin: clamp(2.5rem, 6vw, 4.5rem) 0 0; }
 .g-photo .img-frame { aspect-ratio: 21 / 9; }
-.g-photo figcaption { margin-top: .9rem; font-family: var(--serif); font-style: italic; font-size: 1.3rem; color: var(--gold-soft); }
+.g-photo figcaption { margin-top: .9rem; font-family: var(--serif); font-style: normal; font-size: 1.3rem; color: var(--gold-soft); }
 
 /* vouchers */
 .g-vouch { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }

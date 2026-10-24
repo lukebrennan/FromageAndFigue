@@ -14,7 +14,7 @@ const INFO = CAT ? CAT.info : INFO_FALLBACK;
    categories (editable in the admin). Any other gifts category gets its own section before "Something special". */
 const SECTIONS = CAT ? CAT.sections : null;
 const BUILT = { board: "#boards", box: "#boxes", voucher: "#vouchers" };
-const hx = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])).replace(/\*(.+?)\*/g, "<em>$1</em>");
+const hx = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])).replace(/\*(.+?)\*/g, "$1");
 if (SECTIONS) {
   Object.entries(BUILT).forEach(([id, sel]) => {
     const sec = $(sel), c = SECTIONS.find(x => x.id === id);

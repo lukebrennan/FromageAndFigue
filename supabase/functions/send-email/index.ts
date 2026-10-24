@@ -17,7 +17,7 @@ const DEFAULT_SHOP = { email: "hello@fromageandfigue.co.uk", phone: "0151 496 01
 const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
 const gbp = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(n) || 0);
 const when = (iso: string) => new Date(iso).toLocaleString("en-GB", { timeZone: "Europe/London", weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
-const em = (s: string) => esc(s).replace(/\*(.+?)\*/g, '<em style="color:#b79a5d;font-style:italic">$1</em>');   // *word* becomes gold italic
+const em = (s: string) => esc(s).replace(/\*(.+?)\*/g, "$1");   // any *stars* around a word are simply dropped
 const firstName = (n: string) => String(n || "").trim().split(/\s+/)[0] || "there";
 const SERIF = "Georgia,'Times New Roman',serif", SANS = "Helvetica,Arial,sans-serif";
 
@@ -35,7 +35,7 @@ function layout(o: { preheader: string; eyebrow: string; title: string; excerpt:
 <div style="width:48px;height:1px;background:#b79a5d;margin:22px 0 20px;font-size:0;line-height:0">&nbsp;</div>
 <p style="margin:0;font:400 17px/1.7 ${SANS};color:#4a463f">${o.excerpt}</p></td></tr>
 ${o.body ? `<tr><td style="padding:30px 40px 0">${o.body}</td></tr>` : ""}
-<tr><td style="padding:34px 40px 40px"><p style="margin:0;font:400 14px/1.7 ${SANS};color:#6f6a61">Questions about your order? Just reply to this email, or call us on ${esc(o.shop.phone)}.${o.demo ? "<br><br><i>This was a demonstration order. No payment was taken.</i>" : ""}</p></td></tr>
+<tr><td style="padding:34px 40px 40px"><p style="margin:0;font:400 14px/1.7 ${SANS};color:#6f6a61">Questions about your order? Just reply to this email, or call us on ${esc(o.shop.phone)}.${o.demo ? "<br><br>This was a demonstration order. No payment was taken." : ""}</p></td></tr>
 <tr><td style="background:#141312;padding:30px 40px"><p style="margin:0 0 6px;font:400 22px ${SERIF};color:#f7f3ec">Fromage &amp; Figue</p>
 <p style="margin:0;font:400 12px/1.8 ${SANS};letter-spacing:.04em;color:#d6c291">${addr}<br>An artisan fromagerie and delicatessen, opening Spring 2027</p></td></tr>
 </table></td></tr></table></body></html>`;

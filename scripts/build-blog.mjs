@@ -18,7 +18,7 @@ const SB_KEY = process.env.SUPABASE_KEY || "sb_publishable_8EgFC7RJcarnTit6LlNlL
 const ROOT = process.cwd();
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const day = iso => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" });
-const em = s => esc(s).replace(/\*(.+?)\*/g, "<em>$1</em>");
+const em = s => esc(s).replace(/\*(.+?)\*/g, "$1");
 
 const cleanBody = html => sanitizeHtml(html || "", {
   allowedTags: [...sanitizeHtml.defaults.allowedTags, "img", "figure", "figcaption", "h1", "h2", "h3", "h4", "iframe", "u", "s", "span", "hr", "video", "source", "table", "thead", "tbody", "tr", "th", "td", "details", "summary"],
